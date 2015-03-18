@@ -82,6 +82,39 @@ them.
         txaio.resolve_future(f, answer)
 
 
+What txaio is Not
+-----------------
+
+``txaio`` is not a new event-based programming solution. It is not a
+complete box-set of async tools.
+
+It is **one piece** that *can* help you to write cross-event-loop
+asynchronous code. For example, you'll note that there's no way to run
+"the event loop" -- that's up to you.
+
+There's also no code to convert between Twisted ``IProtocol`` and
+asyncio's protocols.
+
+You are encouraged to look at Autobahn|Python for an example of a
+system that can run on both Twisted and asyncio. In particular, look
+at the difference between ``autobahn/twisted/websocket.py`` and
+``autobahn/asyncio/websocket.py`` and the compatibility super-class in
+``autobahn/wamp/protocol.py`` which is the piece that uses ``txaio``
+to provide an event-loop agnostic implementation that both the Twisted
+and asyncio concrete ``ApplicationSession`` objects inherit from.
+
+``autobahn.wamp.protocol.ApplicationSession`` is glued to a particular
+event-loop via ``autobahn.twisted.wamp.ApplicationSession`` which
+takes advantage of ``txaio.tx.LoopMixin`` to provde the
+helpers-methods attached to ``self``.
+
+In this manner, code in the generic implementation simply always calls
+``txaio`` methods via ``self.create_future()`` or similar and users of
+Autobahn|Python can choose between asyncio and Twisted as they prefer
+by either ``from autobahn.twisted.wamp import ApplicationSession`` or
+``from autobahn.asyncio.wamp import ApplicationSession``
+
+
 
 Contents:
 
