@@ -20,7 +20,7 @@ import shlex
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('..'))
 
 # -- General configuration ------------------------------------------------
 
@@ -34,6 +34,13 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
 ]
+
+# custom txaio extension configuration
+
+autodoc_member_order = 'bysource'
+autodoc_default_flags = ['members', 'show-inheritance', 'undoc-members']
+autoclass_content = 'both'
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
