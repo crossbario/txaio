@@ -23,7 +23,7 @@ try:
             raise Return(x)
 
     else:
-        from .aio_py3asyncio import *
+        from .aio_py3 import *
 
 
 except ImportError:

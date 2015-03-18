@@ -6,11 +6,11 @@ using_twisted = False
 using_asyncio = False
 
 try:
-    from .aio_twisted import *
+    from .tx import *
     using_twisted = True
 except ImportError:
     try:
-        from .aio_asyncio import *
+        from .aio import *
         using_asyncio = True
     except ImportError:
         raise ImportError("Neither asyncio nor Twisted found.")
