@@ -11,7 +11,6 @@ def test_errback():
     errors = []
 
     def err(f):
-        print("ERR", f)
         errors.append(f)
     txaio.add_future_callbacks(f, None, err)
     try:
@@ -20,7 +19,6 @@ def test_errback():
         fail = txaio.create_failure()
     txaio.reject_future(f, fail)
 
-    print("XXX", run_once, run_once.__doc__)
     run_once()
 
     assert len(errors) == 1

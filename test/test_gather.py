@@ -39,12 +39,10 @@ def test_first_result():
 
     final = txaio.gather_futures([f0, f1, f2], first_result=True)
     def blam(arg):
-        print("BLAM", arg)
         results.append(arg)
     txaio.add_future_callbacks(final, blam, None)
 
     await(final)
-    print("XXXX", results)
     assert len(results) == 2
     assert results[0] == 42
     assert results[1] == 9
@@ -57,7 +55,6 @@ def test_first_error():
     results = []
     exception = RuntimeError("testing")
     def callback(arg):
-        print("CALLBACK", arg)
         results.append(arg)
 
     try:
@@ -73,12 +70,10 @@ def test_first_error():
 
     final = txaio.gather_futures([f0, f1, f2], first_exception=True)
     def gather_error(arg):
-        print("BLAM", arg)
         results.append(arg)
     txaio.add_future_callbacks(final, None, gather_error)
 
     await(final)
-    print("X", results)
     assert len(results) == 1
     assert results[0].value == exception
 
@@ -90,7 +85,6 @@ def test_propagate_errors_first():
     results = []
     exception = RuntimeError("testing")
     def callback(arg):
-        print("CALLBACK", arg)
         results.append(arg)
         return arg
 
@@ -131,11 +125,9 @@ def test_propagate_errors_all():
     consume_exceptions=False, first_exception=False
     '''
 
-    print("\n\n\n---------------\n\n\n")
     results = []
     exception = RuntimeError("testing")
     def callback(arg):
-        print("CALLBACK", arg)
         results.append(arg)
         return arg
 
@@ -196,12 +188,10 @@ def test_gather_two():
 
     f2 = txaio.gather_futures([f0, f1])
     def done(arg):
-        print("XXXXXXXXX", arg)
         results.append(arg)
     def error(fail):
-        print("FAIL", fail)
         errors.append(fail)
-        fail.printTraceback()
+        # fail.printTraceback()
     txaio.add_future_callbacks(f2, done, error)
 
     await(f0)
@@ -210,7 +200,6 @@ def test_gather_two():
 
     assert len(results) == 1
     assert len(errors) == 0
-    print("FINAL", results[0])
     assert results[0] == ['OHAI', 42] or results[0] == [42, 'OHAI']
     assert len(calls) == 2
     assert calls[0] == ((1, 2, 3), dict(key='word'))
@@ -235,7 +224,7 @@ def test_gather_first_result():
 
     def error(fail):
         errors.append(fail)
-        fail.printTraceback()
+        # fail.printTraceback()
     txaio.add_future_callbacks(f2, done, error)
 
     await(f2)

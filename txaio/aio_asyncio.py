@@ -19,7 +19,6 @@ try:
         future_generator = coroutine
 
         def returnValue(x):
-            print("OHAI", x)
             # inject the return value into the function-just-called
             raise Return(x)
 
@@ -166,17 +165,14 @@ def add_future_callbacks(future, callback, errback):
     "private" stuff?
     """
     def done(f):
-        print("DONE", f)
         try:
             res = f.result()
-            print("real result=", res)
             if callback:
                 x = callback(res)
                 if x is not None:
                     f._result = x
         except Exception as e:
             if errback:
-                print("ERRBACK", errback, e)
                 errback(create_failure())
     return future.add_done_callback(done)
 
@@ -201,7 +197,6 @@ def gather_futures(futures,
     are not possible at the same time.
     """
     if first_result and first_exception:
-        print("zinga")
         raise RuntimeError("Both first_result and first_exception not possible with asyncio")
 
     if first_result:
@@ -211,20 +206,15 @@ def gather_futures(futures,
     else:
         when = ALL_COMPLETED
 
-    print("WHEN", when)
     gen = asyncio.wait(futures, return_when=when)
     f = asyncio.async(gen)
 
     real_return = create_future()
     def unpack(future):
-        print("UNPACK", future)
         (done, not_done) = future.result()
-        print("done", done)
-        print("NOT", not_done)
         results = []
         an_error = None
         for f in done:
-            print("unpacking", f)
             try:
                 value = f.result()
                 ok = True
@@ -235,19 +225,16 @@ def gather_futures(futures,
                 # result...
 
             except Exception as e:
-                print("GOT EXCEPT", e)
                 if an_error is None:
                     an_error = create_failure()
                 if not consume_exceptions:
                     if first_exception:
-                        print("REJECTING")
                         reject_future(real_return, an_error)
                         return
                 value = e
                 ok = False
-            #results.append((ok, value))
+            # results.append((ok, value))
             results.append(value)
-        print("RES", results)
         if first_result:
             results = results[0]
         if an_error and not consume_exceptions:

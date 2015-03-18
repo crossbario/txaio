@@ -6,7 +6,6 @@ try:
         return _run_once(asyncio.get_event_loop())
 
 except ImportError as e:
-    print(e)
     try:
         import trollius as asyncio
     except ImportError:

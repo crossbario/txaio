@@ -79,11 +79,8 @@ def add_future_callbacks(future, callback, errback):
 
 def gather_futures(futures, consume_exceptions=True, first_result=False, first_exception=False):
     def completed(res):
-        print("gather_futures completed with", res)
         if first_result:
-            print("zzzz first?", res[0])
             return res[0] # XXX really? what if third one fired first?
-        print("MAP", res)
         rtn = []
         for (ok, value) in res:
             rtn.append(value)
@@ -95,19 +92,15 @@ def gather_futures(futures, consume_exceptions=True, first_result=False, first_e
         # This only gets called if fireOnOneErrback=True *and*
         # consume_exceptions=Ture and in that case, the "failure"
         # always contains a FirstError
-        # print("gather_futures failed with", f)
         assert not consume_exceptions
         assert first_exception
         return f.value.subFailure
 
-    print("CONSUME?", consume_exceptions)
     dl = DeferredList(
         list(futures),
         consumeErrors=consume_exceptions,
         fireOnOneCallback=first_result,
         fireOnOneErrback=first_exception
     )
-    print("FUTURES", list(map(lambda x: x.called, futures)))
     add_future_callbacks(dl, completed, failed)
-    print("DL called?", dl.called)
     return dl
