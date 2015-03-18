@@ -38,6 +38,7 @@ except ImportError:
     from trollius import coroutine as future_generator
 
     from trollius import Return
+
     def returnValue(x):
         raise Return(x)
 
@@ -81,7 +82,8 @@ class FailedPromise(IFailedPromise):
         Prints the complete traceback to stderr, or to the provided file
         """
         # print_exception handles None for file
-        traceback.print_exception(self.type, self.value, self._traceback, file=file)
+        traceback.print_exception(self.type, self.value, self._traceback,
+                                  file=file)
 
     def getErrorMessage(self):
         """
@@ -92,15 +94,19 @@ class FailedPromise(IFailedPromise):
     def __str__(self):
         return self.getErrorMessage()
 
+
 # API methods for txaio, exported via the top-level __init__.py
+
 
 def create_future():
     return Future()
+
 
 def create_future_success(result):
     f = Future()
     f.set_result(result)
     return f
+
 
 def create_future_error(error=None):
     if error is None:
@@ -110,6 +116,7 @@ def create_future_error(error=None):
     f = Future()
     f.set_exception(error.value)
     return f
+
 
 def as_future(fun, *args, **kwargs):
     try:
@@ -124,8 +131,10 @@ def as_future(fun, *args, **kwargs):
         else:
             return create_future_success(res)
 
+
 def resolve_future(future, result):
     future.set_result(result)
+
 
 def reject_future(future, error=None):
     if error is None:
@@ -133,6 +142,7 @@ def reject_future(future, error=None):
     else:
         assert isinstance(error, IFailedPromise)
     future.set_exception(error.value)
+
 
 def create_failure():
     """
@@ -145,6 +155,7 @@ def create_failure():
     consistent API between asyncio and Twisted.
     """
     return FailedPromise(*sys.exc_info())
+
 
 def add_future_callbacks(future, callback, errback):
     """
@@ -176,6 +187,7 @@ def add_future_callbacks(future, callback, errback):
                 errback(create_failure())
     return future.add_done_callback(done)
 
+
 def gather_futures(futures,
                    consume_exceptions=True,
                    first_result=False,
@@ -189,7 +201,8 @@ def gather_futures(futures,
 
     :param consume_exceptions: if True, any errors are eaten and NOT propagated
 
-    :param first_result: if True, the Promise returns the first Promise that finishes
+    :param first_result: if True, the Promise returns the first
+        Promise that finishes
 
     :param first_exception: if True, the Promise errbacks with the first error
 
@@ -197,7 +210,7 @@ def gather_futures(futures,
     are not possible at the same time.
     """
     if first_result and first_exception:
-        raise RuntimeError("Both first_result and first_exception not possible with asyncio")
+        raise RuntimeError("Can't do both first_result and first_exception.")
 
     if first_result:
         when = FIRST_COMPLETED
@@ -210,6 +223,7 @@ def gather_futures(futures,
     f = asyncio.async(gen)
 
     real_return = create_future()
+
     def unpack(future):
         (done, not_done) = future.result()
         results = []

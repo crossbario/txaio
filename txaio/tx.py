@@ -5,7 +5,8 @@ from twisted.internet.defer import succeed, fail
 from .interfaces import IFailedPromise
 
 from twisted.internet.defer import inlineCallbacks as future_generator
-from twisted.internet.defer import returnValue # XXX how to do in asyncio?
+from twisted.internet.defer import returnValue  # XXX how to do in asyncio?
+
 
 class FailedPromise(IFailedPromise):
     """
@@ -31,8 +32,10 @@ FailedPromise.register(Failure)
 def create_future():
     return Deferred()
 
+
 def create_future_success(result):
     return succeed(result)
+
 
 def create_future_error(error=None):
     if error is None:
@@ -41,11 +44,14 @@ def create_future_error(error=None):
         assert isinstance(error, Failure)
     return fail(error)
 
+
 def as_future(fun, *args, **kwargs):
     return maybeDeferred(fun, *args, **kwargs)
 
+
 def resolve_future(future, result=None):
     future.callback(result)
+
 
 def reject_future(future, error=None):
     if error is None:
@@ -54,6 +60,7 @@ def reject_future(future, error=None):
         assert isinstance(error, IFailedPromise)
     future.errback(error)
 
+
 def create_failure():
     """
     Create a Failure instance. Can ONLY be called inside an "except"
@@ -61,6 +68,7 @@ def create_failure():
     implements IFailedPromise
     """
     return Failure()
+
 
 def add_future_callbacks(future, callback, errback):
     """
@@ -77,10 +85,11 @@ def add_future_callbacks(future, callback, errback):
     return future
 
 
-def gather_futures(futures, consume_exceptions=True, first_result=False, first_exception=False):
+def gather_futures(futures, consume_exceptions=True,
+                   first_result=False, first_exception=False):
     def completed(res):
         if first_result:
-            return res[0] # XXX really? what if third one fired first?
+            return res[0]  # XXX really? what if third one fired first?
         rtn = []
         for (ok, value) in res:
             rtn.append(value)

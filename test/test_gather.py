@@ -4,6 +4,7 @@ import txaio
 
 from util import run_once, await
 
+
 def test_gather_illegal_args():
     '''
     first_result=True and first_exception=True fails asyncio
@@ -19,12 +20,14 @@ def test_gather_illegal_args():
     except RuntimeError as e:
         assert 'not possible with asyncio' in str(e)
 
+
 def test_first_result():
     '''
     Stop processing after one result.
     '''
 
     results = []
+
     def callback(arg):
         results.append(arg)
         return 9
@@ -38,6 +41,7 @@ def test_first_result():
     txaio.add_future_callbacks(f2, callback, callback)
 
     final = txaio.gather_futures([f0, f1, f2], first_result=True)
+
     def blam(arg):
         results.append(arg)
     txaio.add_future_callbacks(final, blam, None)
@@ -47,6 +51,7 @@ def test_first_result():
     assert results[0] == 42
     assert results[1] == 9
 
+
 def test_first_error():
     '''
     Stop processing after one error.
@@ -54,6 +59,7 @@ def test_first_error():
 
     results = []
     exception = RuntimeError("testing")
+
     def callback(arg):
         results.append(arg)
 
@@ -69,6 +75,7 @@ def test_first_error():
     txaio.add_future_callbacks(f1, callback, callback)
 
     final = txaio.gather_futures([f0, f1, f2], first_exception=True)
+
     def gather_error(arg):
         results.append(arg)
     txaio.add_future_callbacks(final, None, gather_error)
@@ -77,6 +84,7 @@ def test_first_error():
     assert len(results) == 1
     assert results[0].value == exception
 
+
 def test_propagate_errors_first():
     '''
     consume_exceptions=False, first_exception=True
@@ -84,6 +92,7 @@ def test_propagate_errors_first():
 
     results = []
     exception = RuntimeError("testing")
+
     def callback(arg):
         results.append(arg)
         return arg
@@ -101,7 +110,12 @@ def test_propagate_errors_first():
     txaio.add_future_callbacks(f1, callback, callback)
     txaio.add_future_callbacks(f2, callback, callback)
 
-    final = txaio.gather_futures([f0, f1, f2], consume_exceptions=False, first_exception=True)
+    final = txaio.gather_futures(
+        [f0, f1, f2],
+        consume_exceptions=False,
+        first_exception=True,
+    )
+
     def gather_error(arg):
         results.append(arg)
         return None
@@ -120,6 +134,7 @@ def test_propagate_errors_first():
     assert results[0].value == exception
     assert results[1].value == exception
 
+
 def test_propagate_errors_all():
     '''
     consume_exceptions=False, first_exception=False
@@ -127,6 +142,7 @@ def test_propagate_errors_all():
 
     results = []
     exception = RuntimeError("testing")
+
     def callback(arg):
         results.append(arg)
         return arg
@@ -142,7 +158,12 @@ def test_propagate_errors_all():
     txaio.add_future_callbacks(f1, callback, callback)
     txaio.add_future_callbacks(f2, callback, callback)
 
-    final = txaio.gather_futures([f0, f1, f2], consume_exceptions=False, first_exception=False)
+    final = txaio.gather_futures(
+        [f0, f1, f2],
+        consume_exceptions=False,
+        first_exception=False,
+    )
+
     def gather_error(arg):
         results.append(arg)
         return None
@@ -164,6 +185,7 @@ def test_propagate_errors_all():
     # we asked for "don't consume errors", so we should get the first
     # one propogated out to the gather-future as a failure.
     assert results[3].value == exception
+
 
 def test_gather_two():
     '''
@@ -187,8 +209,10 @@ def test_gather_two():
     f1 = txaio.as_future(foo)
 
     f2 = txaio.gather_futures([f0, f1])
+
     def done(arg):
         results.append(arg)
+
     def error(fail):
         errors.append(fail)
         # fail.printTraceback()
@@ -204,6 +228,7 @@ def test_gather_two():
     assert len(calls) == 2
     assert calls[0] == ((1, 2, 3), dict(key='word'))
     assert calls[1] == (tuple(), dict())
+
 
 def test_gather_first_result():
     '''

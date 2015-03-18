@@ -4,6 +4,7 @@ import txaio
 
 from util import run_once
 
+
 def test_callback():
     f = txaio.create_future()
     results = []
@@ -17,6 +18,7 @@ def test_callback():
 
     assert len(results) == 1
     assert results[0] == "it worked"
+
 
 def test_chained_callback():
     """
@@ -42,6 +44,7 @@ def test_chained_callback():
     assert calls[0] == "the deal"
     assert calls[1] == "the deal pray I do not alter it futher"
 
+
 def test_immediate_result():
     f = txaio.create_future_success("it worked")
     results = []
@@ -54,4 +57,3 @@ def test_immediate_result():
 
     assert len(results) == 1
     assert results[0] == "it worked"
-

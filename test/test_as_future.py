@@ -4,6 +4,7 @@ import txaio
 
 from util import run_once
 
+
 def test_as_future_immediate():
     '''
     Returning an immediate value from as_future
@@ -11,6 +12,7 @@ def test_as_future_immediate():
     errors = []
     results = []
     calls = []
+
     def method(*args, **kw):
         calls.append((args, kw))
         return 42
@@ -31,6 +33,7 @@ def test_as_future_immediate():
     assert results[0] == 42
     assert calls[0] == ((1, 2, 3), dict(key='word'))
 
+
 def test_as_future_exception():
     '''
     Raises an exception from as_future
@@ -39,6 +42,7 @@ def test_as_future_exception():
     results = []
     calls = []
     exception = RuntimeError("sadness")
+
     def method(*args, **kw):
         calls.append((args, kw))
         raise exception
@@ -58,6 +62,7 @@ def test_as_future_exception():
     assert len(errors) == 1
     assert errors[0].value == exception
     assert calls[0] == ((1, 2, 3), dict(key='word'))
+
 
 def test_as_future_recursive():
     '''
@@ -88,6 +93,7 @@ def test_as_future_recursive():
     assert len(errors) == 0
     assert results[0] == 42
     assert calls[0] == ((1, 2, 3), dict(key='word'))
+
 
 def test_as_future_generator():
     '''
@@ -128,4 +134,3 @@ def test_as_future_generator():
     assert len(calls) == 2
     assert calls[0] == ((1, 2, 3), dict(key='word'))
     assert calls[1] == ((1, 2, 3), dict(key='word'))
-

@@ -33,6 +33,7 @@ def test_errback():
     assert errors[0].getErrorMessage() == 'it failed'
     assert 'it failed' in str(errors[0])
 
+
 def test_errback_reject_no_args():
     """
     txaio.reject_future() with no args
