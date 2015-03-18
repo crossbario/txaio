@@ -139,21 +139,23 @@ def resolve_future(future, result):
 def reject_future(future, error=None):
     if error is None:
         error = create_failure()  # will be error if we're not in an "except"
+    elif isinstance(error, Exception):
+        error = FailedPromise(type(error), error, None)
     else:
         assert isinstance(error, IFailedPromise)
     future.set_exception(error.value)
 
 
-def create_failure():
+def create_failure(exception=None):
     """
     This returns an object implementing IFailedPromise.
 
-    It may ONLY be called within an "except" block (such that
-    sys.exc_info() returns useful information).
-
-    We create these objects so that errback()s can have a
-    consistent API between asyncio and Twisted.
+    If exception is None (the default) we MUST be called within an
+    "except" block (such that sys.exc_info() returns useful
+    information).
     """
+    if exception:
+        return FailedPromise(type(exception), exception, None)
     return FailedPromise(*sys.exc_info())
 
 
@@ -162,18 +164,8 @@ def add_future_callbacks(future, callback, errback):
     callback or errback may be None, but at least one must be
     non-None.
 
-    XXX in Twisted, if your callback returns something different,
-    that's the value the next callback sees. In asyncio, this is not
-    true (i.e. if you add 3 callbacks to a Future, they all see "the"
-    value of the Future, not matter what they return).
-
-    Currently, Autobahn doesn't depend on this (i.e. it always has one
-    callback or is using closures so doesn't really care about the
-    arg) but it's pretty inconsistent between the two platforms :/
-
-    We can hack around it by setting _state on Future to avoid an
-    error-check, but that seems fraught with the peril of using
-    "private" stuff?
+    XXX beware the "f._result" hack to get "chainable-callback" type
+    behavior.
     """
     def done(f):
         try:

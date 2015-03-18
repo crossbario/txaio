@@ -56,17 +56,24 @@ def resolve_future(future, result=None):
 def reject_future(future, error=None):
     if error is None:
         error = create_failure()
+    elif isinstance(error, Exception):
+        print("FIXME: passing Exception to reject_future")
+        error = Failure(error)
     else:
         assert isinstance(error, IFailedPromise)
     future.errback(error)
 
 
-def create_failure():
+def create_failure(exception=None):
     """
-    Create a Failure instance. Can ONLY be called inside an "except"
-    block. This encapsulates the exception into an object that
-    implements IFailedPromise
+    Create a Failure instance.
+
+    if ``exception`` is None (the default), we MUST be inside an
+    "except" block. This encapsulates the exception into an object
+    that implements IFailedPromise
     """
+    if exception:
+        return Failure(exception)
     return Failure()
 
 
