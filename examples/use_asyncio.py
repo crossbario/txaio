@@ -1,6 +1,9 @@
 from __future__ import print_function
 import txaio.aio as txaio
 
+# note: all the code below is *identical* to the use_asyncio.py
+# example, except for the import line above and event-loop running
+
 def cb(value):
     print("Callback:", value)
 
