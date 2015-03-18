@@ -18,7 +18,8 @@ def test_gather_illegal_args():
         txaio.gather_futures([], first_result=True, first_exception=True)
         assert False
     except RuntimeError as e:
-        assert 'not possible with asyncio' in str(e)
+        assert 'first_result' in str(e)
+        assert 'first_exception' in str(e)
 
 
 def test_first_result():
