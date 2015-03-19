@@ -6,7 +6,9 @@ both Twisted and asyncio.
 
 This is like `six <http://pythonhosted.org/six/>`_, but for wrapping
 over differences between Twisted and asyncio so one can write code
-that runs unmodified on both (*aka* "source code compatibility").
+that runs unmodified on both (*aka* "source code compatibility"). In
+other words: your users can choose if they want asyncio **or** Twisted
+as a dependency.
 
     Note that, with this approach, user code runs under the native
     event loop of either Twisted or asyncio. This is different from
