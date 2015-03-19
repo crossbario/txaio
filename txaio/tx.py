@@ -60,7 +60,8 @@ def reject_future(future, error=None):
         print("FIXME: passing Exception to reject_future")
         error = Failure(error)
     else:
-        assert isinstance(error, IFailedPromise)
+        if not isinstance(error, IFailedPromise):
+            raise RuntimeError("reject_future requires an IFailedPromise")
     future.errback(error)
 
 
