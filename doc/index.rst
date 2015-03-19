@@ -15,8 +15,11 @@ as a dependency.
     attaching either one's event loop to the other using some event
     loop adapter.
 
-It supports both asyncio and Twisted on any of Python 2.7, 3.4 and
+**Support:** either asyncio *or* Twisted on any of Python 2.7, 3.4 and
 PyPy.
+
+How txaio Works
+---------------
 
 Instead of directly importing, instantiating and using ``Deferred``
 (for Twisted) or ``Future`` (for asyncio) objects, ``txaio`` provides
