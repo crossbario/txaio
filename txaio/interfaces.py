@@ -1,6 +1,70 @@
 import abc
 import six
 
+@six.add_metaclass(abc.ABCMeta):
+class ILoopMixin(object):
+    """
+    Some ideas for a Mixin-style API, similar to the FutureMixin that
+    was in Autobahn.
+    """
+
+    @abs.abstractmethod
+    def promise_create(self, value=None, exception=None):
+        pass
+
+    @abs.abstractmethod
+    def promise_call(self, fun, *args, **kw):
+        pass
+
+    @abs.abstractmethod
+    def promise_resolve(self, value):
+        pass
+
+    @abs.abstractmethod
+    def promise_reject(self, exception=None):
+        pass
+
+    @abs.abstractmethod
+    def promise_gather(self, promises, **kw):
+        pass
+
+
+
+@six.add_metaclass(abc.ABCMeta):
+class IPromise(object):
+    """
+    Writing down some ideas for a Thing That Wraps A Future or a
+    Deferred, as per some #twisted feedback
+    """
+
+    @abc.abastractproperty
+    def future(self):
+        """
+        If we're wrapping a Future, return it. Else exception? or None?
+        """
+
+    @abc.abastractproperty
+    def deferred(self):
+        """
+        If we're wrapping a Deferred, return it. Else exception? or None?
+        """
+
+    @abs.abstractmethod
+    def add_callbacks(self, callback, errback):
+        """
+        Same as txaio.add_callbacks(promise, callback, errback) put we provide the promise.
+        """
+
+    @abs.abstractmethod
+    def reject(self, exception=None):
+        pass
+
+    @abs.abstractmethod
+    def resolve(self, value):
+        pass
+
+
+
 
 @six.add_metaclass(abc.ABCMeta)
 class IFailedPromise(object):

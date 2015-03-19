@@ -28,6 +28,37 @@ FailedPromise.register(Failure)
 
 # API methods for txaio
 
+# Some nicer (?) API ideas:
+
+def create_promise(value=None, exception=None):
+    """
+    Returns an appropriate IPromise implementation.
+    If exception non-None, same as create_future_error() was
+    If value non-None, same as create_future_success() was
+    Can't have both exception AND value.
+    """
+
+def as_promise(fun, *args, **kw):
+    """
+    same as as_future was
+    """
+
+def reject(promise, exception=None):
+    pass
+
+def resolve(promise, value):
+    pass
+
+def add_callbacks(promise, callback, errback):
+    pass
+
+def gather(promises, consume_exceptions=True,
+           first_result=False, first_exception=False):
+    pass
+
+
+
+
 
 def create_future():
     return Deferred()
