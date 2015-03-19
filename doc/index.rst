@@ -2,7 +2,11 @@ txaio: Twisted/asyncio helper
 =============================
 
 ``txaio`` is a helper library for writing code that runs on both
-Twisted and asyncio.
+Twisted and asyncio. Like ``six``, but for asyncio vs. Twisted instead
+of Python2 vs. Python3
+
+It supports both asyncio and Twisted on any of Python 2.7, 3.4 and
+PyPy.
 
 Instead of directly importing, instantiating and using ``Deferred``
 (for Twisted) or ``Future`` (for asyncio) objects, ``txaio`` provides
