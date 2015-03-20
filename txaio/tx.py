@@ -64,7 +64,7 @@ def as_future(fun, *args, **kwargs):
 
 
 def call_later(delay, fun, *args, **kwargs):
-    return IReactorTime(config.reactor).callLater(seconds, fun, *args, **kw)
+    return IReactorTime(config.loop).callLater(delay, fun, *args, **kwargs)
 
 
 def resolve(future, result=None):
