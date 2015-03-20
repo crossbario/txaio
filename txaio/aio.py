@@ -134,6 +134,11 @@ def as_future(fun, *args, **kwargs):
         else:
             return create_future_success(res)
 
+def call_later(delay, fun, *args, **kwargs):
+    # loop.call_later doesns't support kwargs
+    real_call = functools.partial(fun, *args, **kwargs)
+    return self.loop.call_later(delay, real_call)
+
 
 def resolve(future, result):
     future.set_result(result)
@@ -183,15 +188,20 @@ def add_callbacks(future, callback, errback):
     return future.add_done_callback(done)
 
 
-def gather(futures, consume_exceptions=True)
+def gather(futures, consume_exceptions=True):
     """
     This returns a Future that waits for all the Futures in the list
     ``futures``
 
     :param futures: a list of Futures (or coroutines?)
 
-    :param consume_exceptions: if True, any errors are eaten and NOT propagated
+    :param consume_exceptions: if True, any errors are eaten and
+    returned in the result list.
     """
 
-    # XXX note originally this as return_exceptions=consume_exceptions ...
-    return asyncio.gather(*futures, return_exceptions=not consume_exceptions)
+    # from the asyncio docs: "If return_exceptions is True, exceptions
+    # in the tasks are treated the same as successful results, and
+    # gathered in the result list; otherwise, the first raised
+    # exception will be immediately propagated to the returned
+    # future."
+    return asyncio.gather(*futures, return_exceptions=consume_exceptions)

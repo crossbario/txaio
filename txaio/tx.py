@@ -1,12 +1,17 @@
 from twisted.python.failure import Failure
 from twisted.internet.defer import maybeDeferred, Deferred, DeferredList
 from twisted.internet.defer import succeed, fail
-
-from .interfaces import IFailedFuture
-
 from twisted.internet.defer import inlineCallbacks as future_generator
 from twisted.internet.defer import returnValue  # XXX how to do in asyncio?
+from twisted.internet.interfaces import IReactorTime
 
+from txaio.interfaces import IFailedFuture
+from txaio import config
+
+# don't see how it *couldn't* be None, but...
+if config.loop is None:
+    from twisted.internet import reactor
+    config.loop = reactor
 
 using_twisted = True
 using_asyncio = False
@@ -33,14 +38,15 @@ FailedFuture.register(Failure)
 
 
 def create_future(result=None, error=None):
-    if result == None and error == None:
-        return Deferred()
-    elif result != None:
-        return create_future_success(result)
-    elif error != None:
-        return create_future_error(error)
-    else:
+    if result is not None and error is not None:
         raise ValueError("Cannot have both result and error.")
+
+    f = Deferred()
+    if result != None:
+        resolve(f, result)
+    elif error != None:
+        reject(f, error)
+    return f
 
 # maybe delete, just use create_future()
 def create_future_success(result):
@@ -49,16 +55,16 @@ def create_future_success(result):
 
 # maybe delete, just use create_future()
 def create_future_error(error=None):
-    if error is None:
-        error = create_failure()
-    else:
-        assert isinstance(error, Failure)
-    return fail(error)
+    return fail(create_failure(error))
 
 
 # maybe rename to call()?
 def as_future(fun, *args, **kwargs):
     return maybeDeferred(fun, *args, **kwargs)
+
+
+def call_later(delay, fun, *args, **kwargs):
+    return IReactorTime(config.reactor).callLater(seconds, fun, *args, **kw)
 
 
 def resolve(future, result=None):
@@ -69,7 +75,6 @@ def reject(future, error=None):
     if error is None:
         error = create_failure()
     elif isinstance(error, Exception):
-        print("FIXME: passing Exception to reject_future")
         error = Failure(error)
     else:
         assert isinstance(error, IFailedFuture)
@@ -113,7 +118,11 @@ def gather(futures, consume_exceptions=True):
                 value.raiseException()
         return rtn
 
+    # XXX if consume_exceptions is False in asyncio.gather(), it will
+    # abort on the first raised exception -- should we set
+    # fireOnOneErrback=True (if consume_exceptions=False?)
     dl = DeferredList(list(futures), consumeErrors=consume_exceptions)
-    # we unpack the (ok, value) tuples into just a list of values
-    add_callback(dl, completed)
+    # we unpack the (ok, value) tuples into just a list of values, so
+    # that the callback() gets the same value in asyncio and Twisted.
+    add_callbacks(dl, completed, None)
     return dl
