@@ -120,7 +120,10 @@ def gather(futures, consume_exceptions=True):
 
     # XXX if consume_exceptions is False in asyncio.gather(), it will
     # abort on the first raised exception -- should we set
-    # fireOnOneErrback=True (if consume_exceptions=False?)
+    # fireOnOneErrback=True (if consume_exceptions=False?) -- but then
+    # we'll have to wrap the errback() to extract the "real" failure
+    # from the FirstError that gets thrown if you set that ...
+
     dl = DeferredList(list(futures), consumeErrors=consume_exceptions)
     # we unpack the (ok, value) tuples into just a list of values, so
     # that the callback() gets the same value in asyncio and Twisted.
