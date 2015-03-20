@@ -2,15 +2,19 @@ from twisted.python.failure import Failure
 from twisted.internet.defer import maybeDeferred, Deferred, DeferredList
 from twisted.internet.defer import succeed, fail
 
-from .interfaces import IFailedPromise
+from .interfaces import IFailedFuture
 
 from twisted.internet.defer import inlineCallbacks as future_generator
 from twisted.internet.defer import returnValue  # XXX how to do in asyncio?
 
 
-class FailedPromise(IFailedPromise):
+using_twisted = True
+using_asyncio = False
+
+
+class FailedFuture(IFailedFuture):
     """
-    XXX provide an abstract-base-class for IFailedPromise or similar,
+    XXX provide an abstract-base-class for IFailedFuture or similar,
     probably. For consistency between asyncio/twisted.
 
     ...i.e. to be explicit about what methods and variables may be
@@ -24,50 +28,26 @@ class FailedPromise(IFailedPromise):
     """
     pass
 
-FailedPromise.register(Failure)
 
-# API methods for txaio
-
-# Some nicer (?) API ideas:
-
-def create_promise(value=None, exception=None):
-    """
-    Returns an appropriate IPromise implementation.
-    If exception non-None, same as create_future_error() was
-    If value non-None, same as create_future_success() was
-    Can't have both exception AND value.
-    """
-
-def as_promise(fun, *args, **kw):
-    """
-    same as as_future was
-    """
-
-def reject(promise, exception=None):
-    pass
-
-def resolve(promise, value):
-    pass
-
-def add_callbacks(promise, callback, errback):
-    pass
-
-def gather(promises, consume_exceptions=True,
-           first_result=False, first_exception=False):
-    pass
+FailedFuture.register(Failure)
 
 
+def create_future(result=None, error=None):
+    if result == None and error == None:
+        return Deferred()
+    elif result != None:
+        return create_future_success(result)
+    elif error != None:
+        return create_future_error(error)
+    else:
+        raise ValueError("Cannot have both result and error.")
 
-
-
-def create_future():
-    return Deferred()
-
-
+# maybe delete, just use create_future()
 def create_future_success(result):
     return succeed(result)
 
 
+# maybe delete, just use create_future()
 def create_future_error(error=None):
     if error is None:
         error = create_failure()
@@ -76,22 +56,23 @@ def create_future_error(error=None):
     return fail(error)
 
 
+# maybe rename to call()?
 def as_future(fun, *args, **kwargs):
     return maybeDeferred(fun, *args, **kwargs)
 
 
-def resolve_future(future, result=None):
+def resolve(future, result=None):
     future.callback(result)
 
 
-def reject_future(future, error=None):
+def reject(future, error=None):
     if error is None:
         error = create_failure()
     elif isinstance(error, Exception):
         print("FIXME: passing Exception to reject_future")
         error = Failure(error)
     else:
-        assert isinstance(error, IFailedPromise)
+        assert isinstance(error, IFailedFuture)
     future.errback(error)
 
 
@@ -101,14 +82,14 @@ def create_failure(exception=None):
 
     if ``exception`` is None (the default), we MUST be inside an
     "except" block. This encapsulates the exception into an object
-    that implements IFailedPromise
+    that implements IFailedFuture
     """
     if exception:
         return Failure(exception)
     return Failure()
 
 
-def add_future_callbacks(future, callback, errback):
+def add_callbacks(future, callback, errback):
     """
     callback or errback may be None, but at least one must be
     non-None.
@@ -123,11 +104,8 @@ def add_future_callbacks(future, callback, errback):
     return future
 
 
-def gather_futures(futures, consume_exceptions=True,
-                   first_result=False, first_exception=False):
+def gather(futures, consume_exceptions=True):
     def completed(res):
-        if first_result:
-            return res[0]  # XXX really? what if third one fired first?
         rtn = []
         for (ok, value) in res:
             rtn.append(value)
@@ -135,19 +113,7 @@ def gather_futures(futures, consume_exceptions=True,
                 value.raiseException()
         return rtn
 
-    def failed(f):
-        # This only gets called if fireOnOneErrback=True *and*
-        # consume_exceptions=Ture and in that case, the "failure"
-        # always contains a FirstError
-        assert not consume_exceptions
-        assert first_exception
-        return f.value.subFailure
-
-    dl = DeferredList(
-        list(futures),
-        consumeErrors=consume_exceptions,
-        fireOnOneCallback=first_result,
-        fireOnOneErrback=first_exception
-    )
-    add_future_callbacks(dl, completed, failed)
+    dl = DeferredList(list(futures), consumeErrors=consume_exceptions)
+    # we unpack the (ok, value) tuples into just a list of values
+    add_callback(dl, completed)
     return dl

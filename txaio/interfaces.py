@@ -1,73 +1,60 @@
 import abc
 import six
 
-@six.add_metaclass(abc.ABCMeta):
+@six.add_metaclass(abc.ABCMeta)
 class ILoopMixin(object):
     """
     Some ideas for a Mixin-style API, similar to the FutureMixin that
     was in Autobahn.
     """
 
-    @abs.abstractmethod
-    def promise_create(self, value=None, exception=None):
+    @abc.abstractmethod
+    def future_create(self, value=None, exception=None):
         pass
 
-    @abs.abstractmethod
-    def promise_call(self, fun, *args, **kw):
+    @abc.abstractmethod
+    def future_call(self, fun, *args, **kw):
         pass
 
-    @abs.abstractmethod
-    def promise_resolve(self, value):
+    @abc.abstractmethod
+    def future_resolve(self, value):
         pass
 
-    @abs.abstractmethod
-    def promise_reject(self, exception=None):
+    @abc.abstractmethod
+    def future_reject(self, exception=None):
         pass
 
-    @abs.abstractmethod
-    def promise_gather(self, promises, **kw):
+    @abc.abstractmethod
+    def future_gather(self, futures, **kw):
         pass
 
 
 
-@six.add_metaclass(abc.ABCMeta):
-class IPromise(object):
+class FutureWrapper(object):
     """
     Writing down some ideas for a Thing That Wraps A Future or a
     Deferred, as per some #twisted feedback
     """
 
-    @abc.abastractproperty
-    def future(self):
-        """
-        If we're wrapping a Future, return it. Else exception? or None?
-        """
+    def __init__(self, future):
+        self.future = future
 
-    @abc.abastractproperty
-    def deferred(self):
-        """
-        If we're wrapping a Deferred, return it. Else exception? or None?
-        """
-
-    @abs.abstractmethod
     def add_callbacks(self, callback, errback):
         """
-        Same as txaio.add_callbacks(promise, callback, errback) put we provide the promise.
+        Same as txaio.add_callbacks(future, callback, errback) put we provide the future.
         """
+        add_callbacks(self.future, callback, errback)
 
-    @abs.abstractmethod
     def reject(self, exception=None):
-        pass
+        reject(self.future, exception=exception)
 
-    @abs.abstractmethod
+    @abc.abstractmethod
     def resolve(self, value):
-        pass
-
-
+        resolve(self.future, value)
 
 
 @six.add_metaclass(abc.ABCMeta)
-class IFailedPromise(object):
+class IFailedFuture(object):
     """
     This defines the interface for a common object encapsulating a
     failure from either an asyncio task/coroutine or a Twisted
@@ -75,6 +62,9 @@ class IFailedPromise(object):
 
     An instance implementing this interface is given to any
     ``errback`` callables you provde via ``add_future_callbacks``
+
+    It is a subset of Twisted's Failure interface, because on Twisted
+    backends it actually *is* a Failure.
     """
 
     @abc.abstractproperty

@@ -24,7 +24,7 @@ def test_as_future_immediate():
     def errback(f):
         errors.append(f)
 
-    txaio.add_future_callbacks(f, cb, errback)
+    txaio.add_callbacks(f, cb, errback)
 
     run_once()
 
@@ -54,7 +54,7 @@ def test_as_future_exception():
     def errback(f):
         errors.append(f)
 
-    txaio.add_future_callbacks(f, cb, errback)
+    txaio.add_callbacks(f, cb, errback)
 
     run_once()
 
@@ -85,7 +85,7 @@ def test_as_future_recursive():
     def errback(f):
         errors.append(f)
 
-    txaio.add_future_callbacks(f0, cb, errback)
+    txaio.add_callbacks(f0, cb, errback)
 
     run_once()
 
@@ -120,7 +120,7 @@ def test_as_future_generator():
     def errback(f):
         errors.append(f)
 
-    txaio.add_future_callbacks(f, cb, errback)
+    txaio.add_callbacks(f, cb, errback)
 
     # XXX really need to figure out something better here :(
     run_once()

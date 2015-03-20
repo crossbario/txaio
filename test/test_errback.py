@@ -12,17 +12,17 @@ def test_errback():
 
     def err(f):
         errors.append(f)
-    txaio.add_future_callbacks(f, None, err)
+    txaio.add_callbacks(f, None, err)
     try:
         raise exception
     except:
         fail = txaio.create_failure()
-    txaio.reject_future(f, fail)
+    txaio.reject(f, fail)
 
     run_once()
 
     assert len(errors) == 1
-    assert isinstance(errors[0], txaio.IFailedPromise)
+    assert isinstance(errors[0], txaio.IFailedFuture)
     assert exception == errors[0].value
     assert type(exception) == errors[0].type
     assert errors[0].tb is not None
@@ -44,14 +44,14 @@ def test_errback_without_except():
 
     def err(f):
         errors.append(f)
-    txaio.add_future_callbacks(f, None, err)
+    txaio.add_callbacks(f, None, err)
     fail = txaio.create_failure(exception)
-    txaio.reject_future(f, fail)
+    txaio.reject(f, fail)
 
     run_once()
 
     assert len(errors) == 1
-    assert isinstance(errors[0], txaio.IFailedPromise)
+    assert isinstance(errors[0], txaio.IFailedFuture)
     assert exception == errors[0].value
     assert type(exception) == errors[0].type
     tb = StringIO()
@@ -64,7 +64,7 @@ def test_errback_without_except():
 
 def test_errback_reject_no_args():
     """
-    txaio.reject_future() with no args
+    txaio.reject() with no args
     """
 
     f = txaio.create_future()
@@ -73,16 +73,16 @@ def test_errback_reject_no_args():
 
     def err(f):
         errors.append(f)
-    txaio.add_future_callbacks(f, None, err)
+    txaio.add_callbacks(f, None, err)
     try:
         raise exception
     except:
-        txaio.reject_future(f)
+        txaio.reject(f)
 
     run_once()
 
     assert len(errors) == 1
-    assert isinstance(errors[0], txaio.IFailedPromise)
+    assert isinstance(errors[0], txaio.IFailedFuture)
     assert exception == errors[0].value
     assert type(exception) == errors[0].type
     assert errors[0].tb is not None
@@ -112,8 +112,8 @@ def test_immediate_failure():
     def errback(f):
         errors.append(f)
 
-    txaio.add_future_callbacks(f0, cb, errback)
-    txaio.add_future_callbacks(f1, cb, errback)
+    txaio.add_callbacks(f0, cb, errback)
+    txaio.add_callbacks(f1, cb, errback)
 
     run_once()
     run_once()
@@ -121,8 +121,8 @@ def test_immediate_failure():
 
     assert len(results) == 0
     assert len(errors) == 2
-    assert isinstance(errors[0], txaio.IFailedPromise)
-    assert isinstance(errors[1], txaio.IFailedPromise)
+    assert isinstance(errors[0], txaio.IFailedFuture)
+    assert isinstance(errors[1], txaio.IFailedFuture)
     assert errors[0].value == exception
     assert errors[1].value == exception
     # should be distinct FailedPromise instances

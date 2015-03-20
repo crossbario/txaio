@@ -4,7 +4,7 @@ import six
 import sys
 import traceback
 
-from .interfaces import IFailedPromise
+from .interfaces import IFailedFuture
 
 try:
     import asyncio
@@ -42,8 +42,11 @@ except ImportError:
     def returnValue(x):
         raise Return(x)
 
+using_twisted = False
+using_asyncio = True
 
-class FailedPromise(IFailedPromise):
+
+class FailedFuture(IFailedFuture):
     """
     This provides an object with any features from Twisted's Failure
     that we might need in Autobahn classes that use FutureMixin.
@@ -112,12 +115,12 @@ def create_future_error(error=None):
     if error is None:
         error = create_failure()
     else:
-        assert isinstance(error, IFailedPromise)
+        assert isinstance(error, IFailedFuture)
     f = Future()
     f.set_exception(error.value)
     return f
 
-
+# XXX maybe rename to call()?
 def as_future(fun, *args, **kwargs):
     try:
         res = fun(*args, **kwargs)
@@ -132,34 +135,34 @@ def as_future(fun, *args, **kwargs):
             return create_future_success(res)
 
 
-def resolve_future(future, result):
+def resolve(future, result):
     future.set_result(result)
 
 
-def reject_future(future, error=None):
+def reject(future, error=None):
     if error is None:
         error = create_failure()  # will be error if we're not in an "except"
     elif isinstance(error, Exception):
-        error = FailedPromise(type(error), error, None)
+        error = FailedFuture(type(error), error, None)
     else:
-        assert isinstance(error, IFailedPromise)
+        assert isinstance(error, IFailedFuture)
     future.set_exception(error.value)
 
 
 def create_failure(exception=None):
     """
-    This returns an object implementing IFailedPromise.
+    This returns an object implementing IFailedFuture.
 
     If exception is None (the default) we MUST be called within an
     "except" block (such that sys.exc_info() returns useful
     information).
     """
     if exception:
-        return FailedPromise(type(exception), exception, None)
-    return FailedPromise(*sys.exc_info())
+        return FailedFuture(type(exception), exception, None)
+    return FailedFuture(*sys.exc_info())
 
 
-def add_future_callbacks(future, callback, errback):
+def add_callbacks(future, callback, errback):
     """
     callback or errback may be None, but at least one must be
     non-None.
@@ -180,74 +183,15 @@ def add_future_callbacks(future, callback, errback):
     return future.add_done_callback(done)
 
 
-def gather_futures(futures,
-                   consume_exceptions=True,
-                   first_result=False,
-                   first_exception=False):
+def gather(futures, consume_exceptions=True)
     """
-    This returns a Promise that waits for all the Promises in the list
-    ``futures``, or the first result or error if you set
-    ``first_result`` or ``first_exception``.
+    This returns a Future that waits for all the Futures in the list
+    ``futures``
 
     :param futures: a list of Futures (or coroutines?)
 
     :param consume_exceptions: if True, any errors are eaten and NOT propagated
-
-    :param first_result: if True, the Promise returns the first
-        Promise that finishes
-
-    :param first_exception: if True, the Promise errbacks with the first error
-
-    Note that in ``asyncio``, both first_result and first_exception
-    are not possible at the same time.
     """
-    if first_result and first_exception:
-        raise RuntimeError("Can't do both first_result and first_exception.")
 
-    if first_result:
-        when = FIRST_COMPLETED
-    elif first_exception:
-        when = FIRST_EXCEPTION
-    else:
-        when = ALL_COMPLETED
-
-    gen = asyncio.wait(futures, return_when=when)
-    f = asyncio.async(gen)
-
-    real_return = create_future()
-
-    def unpack(future):
-        (done, not_done) = future.result()
-        results = []
-        an_error = None
-        for f in done:
-            try:
-                value = f.result()
-                ok = True
-                # conceptually, we could short-circuit the loop here
-                # if first_result is True, but asyncio gets grumpy if
-                # you don't .result() on All The Things, so we
-                # complete the whole loop and *then* return the first
-                # result...
-
-            except Exception as e:
-                if an_error is None:
-                    an_error = create_failure()
-                if not consume_exceptions:
-                    if first_exception:
-                        reject_future(real_return, an_error)
-                        return
-                value = e
-                ok = False
-            # results.append((ok, value))
-            results.append(value)
-        if first_result:
-            results = results[0]
-        if an_error and not consume_exceptions:
-            reject_future(real_return, an_error)
-        else:
-            resolve_future(real_return, results)
-        return results
-
-    f.add_done_callback(unpack)
-    return real_return
+    # XXX note originally this as return_exceptions=consume_exceptions ...
+    return asyncio.gather(*futures, return_exceptions=not consume_exceptions)

@@ -15,7 +15,7 @@ def test_gather_illegal_args():
         pytest.skip()
 
     try:
-        txaio.gather_futures([], first_result=True, first_exception=True)
+        txaio.gather([], first_result=True, first_exception=True)
         assert False
     except RuntimeError as e:
         assert 'first_result' in str(e)
@@ -37,15 +37,15 @@ def test_first_result():
     f1 = txaio.create_future()
     f2 = txaio.create_future_success(42)
 
-    txaio.add_future_callbacks(f0, callback, callback)
-    txaio.add_future_callbacks(f1, callback, callback)
-    txaio.add_future_callbacks(f2, callback, callback)
+    txaio.add_callbacks(f0, callback, callback)
+    txaio.add_callbacks(f1, callback, callback)
+    txaio.add_callbacks(f2, callback, callback)
 
-    final = txaio.gather_futures([f0, f1, f2], first_result=True)
+    final = txaio.gather([f0, f1, f2], first_result=True)
 
     def blam(arg):
         results.append(arg)
-    txaio.add_future_callbacks(final, blam, None)
+    txaio.add_callbacks(final, blam, None)
 
     await(final)
     assert len(results) == 2
@@ -71,15 +71,15 @@ def test_first_error():
     f1 = txaio.create_future()
     f2 = txaio.create_future()
 
-    txaio.add_future_callbacks(f0, callback, callback)
-    txaio.add_future_callbacks(f1, callback, callback)
-    txaio.add_future_callbacks(f1, callback, callback)
+    txaio.add_callbacks(f0, callback, callback)
+    txaio.add_callbacks(f1, callback, callback)
+    txaio.add_callbacks(f1, callback, callback)
 
-    final = txaio.gather_futures([f0, f1, f2], first_exception=True)
+    final = txaio.gather([f0, f1, f2], first_exception=True)
 
     def gather_error(arg):
         results.append(arg)
-    txaio.add_future_callbacks(final, None, gather_error)
+    txaio.add_callbacks(final, None, gather_error)
 
     await(final)
     assert len(results) == 1
@@ -107,11 +107,11 @@ def test_propagate_errors_first():
     f1 = txaio.create_future()
     f2 = txaio.create_future()
 
-    txaio.add_future_callbacks(f0, callback, callback)
-    txaio.add_future_callbacks(f1, callback, callback)
-    txaio.add_future_callbacks(f2, callback, callback)
+    txaio.add_callbacks(f0, callback, callback)
+    txaio.add_callbacks(f1, callback, callback)
+    txaio.add_callbacks(f2, callback, callback)
 
-    final = txaio.gather_futures(
+    final = txaio.gather(
         [f0, f1, f2],
         consume_exceptions=False,
         first_exception=True,
@@ -120,11 +120,11 @@ def test_propagate_errors_first():
     def gather_error(arg):
         results.append(arg)
         return None
-    txaio.add_future_callbacks(final, gather_error, gather_error)
+    txaio.add_callbacks(final, gather_error, gather_error)
 
     # arrange to cancel/ignore all errors in the futures
     for f in [f0, f1, f2]:
-        txaio.add_future_callbacks(f, None, lambda _: None)
+        txaio.add_callbacks(f, None, lambda _: None)
 
     # can't call await(final) because that causes the exception to be
     # raised from await() -- that needs re-design I guess.
@@ -155,11 +155,11 @@ def test_propagate_errors_all():
         f1 = txaio.create_future_error()
     f2 = txaio.create_future_success("foo")
 
-    txaio.add_future_callbacks(f0, callback, callback)
-    txaio.add_future_callbacks(f1, callback, callback)
-    txaio.add_future_callbacks(f2, callback, callback)
+    txaio.add_callbacks(f0, callback, callback)
+    txaio.add_callbacks(f1, callback, callback)
+    txaio.add_callbacks(f2, callback, callback)
 
-    final = txaio.gather_futures(
+    final = txaio.gather(
         [f0, f1, f2],
         consume_exceptions=False,
         first_exception=False,
@@ -168,11 +168,11 @@ def test_propagate_errors_all():
     def gather_error(arg):
         results.append(arg)
         return None
-    txaio.add_future_callbacks(final, gather_error, gather_error)
+    txaio.add_callbacks(final, gather_error, gather_error)
 
     # arrange to cancel/ignore all errors in the futures
     for f in [f0, f1, f2]:
-        txaio.add_future_callbacks(f, None, lambda _: None)
+        txaio.add_callbacks(f, None, lambda _: None)
 
     # can't call await(final) because that causes the exception to be
     # raised from await() -- that needs re-design I guess.
@@ -209,7 +209,7 @@ def test_gather_two():
     f0 = txaio.as_future(method, 1, 2, 3, key='word')
     f1 = txaio.as_future(foo)
 
-    f2 = txaio.gather_futures([f0, f1])
+    f2 = txaio.gather([f0, f1])
 
     def done(arg):
         results.append(arg)
@@ -217,7 +217,7 @@ def test_gather_two():
     def error(fail):
         errors.append(fail)
         # fail.printTraceback()
-    txaio.add_future_callbacks(f2, done, error)
+    txaio.add_callbacks(f2, done, error)
 
     await(f0)
     await(f1)
@@ -241,9 +241,9 @@ def test_gather_first_result():
 
     f0 = txaio.create_future()
     f1 = txaio.create_future()
-    txaio.resolve_future(f0, "foo")
+    txaio.resolve(f0, "foo")
 
-    f2 = txaio.gather_futures([f0, f1], first_result=True)
+    f2 = txaio.gather([f0, f1], first_result=True)
 
     def done(arg):
         results.append(arg)
@@ -251,7 +251,7 @@ def test_gather_first_result():
     def error(fail):
         errors.append(fail)
         # fail.printTraceback()
-    txaio.add_future_callbacks(f2, done, error)
+    txaio.add_callbacks(f2, done, error)
 
     await(f2)
 
