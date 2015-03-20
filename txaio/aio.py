@@ -114,6 +114,8 @@ def create_future_success(result):
 def create_future_error(error=None):
     if error is None:
         error = create_failure()
+    elif isinstance(error, Exception):
+        error = FailedFuture(type(error), error, None)
     else:
         assert isinstance(error, IFailedFuture)
     f = Future()
