@@ -39,12 +39,17 @@ def test_call_later_twisted():
         txaio.config.loop = orig
 
 
+# python3.4-twisted Tox environment has both asyncio and twisted
+# installed, but we want to skip this unit-test if we're using the
+# Twisted backend.
+@pytest.mark.skipif('txaio.using_twisted')
 def test_call_later_asio():
     '''
     Wait for two Futures.
     '''
 
     pytest.importorskip('asyncio')
+    pytest.importorskip('asyncio.test_utils')
 
     from asyncio.test_utils import TestLoop
     calls = []

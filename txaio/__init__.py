@@ -46,23 +46,27 @@ __all__ = (
 )
 
 def use_twisted():
-    from asio import tx
-    import asio
-    asio.using_twisted = True
-    asio.using_asyncio = False
+    from txaio import tx
+    import txaio
+    txaio.using_twisted = True
+    txaio.using_asyncio = False
     for method_name in __all__:
+        if method_name in ['use_twisted', 'use_asyncio']:
+            continue
         twisted_method = getattr(tx, method_name)
-        setattr(asio, method_name, twisted_method)
+        setattr(txaio, method_name, twisted_method)
 
 
 def use_asyncio():
-    from asio import aio
-    import asio
-    asio.using_twisted = False
-    asio.using_asyncio = True
+    from txaio import aio
+    import txaio
+    txaio.using_twisted = False
+    txaio.using_asyncio = True
     for method_name in __all__:
+        if method_name in ['use_twisted', 'use_asyncio']:
+            continue
         twisted_method = getattr(aio, method_name)
-        setattr(asio, method_name, twisted_method)
+        setattr(txaio, method_name, twisted_method)
 
 
 try:
