@@ -6,7 +6,7 @@ from .interfaces import IFailedFuture
 # see tx.py for Twisted implementation
 # see aio.py for asyncio/trollius implementation
 
-class config:
+class _Config:
     """
     This holds all valid configuration options, accessed as
     class-level variables. For example, if you were using asyncio:
@@ -20,26 +20,20 @@ class config:
     into this library. Currently, it's only used by :meth:`call_later`
     If using asyncio, you must set this to an event-loop (by default,
     we use asyncio.get_event_loop). If using Twisted, set this to a
-    reactor instance (by default we import twisted.internet.reactor)
-
-    ``chain_futures`` if True we behave like Twisted (where a
-    callback's return value is passed on to the next) and if False
-    like asyncio (where each callback receives the same value). The
-    "opposite" framework requires that we insert our own wrapper
-    callback. FIXME XXX just for illustration, we don't do this.
+    reactor instance (by default we "from twisted.internet import
+    reactor" on the first call to call_later)
     """
     #: the event-loop object to use
     loop = None
-
-    #: if True, return-value of callback used for the next one
-    chain_futures = False
 
 
 __all__ = (
     'using_twisted',            # True if we're using Twisted
     'using_asyncio',            # True if we're using asyncio
+    'use_twisted',              # sets the library to use Twisted, or exception
+    'use_asyncio',              # sets the library to use asyncio, or exception
 
-    'config',                   # the config class, access via class-level vars
+    'config',                   # the config instance, access via attributes
 
     'create_future',           # create a Future (can be already resolved/errored)
     'as_future',               # call a method, and always return a Future
@@ -50,6 +44,26 @@ __all__ = (
 
     'IFailedFuture',            # describes API for arg to errback()s
 )
+
+def use_twisted():
+    from asio import tx
+    import asio
+    asio.using_twisted = True
+    asio.using_asyncio = False
+    for method_name in __all__:
+        twisted_method = getattr(tx, method_name)
+        setattr(asio, method_name, twisted_method)
+
+
+def use_asyncio():
+    from asio import aio
+    import asio
+    asio.using_twisted = False
+    asio.using_asyncio = True
+    for method_name in __all__:
+        twisted_method = getattr(aio, method_name)
+        setattr(asio, method_name, twisted_method)
+
 
 try:
     from .tx import *

@@ -6,31 +6,15 @@ from twisted.internet.defer import returnValue  # XXX how to do in asyncio?
 from twisted.internet.interfaces import IReactorTime
 
 from txaio.interfaces import IFailedFuture
-from txaio import config
-
-# don't see how it *couldn't* be None, but...
-if config.loop is None:
-    from twisted.internet import reactor
-    config.loop = reactor
+from txaio import _Config
 
 using_twisted = True
 using_asyncio = False
 
+config = _Config()
+
 
 class FailedFuture(IFailedFuture):
-    """
-    XXX provide an abstract-base-class for IFailedFuture or similar,
-    probably. For consistency between asyncio/twisted.
-
-    ...i.e. to be explicit about what methods and variables may be
-    used. Currently:
-
-    .type
-    .value
-    .traceback
-
-    .printTraceback
-    """
     pass
 
 
@@ -64,7 +48,7 @@ def as_future(fun, *args, **kwargs):
 
 
 def call_later(delay, fun, *args, **kwargs):
-    return IReactorTime(config.loop).callLater(delay, fun, *args, **kwargs)
+    return IReactorTime(_get_loop()).callLater(delay, fun, *args, **kwargs)
 
 
 def resolve(future, result=None):
@@ -129,3 +113,13 @@ def gather(futures, consume_exceptions=True):
     # that the callback() gets the same value in asyncio and Twisted.
     add_callbacks(dl, completed, None)
     return dl
+
+
+# methods internal to this implementation
+
+
+def _get_loop():
+    if config.loop is None:
+        from twisted.internet import reactor
+        config.loop = reactor
+    return config.loop

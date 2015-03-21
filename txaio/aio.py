@@ -3,8 +3,10 @@ from __future__ import absolute_import, print_function
 import six
 import sys
 import traceback
+import functools
 
-from .interfaces import IFailedFuture
+from txaio.interfaces import IFailedFuture
+from txaio import _Config
 
 try:
     import asyncio
@@ -41,6 +43,10 @@ except ImportError:
 
     def returnValue(x):
         raise Return(x)
+
+
+config = _Config()
+config.loop = asyncio.get_event_loop()
 
 using_twisted = False
 using_asyncio = True
@@ -139,7 +145,7 @@ def as_future(fun, *args, **kwargs):
 def call_later(delay, fun, *args, **kwargs):
     # loop.call_later doesns't support kwargs
     real_call = functools.partial(fun, *args, **kwargs)
-    return self.loop.call_later(delay, real_call)
+    return config.loop.call_later(delay, real_call)
 
 
 def resolve(future, result):
