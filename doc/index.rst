@@ -14,14 +14,7 @@ at runtime (or import time) which underlying event-loop to use. This
 means you can write **one** code-base that can run on Twisted *or*
 asyncio as you (or your users) see fit.
 
-There are some restrictions -- it does not, at this time, have 100%
-complete feature parity with Twisted or asyncio -- but it does have
-enough power to be generally useful.
-
-We are using the word ``Promise`` throughout the documentation so as
-to avoid using either Twisted's or asyncio's terminology. In practice,
-a "Promise" is just the implementation-specific object representing a
-future value (i.e. either a ``Deferred`` or a ``Future``).
+There are restrictions; see below.
 
 
 Brief History
@@ -82,8 +75,8 @@ them.
         txaio.resolve_future(f, answer)
 
 
-What txaio is Not
------------------
+Restrictions and Caveats
+------------------------
 
 ``txaio`` is not a new event-based programming solution. It is not a
 complete box-set of async tools.
@@ -92,8 +85,36 @@ It is **one piece** that *can* help you to write cross-event-loop
 asynchronous code. For example, you'll note that there's no way to run
 "the event loop" -- that's up to you.
 
-There's also no code to convert between Twisted ``IProtocol`` and
-asyncio's protocols.
+In most cases asyncio is trying to be "as thin as possible" wrapper
+around the different APIs. So, there's nothing wrapping Future or
+Deferred -- you get the bare objects. So
+py:meth:`txaio.create_future`` returns you the native object, which
+you then pass to ``txaio.add_callbacks``.
+
+Similarly, py:meth:`txaio.call_later` returns the underlying object
+(IDelayedCall in Twisted or a Handle in asyncio). These both have a
+``cancel()`` method.
+
+Twisted and asyncio have made different design-decisions for some
+cases. One that stands out is callbacks, and callback chaining. In
+Twisted, the return value from an earlier callback is what gets passed
+to the next callback. Similarly, errbacks in Twisted can cancel the
+error. There are not equivalent facilities in asyncio: if you add
+multiple callbacks, they all get the same value (or exception).
+
+So: **don't depend on chaining**. This means that your ``callback``
+and ``errback`` methods must **always return their input argument** so
+that Twisted works if you add multiple callbacks or errbacks (and
+doesn't unexpectedly cancel errors).
+
+We do add the concept of an ``errback`` for handling errors (which
+asyncio does not have) and therefore have one helper to encapsulate
+exceptions (similar to Twisted's ``Failure`` object) which only exists
+in the asyncio implementation.
+
+
+Real Examples
+-------------
 
 You are encouraged to look at Autobahn|Python for an example of a
 system that can run on both Twisted and asyncio. In particular, look
