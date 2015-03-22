@@ -112,6 +112,9 @@ asyncio does not have) and therefore have one helper to encapsulate
 exceptions (similar to Twisted's ``Failure`` object) which only exists
 in the asyncio implementation.
 
+There is no ``inlineCallbacks`` or ``coroutine`` decorator
+support. Don't use these.
+
 
 Real Examples
 -------------
