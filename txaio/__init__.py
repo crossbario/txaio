@@ -1,6 +1,4 @@
-from __future__ import absolute_import
-
-from .interfaces import IFailedFuture
+from txaio.interfaces import IFailedFuture
 
 # This is the API
 # see tx.py for Twisted implementation

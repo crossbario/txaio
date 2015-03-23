@@ -14,7 +14,7 @@ def replace_loop(new_loop):
     .. sourcecode:: python
 
         from twisted.internet import task
-        with replace_reactor(task.Clock()) as fake_reactor:
+        with replace_loop(task.Clock()) as fake_reactor:
             f = txaio.call_later(5, foo)
             fake_reactor.advance(10)
             # ...etc

@@ -10,7 +10,7 @@ class IFailedFuture(object):
     Deferred.
 
     An instance implementing this interface is given to any
-    ``errback`` callables you provde via ``add_future_callbacks``
+    ``errback`` callables you provde via :meth:`txaio.add_callbacks`
 
     It is a subset of Twisted's Failure interface, because on Twisted
     backends it actually *is* a Failure.
@@ -43,12 +43,16 @@ class IFailedFuture(object):
         Prints the exception and its traceback to the given ``file``. If
         that is ``None`` (the default) then it is printed to
         ``sys.stderr``.
+
+        XXX this is camelCase because Twisted is; can we change somehow?
         """
 
     @abc.abstractmethod
     def getErrorMessage(self):
         """
         Return a string describing the error.
+
+        XXX this is camelCase because Twisted is; can we change somehow?
         """
 
-    # XXX anythign else make sense? Do we ape the *entire* Failure API?
+    # XXX anything else make sense? Do we ape the *entire* Failure API?
