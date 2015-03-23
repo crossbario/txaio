@@ -60,8 +60,8 @@ def reject(future, error=None):
     elif isinstance(error, Exception):
         error = Failure(error)
     else:
-        if not isinstance(error, IFailedPromise):
-            raise RuntimeError("reject requires an IFailedPromise or Exception")
+        if not isinstance(error, Failure):
+            raise RuntimeError("reject requires a Failure or Exception")
     future.errback(error)
 
 
