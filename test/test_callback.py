@@ -1,5 +1,3 @@
-from six import StringIO
-import pytest
 import txaio
 
 from util import run_once
@@ -11,8 +9,8 @@ def test_callback():
 
     def cb(f):
         results.append(f)
-    txaio.add_future_callbacks(f, cb, None)
-    txaio.resolve_future(f, "it worked")
+    txaio.add_callbacks(f, cb, None)
+    txaio.resolve(f, "it worked")
 
     run_once()
 
@@ -34,9 +32,9 @@ def test_chained_callback():
         calls.append(arg)
 
     f = txaio.create_future()
-    txaio.add_future_callbacks(f, callback0, None)
-    txaio.add_future_callbacks(f, callback1, None)
-    txaio.resolve_future(f, "the deal")
+    txaio.add_callbacks(f, callback0, None)
+    txaio.add_callbacks(f, callback1, None)
+    txaio.resolve(f, "the deal")
 
     run_once()
 
@@ -51,7 +49,7 @@ def test_immediate_result():
 
     def cb(f):
         results.append(f)
-    txaio.add_future_callbacks(f, cb, None)
+    txaio.add_callbacks(f, cb, None)
 
     run_once()
 
