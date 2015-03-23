@@ -48,13 +48,3 @@ See :ref:`restrictions` for limitations.
 
    overview
    api
-
-
-.. comment:
-    Indices and tables
-    ==================
-
-    * :ref:`genindex`
-    * :ref:`modindex`
-    * :ref:`search`
-
