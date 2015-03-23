@@ -1,6 +1,5 @@
 from __future__ import absolute_import, print_function
 
-import six
 import sys
 import traceback
 import functools
@@ -12,21 +11,6 @@ try:
     import asyncio
     from asyncio import iscoroutine
     from asyncio import Future
-    from asyncio import async
-    from asyncio import ALL_COMPLETED, FIRST_COMPLETED, FIRST_EXCEPTION
-
-    from asyncio import coroutine
-
-    if six.PY2:
-        future_generator = coroutine
-
-        def returnValue(x):
-            # inject the return value into the function-just-called
-            raise Return(x)
-
-    else:
-        from .aio_py3 import *
-
 
 except ImportError:
     # Trollius >= 0.3 was renamed
@@ -34,15 +18,6 @@ except ImportError:
     import trollius as asyncio
     from trollius import iscoroutine
     from trollius import Future
-    from trollius import async
-    from trollius import ALL_COMPLETED, FIRST_COMPLETED, FIRST_EXCEPTION
-
-    from trollius import coroutine as future_generator
-
-    from trollius import Return
-
-    def returnValue(x):
-        raise Return(x)
 
 
 config = _Config()
@@ -128,6 +103,7 @@ def create_future_error(error=None):
     f.set_exception(error.value)
     return f
 
+
 # XXX maybe rename to call()?
 def as_future(fun, *args, **kwargs):
     try:
@@ -141,6 +117,7 @@ def as_future(fun, *args, **kwargs):
             return asyncio.Task(res)
         else:
             return create_future_success(res)
+
 
 def call_later(delay, fun, *args, **kwargs):
     # loop.call_later doesns't support kwargs
@@ -190,7 +167,7 @@ def add_callbacks(future, callback, errback):
                 x = callback(res)
                 if x is not None:
                     f._result = x
-        except Exception as e:
+        except Exception:
             if errback:
                 errback(create_failure())
     return future.add_done_callback(done)

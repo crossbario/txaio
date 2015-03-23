@@ -1,8 +1,6 @@
 from twisted.python.failure import Failure
 from twisted.internet.defer import maybeDeferred, Deferred, DeferredList
 from twisted.internet.defer import succeed, fail
-from twisted.internet.defer import inlineCallbacks as future_generator
-from twisted.internet.defer import returnValue  # XXX how to do in asyncio?
 from twisted.internet.interfaces import IReactorTime
 
 from txaio.interfaces import IFailedFuture
@@ -26,11 +24,12 @@ def create_future(result=None, error=None):
         raise ValueError("Cannot have both result and error.")
 
     f = Deferred()
-    if result != None:
+    if result is not None:
         resolve(f, result)
-    elif error != None:
+    elif error is not None:
         reject(f, error)
     return f
+
 
 # maybe delete, just use create_future()
 def create_future_success(result):

@@ -1,8 +1,7 @@
 from six import StringIO
-import pytest
 import txaio
 
-from util import run_once, await
+from util import run_once
 
 
 def test_errback():

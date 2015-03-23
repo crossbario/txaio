@@ -1,57 +1,6 @@
 import abc
 import six
 
-@six.add_metaclass(abc.ABCMeta)
-class ILoopMixin(object):
-    """
-    Some ideas for a Mixin-style API, similar to the FutureMixin that
-    was in Autobahn.
-    """
-
-    @abc.abstractmethod
-    def future_create(self, value=None, exception=None):
-        pass
-
-    @abc.abstractmethod
-    def future_call(self, fun, *args, **kw):
-        pass
-
-    @abc.abstractmethod
-    def future_resolve(self, value):
-        pass
-
-    @abc.abstractmethod
-    def future_reject(self, exception=None):
-        pass
-
-    @abc.abstractmethod
-    def future_gather(self, futures, **kw):
-        pass
-
-
-
-class FutureWrapper(object):
-    """
-    Writing down some ideas for a Thing That Wraps A Future or a
-    Deferred, as per some #twisted feedback
-    """
-
-    def __init__(self, future):
-        self.future = future
-
-    def add_callbacks(self, callback, errback):
-        """
-        Same as txaio.add_callbacks(future, callback, errback) put we provide the future.
-        """
-        add_callbacks(self.future, callback, errback)
-
-    def reject(self, exception=None):
-        reject(self.future, exception=exception)
-
-    @abc.abstractmethod
-    def resolve(self, value):
-        resolve(self.future, value)
-
 
 @six.add_metaclass(abc.ABCMeta)
 class IFailedFuture(object):

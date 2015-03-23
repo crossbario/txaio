@@ -1,13 +1,9 @@
-from six import StringIO
 import pytest
 import txaio
-from mock import patch
 
-from util import run_once, await
 
 # we need implementation-specific tests because we have to do
 # implementation-specific mocking of the event-loops
-
 def test_call_later_twisted():
     '''
     Wait for two Futures.
@@ -29,6 +25,7 @@ def test_call_later_twisted():
 
         delay = txaio.call_later(1, foo, 5, 6, 7, foo="bar")
         assert len(calls) == 0
+        assert hasattr(delay, 'cancel')
         reactor.advance(2)
 
         assert len(calls) == 1
@@ -71,6 +68,7 @@ def test_call_later_asio():
             calls.append((args, kw))
 
         delay = txaio.call_later(1, foo, 5, 6, 7, foo="bar")
+        assert hasattr(delay, 'cancel')
         assert len(calls) == 0
 
         # advance time in the asyncio event-loop past our

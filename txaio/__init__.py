@@ -6,6 +6,7 @@ from .interfaces import IFailedFuture
 # see tx.py for Twisted implementation
 # see aio.py for asyncio/trollius implementation
 
+
 class _Config:
     """
     This holds all valid configuration options, accessed as
@@ -35,15 +36,16 @@ __all__ = (
 
     'config',                   # the config instance, access via attributes
 
-    'create_future',           # create a Future (can be already resolved/errored)
-    'as_future',               # call a method, and always return a Future
-    'reject',                  # errback a Future
-    'resolve',                 # callback a Future
-    'add_callbacks',           # add callback and/or errback
-    'gather',      # return a Future waiting for several other Futures
+    'create_future',   # create a Future (can be already resolved/errored)
+    'as_future',       # call a method, and always return a Future
+    'reject',          # errback a Future
+    'resolve',         # callback a Future
+    'add_callbacks',   # add callback and/or errback
+    'gather',          # return a Future waiting for several other Futures
 
     'IFailedFuture',            # describes API for arg to errback()s
 )
+
 
 def use_twisted():
     from txaio import tx
@@ -70,11 +72,11 @@ def use_asyncio():
 
 
 try:
-    from .tx import *
+    from txaio.tx import *  # noqa
     using_twisted = True
 except ImportError:
     try:
-        from .aio import *
+        from txaio.aio import *  # noqa
         using_asyncio = True
     except ImportError:
         raise ImportError("Neither asyncio nor Twisted found.")

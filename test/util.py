@@ -30,7 +30,7 @@ except ImportError as e:
 try:
     # XXX fixme hack better way to detect twisted
     # (has to work on py3 where asyncio exists always, though)
-    import twisted
+    import twisted  # noqa
 
     def await(_):
         return

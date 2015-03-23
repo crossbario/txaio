@@ -1,5 +1,3 @@
-from six import StringIO
-import pytest
 import txaio
 
 from util import run_once
