@@ -76,5 +76,6 @@ except ImportError:
     try:
         from txaio.aio import *  # noqa
         using_asyncio = True
-    except ImportError:
+    except ImportError:  # pragma: no cover
+        # pragma: no cover
         raise ImportError("Neither asyncio nor Twisted found.")

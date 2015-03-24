@@ -61,6 +61,45 @@ def test_errback_without_except():
     assert 'it failed' in str(errors[0])
 
 
+def test_errback_plain_exception():
+    '''
+    reject a future with just an Exception
+    '''
+    f = txaio.create_future()
+    exception = RuntimeError("it failed")
+    errors = []
+
+    def err(f):
+        errors.append(f)
+    txaio.add_callbacks(f, None, err)
+    txaio.reject(f, exception)
+
+    run_once()
+
+    assert len(errors) == 1
+    assert isinstance(errors[0], txaio.IFailedFuture)
+    assert exception == errors[0].value
+    assert type(exception) == errors[0].type
+    tb = StringIO()
+    errors[0].printTraceback(file=tb)
+    assert 'RuntimeError' in tb.getvalue()
+    assert 'it failed' in tb.getvalue()
+    assert errors[0].getErrorMessage() == 'it failed'
+    assert 'it failed' in str(errors[0])
+
+
+def test_errback_illegal_args():
+    '''
+    non-Exception/Failures should be rejected
+    '''
+    f = txaio.create_future()
+    try:
+        txaio.reject(f, object())
+        assert "should have raised exception."
+    except RuntimeError:
+        pass
+
+
 def test_errback_reject_no_args():
     """
     txaio.reject() with no args

@@ -135,7 +135,8 @@ def reject(future, error=None):
     elif isinstance(error, Exception):
         error = FailedFuture(type(error), error, None)
     else:
-        assert isinstance(error, IFailedFuture)
+        if not isinstance(error, IFailedFuture):
+            raise RuntimeError("reject requires an IFailedFuture or Exception")
     future.set_exception(error.value)
 
 

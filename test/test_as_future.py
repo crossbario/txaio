@@ -1,3 +1,4 @@
+import pytest
 import txaio
 
 from util import run_once
@@ -24,6 +25,45 @@ def test_as_future_immediate():
 
     txaio.add_callbacks(f, cb, errback)
 
+    run_once()
+
+    assert len(results) == 1
+    assert len(errors) == 0
+    assert results[0] == 42
+    assert calls[0] == ((1, 2, 3), dict(key='word'))
+
+
+def test_as_future_coroutine():
+    '''
+    call a coroutine (asyncio)
+    '''
+    pytest.importorskip('asyncio')
+    # can import asyncio on python3.4, but might still be using
+    # twisted
+    if not txaio.using_asyncio:
+        return
+
+    errors = []
+    results = []
+    calls = []
+
+    from asyncio import coroutine
+
+    @coroutine
+    def method(*args, **kw):
+        calls.append((args, kw))
+        return 42
+    f = txaio.as_future(method, 1, 2, 3, key='word')
+
+    def cb(x):
+        results.append(x)
+
+    def errback(f):
+        errors.append(f)
+
+    txaio.add_callbacks(f, cb, errback)
+
+    run_once()
     run_once()
 
     assert len(results) == 1
