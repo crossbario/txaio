@@ -3,6 +3,19 @@ import txaio
 from txaio.testutil import replace_loop
 
 
+def test_default_reactor():
+    """
+    run the code that defaults txaio.config.loop
+    """
+    pytest.importorskip('twisted')
+
+    assert txaio.config.loop is None
+    txaio.call_later(1, lambda: None)
+
+    from twisted.internet import reactor
+    assert txaio.config.loop is reactor
+
+
 def test_call_later():
     '''
     Wait for two Futures.

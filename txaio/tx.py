@@ -60,7 +60,8 @@ def reject(future, error=None):
     elif isinstance(error, Exception):
         error = Failure(error)
     else:
-        assert isinstance(error, IFailedFuture)
+        if not isinstance(error, Failure):
+            raise RuntimeError("reject requires a Failure or Exception")
     future.errback(error)
 
 
