@@ -21,38 +21,49 @@ from __future__ import absolute_import
 import sys
 from setuptools import setup, find_packages
 
-# XXX FIXME
-verstr = '0.0.0'
-docstr = 'FIXME'
+verstr = "1.0.0"
+docstr = """
+``txaio`` is a helper library for writing code that runs unmodified on
+both Twisted and asyncio.
+
+This is like `six <http://pythonhosted.org/six/>`_, but for wrapping
+over differences between Twisted and asyncio so one can write code
+that runs unmodified on both (*aka* "source code compatibility"). In
+other words: your users can choose if they want asyncio **or** Twisted
+as a dependency.
+
+    Note that, with this approach, user code runs under the native
+    event loop of either Twisted or asyncio. This is different from
+    attaching either one's event loop to the other using some event
+    loop adapter.
+"""
 
 setup (
-    name='taxio',
+    name='txaio',
     version=verstr,
     description='compatibility API between asyncio/Twisted/Trollius',
     long_description=docstr,
     author='Tavendo GmbH',
-    author_email='FIXME',
-    url='FIXME',
+    author_email='autobahnws@googlegroups.com',
+    url='https://github.com/tavendo/txaio',
     platforms=('Any'),
     install_requires=[
         'six'
     ],
     extras_require={
         'dev': [
-            'pytest>=2.6.4',     # FIXME
-            'pytest-cov>=1.8.1', # FIXME
+            'pytest>=2.6.4',     # MIT
+            'pytest-cov>=1.8.1', # MIT
             'pep8>=1.6.2',       # MIT
 
             'Sphinx>=1.2.3',     # BSD
             'alabaster>=0.6.3',  # BSD
         ],
         'twisted': [
-            'twisted',
+            'twisted',          # MIT
         ]
     },
     packages=['txaio'],
-#    include_package_data=True,
-#    data_files=[('.', ['LICENSE'])],
     zip_safe=False,
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     #
