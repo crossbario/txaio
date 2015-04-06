@@ -73,26 +73,31 @@ __all__ = (
 
 def use_twisted():
     from txaio import tx
+    _use_framework(tx)
     import txaio
     txaio.using_twisted = True
     txaio.using_asyncio = False
-    for method_name in __all__:
-        if method_name in ['use_twisted', 'use_asyncio']:
-            continue
-        twisted_method = getattr(tx, method_name)
-        setattr(txaio, method_name, twisted_method)
 
 
 def use_asyncio():
     from txaio import aio
+    _use_framework(aio)
     import txaio
     txaio.using_twisted = False
     txaio.using_asyncio = True
+
+
+def _use_framework(module):
+    """
+    Internal helper, to set this modules methods to a specified
+    framework helper-methods.
+    """
+    import txaio
     for method_name in __all__:
         if method_name in ['use_twisted', 'use_asyncio']:
             continue
-        twisted_method = getattr(aio, method_name)
-        setattr(txaio, method_name, twisted_method)
+        setattr(txaio, method_name,
+                getattr(module, method_name))
 
 
 try:
