@@ -18,3 +18,18 @@ docs:
 
 pep8:
 	pep8 test/*.py txaio/*.py
+
+# This will run pep8, pyflakes and can skip lines that end with # noqa
+flake8:
+	flake8 --ignore=E501 test/*.py txaio/*.py
+
+# cleanup everything
+clean:
+	rm -rf ./txaio.egg-info
+	rm -rf ./build
+	rm -rf ./dist
+
+# publish to PyPI
+publish: clean
+	python setup.py register
+	python setup.py sdist upload
