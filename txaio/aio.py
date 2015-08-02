@@ -108,25 +108,25 @@ class FailedFuture(IFailedFuture):
 # API methods for txaio, exported via the top-level __init__.py
 
 
-def create_future():
-    return Future()
+def create_future(result=None, error=None):
+    if result is not None and error is not None:
+        raise ValueError("Cannot have both result and error.")
 
-
-def create_future_success(result):
     f = Future()
-    f.set_result(result)
+    if result is not None:
+        resolve(f, result)
+    elif error is not None:
+        reject(f, error)
     return f
 
 
+def create_future_success(result):
+    return create_future(result=result)
+
+
 def create_future_error(error=None):
-    if error is None:
-        error = create_failure()
-    elif isinstance(error, Exception):
-        error = FailedFuture(type(error), error, None)
-    else:
-        assert isinstance(error, IFailedFuture)
-    f = Future()
-    f.set_exception(error.value)
+    f = create_future()
+    reject(f, error)
     return f
 
 
