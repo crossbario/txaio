@@ -24,6 +24,8 @@
 #
 ###############################################################################
 
+from __future__ import absolute_import
+
 from txaio.interfaces import IFailedFuture
 
 # This is the API
@@ -107,6 +109,6 @@ except ImportError:
     try:
         from txaio.aio import *  # noqa
         using_asyncio = True
-    except ImportError:  # pragma: no cover
+    except (ImportError, SyntaxError):  # pragma: no cover
         # pragma: no cover
         raise ImportError("Neither asyncio nor Twisted found.")

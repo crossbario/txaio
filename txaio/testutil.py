@@ -24,6 +24,8 @@
 #
 ###############################################################################
 
+from __future__ import absolute_import
+
 import txaio
 from contextlib import contextmanager
 
