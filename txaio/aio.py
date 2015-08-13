@@ -151,7 +151,7 @@ def call_later(delay, fun, *args, **kwargs):
     return config.loop.call_later(delay, real_call)
 
 
-def resolve(future, result):
+def resolve(future, result=None):
     future.set_result(result)
 
 
