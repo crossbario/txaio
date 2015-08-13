@@ -28,6 +28,18 @@ import txaio
 
 from util import run_once
 
+def test_default_resolve():
+    f = txaio.create_future()
+    results = []
+    def cb(f):
+        results.append(f)
+    txaio.add_callbacks(f, cb, None)
+    txaio.resolve(f)
+
+    run_once()
+
+    assert len(results) == 1
+    assert results[0] is None
 
 def test_callback():
     f = txaio.create_future()
