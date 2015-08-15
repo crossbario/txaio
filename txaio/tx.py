@@ -44,15 +44,17 @@ class FailedFuture(IFailedFuture):
 
 FailedFuture.register(Failure)
 
+_unspecified = object()
 
-def create_future(result=None, error=None):
-    if result is not None and error is not None:
+
+def create_future(result=_unspecified, error=_unspecified):
+    if result is not _unspecified and error is not _unspecified:
         raise ValueError("Cannot have both result and error.")
 
     f = Deferred()
-    if result is not None:
+    if result is not _unspecified:
         resolve(f, result)
-    elif error is not None:
+    elif error is not _unspecified:
         reject(f, error)
     return f
 

@@ -29,7 +29,7 @@ from __future__ import absolute_import
 import sys
 from setuptools import setup, find_packages
 
-verstr = "1.0.3"
+verstr = "1.0.4"
 docstr = """
 ``txaio`` is a helper library for writing code that runs unmodified on
 both Twisted and asyncio.
