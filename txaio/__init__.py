@@ -69,7 +69,11 @@ __all__ = (
     'add_callbacks',   # add callback and/or errback
     'gather',          # return a Future waiting for several other Futures
 
-    'IFailedFuture',            # describes API for arg to errback()s
+    'failure_message',    # a printable error-message from a IFailedFuture
+    'failure_traceback',  # returns a traceback instance from an IFailedFuture
+    'failure_format_traceback',  # a string, the formatted traceback
+
+    'IFailedFuture',             # describes API for arg to errback()s
 )
 
 

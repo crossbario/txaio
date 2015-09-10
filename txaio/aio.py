@@ -27,11 +27,13 @@
 from __future__ import absolute_import, print_function
 
 import sys
-import traceback
 import functools
+import traceback
 
 from txaio.interfaces import IFailedFuture
 from txaio import _Config
+
+import six
 
 try:
     import asyncio
@@ -76,36 +78,45 @@ class FailedFuture(IFailedFuture):
         self._traceback = traceback
 
     @property
-    def type(self):
-        return self._type
-
-    @property
     def value(self):
         return self._value
 
-    @property
-    def tb(self):
-        return self._traceback
-
-    def printTraceback(self, file=None):
-        """
-        Prints the complete traceback to stderr, or to the provided file
-        """
-        # print_exception handles None for file
-        traceback.print_exception(self.type, self.value, self._traceback,
-                                  file=file)
-
-    def getErrorMessage(self):
-        """
-        Returns the str() of the underlying exception.
-        """
-        return str(self.value)
-
     def __str__(self):
-        return self.getErrorMessage()
+        return str(self.value)
 
 
 # API methods for txaio, exported via the top-level __init__.py
+
+
+def failure_message(fail):
+    """
+    :param fail: must be an IFailedFuture
+    returns a unicode error-message
+    """
+    return str(fail._value)
+
+
+def failure_traceback(fail):
+    """
+    :param fail: must be an IFailedFuture
+    returns a traceback instance
+    """
+    return fail._traceback
+
+
+def failure_format_traceback(fail):
+    """
+    :param fail: must be an IFailedFuture
+    returns a string
+    """
+    f = six.StringIO()
+    traceback.print_exception(
+        fail._type,
+        fail.value,
+        fail._traceback,
+        file=f,
+    )
+    return f.getvalue()
 
 
 _unspecified = object()

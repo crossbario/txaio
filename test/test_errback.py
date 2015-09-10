@@ -24,7 +24,6 @@
 #
 ###############################################################################
 
-from six import StringIO
 import txaio
 
 from util import run_once
@@ -49,13 +48,13 @@ def test_errback():
     assert len(errors) == 1
     assert isinstance(errors[0], txaio.IFailedFuture)
     assert exception == errors[0].value
-    assert type(exception) == errors[0].type
-    assert errors[0].tb is not None
-    tb = StringIO()
-    errors[0].printTraceback(file=tb)
-    assert 'RuntimeError' in tb.getvalue()
-    assert 'it failed' in tb.getvalue()
-    assert errors[0].getErrorMessage() == 'it failed'
+    assert txaio.failure_traceback(errors[0]) is not None
+
+    tb = txaio.failure_format_traceback(errors[0])
+
+    assert 'RuntimeError' in tb
+    assert 'it failed' in tb
+    assert txaio.failure_message(errors[0]) == 'it failed'
     assert 'it failed' in str(errors[0])
 
 
@@ -77,13 +76,11 @@ def test_errback_without_except():
 
     assert len(errors) == 1
     assert isinstance(errors[0], txaio.IFailedFuture)
-    assert exception == errors[0].value
-    assert type(exception) == errors[0].type
-    tb = StringIO()
-    errors[0].printTraceback(file=tb)
-    assert 'RuntimeError' in tb.getvalue()
-    assert 'it failed' in tb.getvalue()
-    assert errors[0].getErrorMessage() == 'it failed'
+    tb = txaio.failure_format_traceback(errors[0])
+
+    assert 'RuntimeError' in tb
+    assert 'it failed' in tb
+    assert txaio.failure_message(errors[0]) == 'it failed'
     assert 'it failed' in str(errors[0])
 
 
@@ -104,13 +101,11 @@ def test_errback_plain_exception():
 
     assert len(errors) == 1
     assert isinstance(errors[0], txaio.IFailedFuture)
-    assert exception == errors[0].value
-    assert type(exception) == errors[0].type
-    tb = StringIO()
-    errors[0].printTraceback(file=tb)
-    assert 'RuntimeError' in tb.getvalue()
-    assert 'it failed' in tb.getvalue()
-    assert errors[0].getErrorMessage() == 'it failed'
+    tb = txaio.failure_format_traceback(errors[0])
+
+    assert 'RuntimeError' in tb
+    assert 'it failed' in tb
+    assert txaio.failure_message(errors[0]) == 'it failed'
     assert 'it failed' in str(errors[0])
 
 
@@ -148,13 +143,11 @@ def test_errback_reject_no_args():
     assert len(errors) == 1
     assert isinstance(errors[0], txaio.IFailedFuture)
     assert exception == errors[0].value
-    assert type(exception) == errors[0].type
-    assert errors[0].tb is not None
-    tb = StringIO()
-    errors[0].printTraceback(file=tb)
-    assert 'RuntimeError' in tb.getvalue()
-    assert 'it failed' in tb.getvalue()
-    assert errors[0].getErrorMessage() == 'it failed'
+    tb = txaio.failure_format_traceback(errors[0])
+
+    assert 'RuntimeError' in tb
+    assert 'it failed' in tb
+    assert txaio.failure_message(errors[0]) == 'it failed'
     assert 'it failed' in str(errors[0])
 
 
