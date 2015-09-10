@@ -38,9 +38,9 @@ methods on futures -- use *only* ``txaio`` methods to operate on them.
         print("Callback:", value)
 
     def eb(fail):
-        # fail will implement txaio.IFailedPromise
-        print("Errback:", fail)
-        fail.printTraceback()
+        # fail will implement txaio.IFailedFuture
+        print("Errback:", txaio.failure_message(fail))
+        print(txaio.failure_formatted_traceback(fail))
 
     f = txaio.create_future()
     txaio.add_callbacks(f, cb, eb)
@@ -113,6 +113,23 @@ only exists in the asyncio implementation.
 
 There is no ``inlineCallbacks`` or ``coroutine`` decorator
 support. Don't use these.
+
+
+Error Handling
+--------------
+
+In your ``errback``, you will receive a single arg which is an
+instance conforming to ``IFailedFuture``. This interface has only a
+single attribute: ``.value``, which is the Exception instance which
+caused the error. You can also use ``txaio.failure_*`` methods to
+operate on an ``IFailedFuture``:
+
+ - txaio.failure_message: returns a unicode error-message
+ - txaio.failure_traceback: returns a ``traceback`` object
+ - txaio.failure_formatted_traceback: returns a unicode formatted stack-trace
+
+You should **not** depend on *any* other attributes or methods of the
+instance you're given.
 
 
 Real Examples

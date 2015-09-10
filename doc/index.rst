@@ -45,8 +45,6 @@ Code like the following can then run on *either* system:
     txaio.reject(f1, RuntimeError("it failed"))
 
 
-See :ref:`restrictions` for limitations.
-
 .. toctree::
    :maxdepth: 3
 
