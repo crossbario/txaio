@@ -32,17 +32,42 @@ from twisted.internet.interfaces import IReactorTime
 from txaio.interfaces import IFailedFuture
 from txaio import _Config
 
+import six
+
 using_twisted = True
 using_asyncio = False
 
 config = _Config()
 
 
-class FailedFuture(IFailedFuture):
-    pass
+IFailedFuture.register(Failure)
 
 
-FailedFuture.register(Failure)
+def failure_message(fail):
+    """
+    :param fail: must be an IFailedFuture
+    returns a unicode error-message
+    """
+    return fail.getErrorMessage()
+
+
+def failure_traceback(fail):
+    """
+    :param fail: must be an IFailedFuture
+    returns a traceback instance
+    """
+    return fail.tb
+
+
+def failure_format_traceback(fail):
+    """
+    :param fail: must be an IFailedFuture
+    returns a string
+    """
+    f = six.StringIO()
+    fail.printTraceback(file=f)
+    return f.getvalue()
+
 
 _unspecified = object()
 
