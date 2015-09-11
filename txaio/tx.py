@@ -48,7 +48,10 @@ def failure_message(fail):
     :param fail: must be an IFailedFuture
     returns a unicode error-message
     """
-    return '{}: {}'.format(fail.value.__class__.__name__, fail.getErrorMessage())
+    return '{}: {}'.format(
+        fail.value.__class__.__name__,
+        fail.getErrorMessage(),
+    )
 
 
 def failure_traceback(fail):
