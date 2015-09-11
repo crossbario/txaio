@@ -29,6 +29,90 @@ from __future__ import absolute_import
 import abc
 import six
 
+#: all the log-levels that txaio recognizes
+log_levels = [
+    'critical',
+    'error',
+    'warn',
+    'info',
+    'debug',
+    'trace',
+]
+
+
+@six.add_metaclass(abc.ABCMeta)
+class ILogger(object):
+    """
+    This defines the methods you can call on the object returned from
+    :meth:`txaio.make_logger` -- although the actual object may have
+    additional methods, you should *only* call the methods listed
+    here.
+
+    All the log methods have the same signature, they just differ in
+    what "log level" they represent to the handlers/emitters. The
+    ``message`` argument is a format string using PEP3101-style
+    references to things from the ``kwargs``. Note that there are also
+    the following keys added to the ``kwargs``: log_time and log_level.
+
+    For example::
+
+        class MyThing(object):
+            log = txaio.make_logger()
+
+            def something_interesting(self, things=dict(one=1, two=2)):
+                try:
+                    self.log.debug("Called with {things[one]}", things=things)
+                    result = self._method_call()
+                    self.log.info("Got '{result}'.", result=result)
+                except Exception:
+                    fail = txaio.create_future_error()
+                    self.log.critical(txaio.failure_format_traceback(fail))
+
+    The philsophy behind txaio's interface is fairly similar to
+    Twisted's logging APIs after version 15. See `Twisted's
+    documentation
+    <http://twistedmatrix.com/documents/current/core/howto/logger.html>`_
+    for details.
+    """
+
+# stdlib notes:
+# levels:
+#   CRITICAL 50
+#   ERROR 40
+#   WARNING 30
+#   INFO 20
+#   DEBUG 10
+#   NOTSET 0
+
+
+# NOTES
+# things in Twisted's event:
+# - log_level
+# - log_failure (sometimes?)
+# - log_format (can be None)
+# - log_source (sometimes? no, always, but sometimes None)
+# - log_namespace
+#
+# .warn not warning!
+
+    def critical(self, message, **kwargs):
+        "log a critical-level message"
+
+    def error(self, message, **kwargs):
+        "log a error-level message"
+
+    def warn(self, message, **kwargs):
+        "log a error-level message"
+
+    def info(self, message, **kwargs):
+        "log an info-level message"
+
+    def debug(self, message, **kwargs):
+        "log an debug-level message"
+
+    def trace(self, message, **kwargs):
+        "log a trace-level message"
+
 
 @six.add_metaclass(abc.ABCMeta)
 class IFailedFuture(object):
