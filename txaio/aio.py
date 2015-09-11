@@ -93,7 +93,7 @@ def failure_message(fail):
     :param fail: must be an IFailedFuture
     returns a unicode error-message
     """
-    return str(fail._value)
+    return '{}: {}'.format(fail._value.__class__.__name__, str(fail._value))
 
 
 def failure_traceback(fail):

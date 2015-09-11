@@ -54,7 +54,7 @@ def test_errback():
 
     assert 'RuntimeError' in tb
     assert 'it failed' in tb
-    assert txaio.failure_message(errors[0]) == 'it failed'
+    assert txaio.failure_message(errors[0]) == 'RuntimeError: it failed'
     assert 'it failed' in str(errors[0])
 
 
@@ -80,7 +80,7 @@ def test_errback_without_except():
 
     assert 'RuntimeError' in tb
     assert 'it failed' in tb
-    assert txaio.failure_message(errors[0]) == 'it failed'
+    assert txaio.failure_message(errors[0]) == 'RuntimeError: it failed'
     assert 'it failed' in str(errors[0])
 
 
@@ -105,7 +105,7 @@ def test_errback_plain_exception():
 
     assert 'RuntimeError' in tb
     assert 'it failed' in tb
-    assert txaio.failure_message(errors[0]) == 'it failed'
+    assert txaio.failure_message(errors[0]) == 'RuntimeError: it failed'
     assert 'it failed' in str(errors[0])
 
 
@@ -147,7 +147,7 @@ def test_errback_reject_no_args():
 
     assert 'RuntimeError' in tb
     assert 'it failed' in tb
-    assert txaio.failure_message(errors[0]) == 'it failed'
+    assert txaio.failure_message(errors[0]) == 'RuntimeError: it failed'
     assert 'it failed' in str(errors[0])
 
 
