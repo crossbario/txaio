@@ -29,7 +29,7 @@ from __future__ import absolute_import
 import sys
 from setuptools import setup, find_packages
 
-verstr = "2.0.0"
+verstr = "1.1.0"
 docstr = """
 ``txaio`` is a helper library for writing code that runs unmodified on
 both Twisted and asyncio.
@@ -63,7 +63,6 @@ setup (
             'pytest>=2.6.4',     # MIT
             'pytest-cov>=1.8.1', # MIT
             'pep8>=1.6.2',       # MIT
-
             'Sphinx>=1.2.3',     # BSD
             'alabaster>=0.6.3',  # BSD
         ],
@@ -74,7 +73,6 @@ setup (
     packages=['txaio'],
     zip_safe=False,
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
-    #
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Development Status :: 3 - Alpha",
