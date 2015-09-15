@@ -172,6 +172,7 @@ def start_logging(out=None, level='info'):
         )
 
     if _loggers is None:
+        return
         raise RuntimeError("start_logging() may only be called once")
     _log_level = level
 
