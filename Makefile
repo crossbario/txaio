@@ -8,7 +8,7 @@ test:
 coverage:
 	-rm test/.coverage
 # can we exclude just the flake8 environment?
-	tox -e py27-twisted,pypy-twisted,py34-twisted,py34-asyncio,py27-asyncio,pypy-asyncio
+	tox -e py27-twisted,pypy-twisted,py34-twisted,py34-asyncio,py27-asyncio,pypy-asyncio,py27-twisted13
 	cd test && coverage combine
 	cd test && coverage html
 	cd test && coverage report --show-missing
