@@ -26,7 +26,10 @@
 
 from __future__ import absolute_import
 
+from txaio._version import __version__
 from txaio.interfaces import IFailedFuture, ILogger
+
+version = __version__
 
 # This is the API
 # see tx.py for Twisted implementation

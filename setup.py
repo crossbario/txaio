@@ -29,7 +29,9 @@ from __future__ import absolute_import
 import sys
 from setuptools import setup, find_packages
 
-verstr = "1.1.0"
+with open('txaio/_version.py') as f:
+    exec(f.read())  # defines __version__
+verstr = __version__
 docstr = """
 ``txaio`` is a helper library for writing code that runs unmodified on
 both Twisted and asyncio.
