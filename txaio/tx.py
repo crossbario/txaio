@@ -62,7 +62,7 @@ _NEW_LOGGER = False
 try:
     # Twisted 15+
     from twisted.logger import Logger, formatEvent, ILogObserver
-    from twisted.logger import globalLogBeginner, formatTime
+    from twisted.logger import globalLogBeginner, formatTime, LogLevel
     ILogger.register(Logger)
     _NEW_LOGGER = True
 
@@ -71,7 +71,10 @@ except ImportError:
     from functools import partial
     from zope.interface import Interface
     from datetime import datetime
+    import logging
     import time
+
+    # provide our own simple versions of what Twisted new-logger does
 
     class ILogObserver(Interface):
         pass
@@ -83,6 +86,14 @@ except ImportError:
     def formatEvent(event):
         msg = event['log_format']
         return msg.format(**event)
+
+    class LogLevel:
+        critical = 'critical'
+        error = 'error'
+        warn = 'warn'
+        info = 'info'
+        debug = 'debug'
+        trace = 'trace'
 
     class Logger(ILogger):
         def __init__(self, **kwargs):
@@ -137,7 +148,7 @@ class _TxLogger(Logger):
         # level, we bind to the no_op method
         desired_index = log_levels.index(level)
         for (idx, name) in enumerate(log_levels):
-            if idx > desired_index:
+            if idx > desired_index + 1:
                 setattr(self, name, _no_op)
 
     def trace(self, *args, **kw):
@@ -171,17 +182,41 @@ class _LogObserver(object):
 
     An observer which formats events to a given file.
     """
+    to_tx = {
+        'critical': LogLevel.critical,
+        'error': LogLevel.error,
+        'warn': LogLevel.warn,
+        'info': LogLevel.info,
+        'debug': LogLevel.debug,
+        'trace': LogLevel.debug,
+    }
+
     def __init__(self, out):
         self._file = out
+        self._levels = None
+
+    def _acceptable_level(self, level):
+        if self._levels is None:
+            target_level = log_levels.index(_log_level)
+            self._levels = [self.to_tx[lvl] for lvl in log_levels if log_levels.index(lvl) <= target_level]
+        return level in self._levels
 
     def __call__(self, event):
-        # we don't do any filtering on levels here, as our loggers are
-        # already looking for the correct levels.
-        msg = '{} {}\n'.format(
-            formatTime(event["log_time"]),
-            formatEvent(event),
-        )
-        self._file.write(msg)
+        # it seems if a twisted.logger.Logger() has .failure() called
+        # on it, the log_format will be None for the traceback after
+        # "Unhandled error in Deferred" -- perhaps this is a Twisted
+        # bug?
+        if event['log_format'] is None:
+            event['log_format'] = failure_format_traceback(event['log_failure'])
+
+        # although _TxLogger will already have filtered out unwanted
+        # levels, bare Logger instances from Twisted code won't have.
+        if 'log_level' in event and self._acceptable_level(event['log_level']):
+            msg = '{} {}\n'.format(
+                formatTime(event["log_time"]),
+                formatEvent(event),
+            )
+            self._file.write(msg)
 
 
 def start_logging(out=None, level='info'):
@@ -200,7 +235,6 @@ def start_logging(out=None, level='info'):
 
     if _loggers is None:
         return
-        raise RuntimeError("start_logging() may only be called once")
 
     if out is None:
         out = _stdout
@@ -211,6 +245,7 @@ def start_logging(out=None, level='info'):
             if instance:
                 instance._set_log_level(level)
     _loggers = None
+    _log_level = level
 
     _observer = _LogObserver(out)
     if _NEW_LOGGER:
@@ -225,10 +260,13 @@ def failure_message(fail):
     :param fail: must be an IFailedFuture
     returns a unicode error-message
     """
-    return '{}: {}'.format(
-        fail.value.__class__.__name__,
-        fail.getErrorMessage(),
-    )
+    try:
+        return '{}: {}'.format(
+            fail.value.__class__.__name__,
+            fail.getErrorMessage(),
+        )
+    except Exception:
+        return 'Failed to produce failure message for "{}"'.format(fail)
 
 
 def failure_traceback(fail):
@@ -244,9 +282,12 @@ def failure_format_traceback(fail):
     :param fail: must be an IFailedFuture
     returns a string
     """
-    f = six.StringIO()
-    fail.printTraceback(file=f)
-    return f.getvalue()
+    try:
+        f = six.StringIO()
+        fail.printTraceback(file=f)
+        return f.getvalue()
+    except Exception:
+        return u"Failed to format failure traceback for '{}'".format(fail)
 
 
 _unspecified = object()
