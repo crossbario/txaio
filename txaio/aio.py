@@ -173,7 +173,6 @@ def start_logging(out=None, level='info'):
 
     if _loggers is None:
         return
-        raise RuntimeError("start_logging() may only be called once")
     _log_level = level
 
     if out is None:
@@ -206,7 +205,13 @@ def failure_message(fail):
     :param fail: must be an IFailedFuture
     returns a unicode error-message
     """
-    return '{}: {}'.format(fail._value.__class__.__name__, str(fail._value))
+    try:
+        return '{}: {}'.format(
+            fail._value.__class__.__name__,
+            str(fail._value),
+        )
+    except Exception:
+        return 'Failed to produce failure message for "{}"'.format(fail)
 
 
 def failure_traceback(fail):
@@ -222,14 +227,17 @@ def failure_format_traceback(fail):
     :param fail: must be an IFailedFuture
     returns a string
     """
-    f = six.StringIO()
-    traceback.print_exception(
-        fail._type,
-        fail.value,
-        fail._traceback,
-        file=f,
-    )
-    return f.getvalue()
+    try:
+        f = six.StringIO()
+        traceback.print_exception(
+            fail._type,
+            fail.value,
+            fail._traceback,
+            file=f,
+        )
+        return f.getvalue()
+    except Exception:
+        return u"Failed to format failure traceback for '{}'".format(fail)
 
 
 _unspecified = object()

@@ -26,6 +26,7 @@
 
 from __future__ import print_function
 
+import six
 import pytest
 import txaio
 
@@ -96,6 +97,12 @@ def test_info(handler):
     assert handler.messages[0].endswith("hilarious elephant")
 
 
+def test_bad_failures(handler):
+    # just ensuring this doesn't explode
+    txaio.failure_format_traceback("not a failure")
+    txaio.failure_message("not a failure")
+
+
 def test_debug_with_object(handler):
     logger = txaio.make_logger()
 
@@ -126,9 +133,8 @@ def test_log_noop_trace(handler):
 def test_double_start(handler):
     try:
         txaio.start_logging()
-        assert False, "should get exception"
     except RuntimeError:
-        pass
+        assert False, "shouldn't get exception"
 
 
 def test_invalid_level():
@@ -165,3 +171,24 @@ def test_class_attribute(handler):
 
     assert len(handler.messages) == 1
     assert handler.messages[0].endswith("doing a thing")
+
+
+def test_log_converter(handler):
+    pytest.importorskip("twisted.logger")
+    # this checks that we can convert a plain Twisted Logger calling
+    # failure() into a traceback on our observers.
+    from twisted.logger import Logger
+    from txaio.tx import _LogObserver
+
+    out = six.StringIO()
+    observer = _LogObserver(out)
+    logger = Logger(observer=observer)
+
+    try:
+        raise RuntimeError("failed on purpose")
+    except:
+        logger.failure(None)
+
+    output = out.getvalue()
+    assert "failed on purpose" in output
+    assert "Traceback" in output
