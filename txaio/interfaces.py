@@ -65,7 +65,7 @@ class ILogger(object):
                     result = self._method_call()
                     self.log.info("Got '{result}'.", result=result)
                 except Exception:
-                    fail = txaio.create_future_error()
+                    fail = txaio.create_failure()
                     self.log.critical(txaio.failure_format_traceback(fail))
 
     The philsophy behind txaio's interface is fairly similar to
