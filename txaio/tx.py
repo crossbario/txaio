@@ -207,16 +207,20 @@ class _LogObserver(object):
         # "Unhandled error in Deferred" -- perhaps this is a Twisted
         # bug?
         if event['log_format'] is None:
-            event['log_format'] = failure_format_traceback(event['log_failure'])
-
-        # although _TxLogger will already have filtered out unwanted
-        # levels, bare Logger instances from Twisted code won't have.
-        if 'log_level' in event and self._acceptable_level(event['log_level']):
             msg = '{} {}\n'.format(
                 formatTime(event["log_time"]),
-                formatEvent(event),
+                failure_format_traceback(event['log_failure']),
             )
             self._file.write(msg)
+        else:
+            # although _TxLogger will already have filtered out unwanted
+            # levels, bare Logger instances from Twisted code won't have.
+            if 'log_level' in event and self._acceptable_level(event['log_level']):
+                msg = '{} {}\n'.format(
+                    formatTime(event["log_time"]),
+                    formatEvent(event),
+                )
+                self._file.write(msg)
 
 
 def start_logging(out=None, level='info'):
