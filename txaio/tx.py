@@ -165,7 +165,7 @@ def make_logger():
     if "self" in cf.f_locals:
         # We're probably in a class init or method
         cls = cf.f_locals["self"].__class__
-        namespace = '{}.{}'.format(cls.__module__, cls.__name__)
+        namespace = '{0}.{1}'.format(cls.__module__, cls.__name__)
     else:
         namespace = cf.f_globals["__name__"]
         if cf.f_code.co_name != "<module>":
@@ -207,7 +207,7 @@ class _LogObserver(object):
         # "Unhandled error in Deferred" -- perhaps this is a Twisted
         # bug?
         if event['log_format'] is None:
-            msg = '{} {}\n'.format(
+            msg = '{0} {1}\n'.format(
                 formatTime(event["log_time"]),
                 failure_format_traceback(event['log_failure']),
             )
@@ -216,7 +216,7 @@ class _LogObserver(object):
             # although _TxLogger will already have filtered out unwanted
             # levels, bare Logger instances from Twisted code won't have.
             if 'log_level' in event and self._acceptable_level(event['log_level']):
-                msg = '{} {}\n'.format(
+                msg = '{0} {1}\n'.format(
                     formatTime(event["log_time"]),
                     formatEvent(event),
                 )
@@ -232,7 +232,7 @@ def start_logging(out=None, level='info'):
 
     if level not in log_levels:
         raise RuntimeError(
-            "Invalid log level '{}'; valid are: {}".format(
+            "Invalid log level '{0}'; valid are: {1}".format(
                 level, ', '.join(log_levels)
             )
         )
@@ -265,12 +265,12 @@ def failure_message(fail):
     returns a unicode error-message
     """
     try:
-        return '{}: {}'.format(
+        return '{0}: {1}'.format(
             fail.value.__class__.__name__,
             fail.getErrorMessage(),
         )
     except Exception:
-        return 'Failed to produce failure message for "{}"'.format(fail)
+        return 'Failed to produce failure message for "{0}"'.format(fail)
 
 
 def failure_traceback(fail):
@@ -291,7 +291,7 @@ def failure_format_traceback(fail):
         fail.printTraceback(file=f)
         return f.getvalue()
     except Exception:
-        return u"Failed to format failure traceback for '{}'".format(fail)
+        return u"Failed to format failure traceback for '{0}'".format(fail)
 
 
 _unspecified = object()
