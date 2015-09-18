@@ -132,7 +132,8 @@ class _TxLogger(Logger):
         super(_TxLogger, self).__init__(*args, **kw)
         if _loggers is not None:
             _loggers.append(weakref.ref(self))
-        self._set_log_level(_log_level)
+        else:
+            self._set_log_level(_log_level)
 
     def __get__(self, oself, type=None):
         # this causes the Logger to lie about the "source=", but
@@ -148,7 +149,7 @@ class _TxLogger(Logger):
         # level, we bind to the no_op method
         desired_index = log_levels.index(level)
         for (idx, name) in enumerate(log_levels):
-            if idx > desired_index + 1:
+            if idx > desired_index:
                 setattr(self, name, _no_op)
 
     def trace(self, *args, **kw):
@@ -198,7 +199,7 @@ class _LogObserver(object):
     def _acceptable_level(self, level):
         if self._levels is None:
             target_level = log_levels.index(_log_level)
-            self._levels = [self.to_tx[lvl] for lvl in log_levels if log_levels.index(lvl) <= target_level]
+            self._levels = [self.to_tx[lvl] for lvl in log_levels if log_levels.index(lvl) <= target_level + 1]
         return level in self._levels
 
     def __call__(self, event):
