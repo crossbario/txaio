@@ -328,6 +328,10 @@ def call_later(delay, fun, *args, **kwargs):
     return IReactorTime(_get_loop()).callLater(delay, fun, *args, **kwargs)
 
 
+def is_called(future):
+    return future.called
+
+
 def resolve(future, result=None):
     future.callback(result)
 

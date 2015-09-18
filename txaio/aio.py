@@ -286,6 +286,10 @@ def call_later(delay, fun, *args, **kwargs):
     return config.loop.call_later(delay, real_call)
 
 
+def is_called(future):
+    return future.done()
+
+
 def resolve(future, result=None):
     future.set_result(result)
 
