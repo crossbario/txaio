@@ -71,6 +71,7 @@ __all__ = (
     'resolve',         # callback a Future
     'add_callbacks',   # add callback and/or errback
     'gather',          # return a Future waiting for several other Futures
+    'is_called',       # True if the Future has a result
 
     'failure_message',    # a printable error-message from a IFailedFuture
     'failure_traceback',  # returns a traceback instance from an IFailedFuture

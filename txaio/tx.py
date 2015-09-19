@@ -198,7 +198,7 @@ class _LogObserver(object):
     def _acceptable_level(self, level):
         if self._levels is None:
             target_level = log_levels.index(_log_level)
-            self._levels = [self.to_tx[lvl] for lvl in log_levels if log_levels.index(lvl) <= target_level]
+            self._levels = [self.to_tx[lvl] for lvl in log_levels if log_levels.index(lvl) <= target_level + 1]
         return level in self._levels
 
     def __call__(self, event):
@@ -326,6 +326,10 @@ def as_future(fun, *args, **kwargs):
 
 def call_later(delay, fun, *args, **kwargs):
     return IReactorTime(_get_loop()).callLater(delay, fun, *args, **kwargs)
+
+
+def is_called(future):
+    return future.called
 
 
 def resolve(future, result=None):
