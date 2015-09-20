@@ -199,7 +199,7 @@ class _LogObserver(object):
     def _acceptable_level(self, level):
         if self._levels is None:
             target_level = log_levels.index(_log_level)
-            self._levels = [self.to_tx[lvl] for lvl in log_levels if log_levels.index(lvl) <= target_level + 1]
+            self._levels = [self.to_tx[lvl] for lvl in log_levels if log_levels.index(lvl) <= target_level]
         return level in self._levels
 
     def __call__(self, event):
@@ -229,7 +229,7 @@ def start_logging(out=None, level='info'):
     Start logging to the file-like object in ``out``. By default, this
     is stdout.
     """
-    global _loggers, _observer
+    global _loggers, _observer, _log_level
 
     if level not in log_levels:
         raise RuntimeError(
