@@ -71,7 +71,6 @@ except ImportError:
     from functools import partial
     from zope.interface import Interface
     from datetime import datetime
-    import logging
     import time
 
     # provide our own simple versions of what Twisted new-logger does
