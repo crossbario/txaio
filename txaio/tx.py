@@ -71,7 +71,6 @@ except ImportError:
     from functools import partial
     from zope.interface import Interface
     from datetime import datetime
-    import logging
     import time
 
     # provide our own simple versions of what Twisted new-logger does
@@ -208,7 +207,7 @@ class _LogObserver(object):
         # "Unhandled error in Deferred" -- perhaps this is a Twisted
         # bug?
         if event['log_format'] is None:
-            msg = '{0} {1}\n'.format(
+            msg = u'{0} {1}\n'.format(
                 formatTime(event["log_time"]),
                 failure_format_traceback(event['log_failure']),
             )
@@ -217,7 +216,7 @@ class _LogObserver(object):
             # although _TxLogger will already have filtered out unwanted
             # levels, bare Logger instances from Twisted code won't have.
             if 'log_level' in event and self._acceptable_level(event['log_level']):
-                msg = '{0} {1}\n'.format(
+                msg = u'{0} {1}\n'.format(
                     formatTime(event["log_time"]),
                     formatEvent(event),
                 )
@@ -266,7 +265,7 @@ def failure_message(fail):
     returns a unicode error-message
     """
     try:
-        return '{0}: {1}'.format(
+        return u'{0}: {1}'.format(
             fail.value.__class__.__name__,
             fail.getErrorMessage(),
         )

@@ -148,6 +148,7 @@ def test_invalid_level():
 def test_class_descriptor(handler):
     class Something(object):
         log = txaio.make_logger()
+
         def do_a_thing(self):
             self.log.info("doing a thing")
 

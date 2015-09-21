@@ -132,7 +132,7 @@ class _TxaioLogWrapper(ILogger):
             setattr(self, name, log_method)
 
 
-class _TxaioFileHandler(logging.Handler):
+class _TxaioFileHandler(logging.Handler, object):
     def __init__(self, fileobj, **kw):
         super(_TxaioFileHandler, self).__init__(**kw)
         self._file = fileobj
@@ -140,7 +140,7 @@ class _TxaioFileHandler(logging.Handler):
     def emit(self, record):
         fmt = record.args['log_message']
         dt = datetime.fromtimestamp(record.args['log_time'])
-        msg = '{} {}\n'.format(
+        msg = u'{0} {1}\n'.format(
             dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
             fmt.format(**record.args),
         )
@@ -166,7 +166,7 @@ def start_logging(out=None, level='info'):
     global _log_level, _loggers
     if level not in log_levels:
         raise RuntimeError(
-            "Invalid log level '{}'; valid are: {}".format(
+            "Invalid log level '{0}'; valid are: {1}".format(
                 level, ', '.join(log_levels)
             )
         )
@@ -206,12 +206,12 @@ def failure_message(fail):
     returns a unicode error-message
     """
     try:
-        return '{}: {}'.format(
+        return u'{0}: {1}'.format(
             fail._value.__class__.__name__,
             str(fail._value),
         )
     except Exception:
-        return 'Failed to produce failure message for "{}"'.format(fail)
+        return u'Failed to produce failure message for "{0}"'.format(fail)
 
 
 def failure_traceback(fail):
@@ -237,7 +237,7 @@ def failure_format_traceback(fail):
         )
         return f.getvalue()
     except Exception:
-        return u"Failed to format failure traceback for '{}'".format(fail)
+        return u"Failed to format failure traceback for '{0}'".format(fail)
 
 
 _unspecified = object()
