@@ -35,19 +35,17 @@ import txaio
 
 # XXX just use StringIO?
 class TestHandler(object):
+    encoding = 'utf8'
+
     def __init__(self, *args, **kwargs):
         self.messages = []
-        self._data = ''
+        self._data = b''
 
     def write(self, data):
-        for line in data.split('\n'):
+        for line in data.split(b'\n'):
             line = line.strip()
             if line:
                 self.messages.append(line)
-
-    def read(self, bytes):
-        assert bytes == 0
-        return ""
 
     def flush(self):
         pass
@@ -86,7 +84,7 @@ def test_critical(handler):
     )
 
     assert len(handler.messages) == 1
-    assert handler.messages[0].endswith("hilarious wombat")
+    assert handler.messages[0].endswith(b"hilarious wombat")
 
 
 def test_info(handler):
@@ -100,7 +98,7 @@ def test_info(handler):
     )
 
     assert len(handler.messages) == 1
-    assert handler.messages[0].endswith("hilarious elephant")
+    assert handler.messages[0].endswith(b"hilarious elephant")
 
 
 def test_bad_failures(handler):
@@ -123,7 +121,7 @@ def test_debug_with_object(handler):
     )
 
     assert len(handler.messages) == 1
-    assert handler.messages[0].endswith("bar 4 bamboozle")
+    assert handler.messages[0].endswith(b"bar 4 bamboozle")
 
 
 def test_log_noop_trace(handler):
@@ -162,7 +160,7 @@ def test_class_descriptor(handler):
     s.do_a_thing()
 
     assert len(handler.messages) == 1
-    assert handler.messages[0].endswith("doing a thing")
+    assert handler.messages[0].endswith(b"doing a thing")
 
 
 def test_class_attribute(handler):
@@ -177,7 +175,7 @@ def test_class_attribute(handler):
     s.do_a_thing()
 
     assert len(handler.messages) == 1
-    assert handler.messages[0].endswith("doing a thing")
+    assert handler.messages[0].endswith(b"doing a thing")
 
 
 def test_log_converter(handler):

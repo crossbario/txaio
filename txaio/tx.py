@@ -40,6 +40,7 @@ from twisted.internet.interfaces import IReactorTime
 from zope.interface import provider
 
 from txaio.interfaces import IFailedFuture, ILogger, log_levels
+from txaio._iotype import ioType, unicode
 from txaio import _Config
 
 import six
@@ -198,35 +199,24 @@ class _LogObserver(object):
     def __init__(self, out):
         self._file = out
 
-        # XXX: Unicode
-        # On Python 2, stdout is bytes. However, we can't wrap it in a
-        # TextIOWrapper, as it's not from IOBase, so it doesn't have .seekable.
-        # It does, however, have a mode, and we can cheese it base on that.
-        # On Python 3, stdout is a TextIOWrapper, and so we can safely write
-        # str to it, and it will encode it correctly for the target terminal or
-        # whatever.
-        # If it's a io.BytesIO or StringIO, then it won't have a mode, but it
-        # is a read/write stream, so we can get its type by reading 0 bytes and
-        # checking the type.
-        try:
-            # If it's a r/w stream, this will give us the type of it
-            t = type(out.read(0))
+        file_stream_type = ioType(out, bytes)
 
-            if t == bytes:
+        if PY2:
+            if file_stream_type is unicode:
+                self._encode = False
+            elif file_stream_type is bytes:
+                self._encode = True
+            elif file_stream_type is basestring:
+                self._encode = False
+            else:
+                assert False, file_stream_type
+        else:
+            if file_stream_type is unicode:
+                self._encode = False
+            elif file_stream_type is bytes:
                 self._encode = True
             else:
-                self._encode = False
-        except:
-            # We kind of have to guess now
-            mode = getattr(out, "mode", "w")
-
-            if PY2 and mode == "w":
-                mode = "wb"
-
-            if "b" in mode:
-                self._encode = True
-            else:
-                self._encode = False
+                assert False, file_stream_type
 
         self._levels = None
 
