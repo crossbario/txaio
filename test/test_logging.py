@@ -205,6 +205,7 @@ def test_log_write_binary(handler):
     """
     Writing to a binary stream is supported.
     """
+    pytest.importorskip("twisted.logger")
     from txaio.tx import _LogObserver
 
     out_file = BytesIO()
@@ -225,6 +226,7 @@ def test_log_write_text(handler):
     """
     Writing to a text stream is supported.
     """
+    pytest.importorskip("twisted.logger")
     from txaio.tx import _LogObserver
 
     out_file = StringIO()
