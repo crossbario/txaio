@@ -26,6 +26,8 @@
 
 from __future__ import print_function
 
+from io import BytesIO, StringIO
+
 import six
 import pytest
 import txaio
@@ -33,7 +35,7 @@ import txaio
 
 # XXX just use StringIO?
 class TestHandler(object):
-    def __init__(self, *args, **kw):
+    def __init__(self, *args, **kwargs):
         self.messages = []
         self._data = ''
 
@@ -42,6 +44,10 @@ class TestHandler(object):
             line = line.strip()
             if line:
                 self.messages.append(line)
+
+    def read(self, bytes):
+        assert bytes == 0
+        return ""
 
     def flush(self):
         pass
@@ -193,3 +199,43 @@ def test_log_converter(handler):
     output = out.getvalue()
     assert "failed on purpose" in output
     assert "Traceback" in output
+
+
+def test_log_write_binary(handler):
+    """
+    Writing to a binary stream is supported.
+    """
+    from txaio.tx import _LogObserver
+
+    out_file = BytesIO()
+    observer = _LogObserver(out_file)
+
+    observer({
+        "log_format": "hi: {testentry}",
+        "testentry": "hello",
+        "log_level": observer.to_tx["info"],
+        "log_time": 1442890018.002233
+    })
+
+    output = out_file.getvalue()
+    assert b"hi: hello" in output
+
+
+def test_log_write_text(handler):
+    """
+    Writing to a text stream is supported.
+    """
+    from txaio.tx import _LogObserver
+
+    out_file = StringIO()
+    observer = _LogObserver(out_file)
+
+    observer({
+        "log_format": "hi: {testentry}",
+        "testentry": "hello",
+        "log_level": observer.to_tx["info"],
+        "log_time": 1442890018.002233
+    })
+
+    output = out_file.getvalue()
+    assert u"hi: hello" in output
