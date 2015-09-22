@@ -26,16 +26,18 @@
 
 from __future__ import print_function
 
+from collections import namedtuple
 from io import BytesIO, StringIO
 
 import six
 import pytest
 import txaio
 
+Log = namedtuple('Log', ['args'])
+
 
 # XXX just use StringIO?
 class TestHandler(object):
-    encoding = 'utf8'
 
     def __init__(self, *args, **kwargs):
         self.messages = []
@@ -199,7 +201,7 @@ def test_log_converter(handler):
     assert "Traceback" in output
 
 
-def test_log_write_binary(handler):
+def test_txlog_write_binary(handler):
     """
     Writing to a binary stream is supported.
     """
@@ -220,7 +222,7 @@ def test_log_write_binary(handler):
     assert b"hi: hello" in output
 
 
-def test_log_write_text(handler):
+def test_txlog_write_text(handler):
     """
     Writing to a text stream is supported.
     """
@@ -236,6 +238,46 @@ def test_log_write_text(handler):
         "log_level": observer.to_tx["info"],
         "log_time": 1442890018.002233
     })
+
+    output = out_file.getvalue()
+    assert u"hi: hello" in output
+
+
+def test_aiolog_write_binary(handler):
+    """
+    Writing to a binary stream is supported.
+    """
+    pytest.importorskip("txaio.aio")
+    from txaio.aio import _TxaioFileHandler
+
+    out_file = BytesIO()
+    observer = _TxaioFileHandler(out_file)
+
+    observer.emit(Log(args={
+        "log_message": "hi: {testentry}",
+        "testentry": "hello",
+        "log_time": 1442890018.002233
+    }))
+
+    output = out_file.getvalue()
+    assert b"hi: hello" in output
+
+
+def test_aiolog_write_text(handler):
+    """
+    Writing to a text stream is supported.
+    """
+    pytest.importorskip("txaio.aio")
+    from txaio.aio import _TxaioFileHandler
+
+    out_file = StringIO()
+    observer = _TxaioFileHandler(out_file)
+
+    observer.emit(Log(args={
+        "log_message": "hi: {testentry}",
+        "testentry": "hello",
+        "log_time": 1442890018.002233
+    }))
 
     output = out_file.getvalue()
     assert u"hi: hello" in output

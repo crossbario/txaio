@@ -32,9 +32,11 @@ import weakref
 import functools
 import traceback
 import logging
+
 from datetime import datetime
 
 from txaio.interfaces import IFailedFuture, ILogger, log_levels
+from txaio._iotype import ioType, unicode
 from txaio import _Config
 
 import six
@@ -137,6 +139,25 @@ class _TxaioFileHandler(logging.Handler, object):
         super(_TxaioFileHandler, self).__init__(**kw)
         self._file = fileobj
 
+        file_stream_type = ioType(fileobj, bytes)
+
+        if six.PY2:
+            if file_stream_type is unicode:
+                self._encode = False
+            elif file_stream_type is bytes:
+                self._encode = True
+            elif file_stream_type is basestring:
+                self._encode = False
+            else:
+                assert False, file_stream_type
+        else:
+            if file_stream_type is unicode:
+                self._encode = False
+            elif file_stream_type is bytes:
+                self._encode = True
+            else:
+                assert False, file_stream_type
+
     def emit(self, record):
         fmt = record.args['log_message']
         dt = datetime.fromtimestamp(record.args['log_time'])
@@ -144,6 +165,8 @@ class _TxaioFileHandler(logging.Handler, object):
             dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
             fmt.format(**record.args),
         )
+        if self._encode:
+            msg = msg.encode('utf8')
         self._file.write(msg)
 
 
