@@ -26,15 +26,18 @@
 
 from __future__ import absolute_import, print_function
 
+import os
 import sys
 import time
 import weakref
 import functools
 import traceback
 import logging
+
 from datetime import datetime
 
 from txaio.interfaces import IFailedFuture, ILogger, log_levels
+from txaio._iotype import guess_stream_needs_encoding
 from txaio import _Config
 
 import six
@@ -136,14 +139,18 @@ class _TxaioFileHandler(logging.Handler, object):
     def __init__(self, fileobj, **kw):
         super(_TxaioFileHandler, self).__init__(**kw)
         self._file = fileobj
+        self._encode = guess_stream_needs_encoding(fileobj)
 
     def emit(self, record):
         fmt = record.args['log_message']
         dt = datetime.fromtimestamp(record.args['log_time'])
-        msg = u'{0} {1}\n'.format(
+        msg = u'{0} {1}{2}'.format(
             dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
             fmt.format(**record.args),
+            os.sep
         )
+        if self._encode:
+            msg = msg.encode('utf8')
         self._file.write(msg)
 
 
