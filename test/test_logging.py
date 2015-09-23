@@ -26,25 +26,24 @@
 
 from __future__ import print_function
 
+from collections import namedtuple
+from io import BytesIO, StringIO
+
+import os
 import six
 import pytest
 import txaio
 
+Log = namedtuple('Log', ['args'])
 
-# XXX just use StringIO?
-class TestHandler(object):
-    def __init__(self, *args, **kw):
-        self.messages = []
-        self._data = ''
 
-    def write(self, data):
-        for line in data.split('\n'):
-            line = line.strip()
-            if line:
-                self.messages.append(line)
+class TestHandler(BytesIO):
 
-    def flush(self):
-        pass
+    @property
+    def messages(self):
+        # Because we print the \n after, there will always be an empty
+        # 'message', so just don't include it.
+        return self.getvalue().split(os.sep.encode('ascii'))[:-1]
 
 
 @pytest.fixture(scope='session')
@@ -65,7 +64,8 @@ def handler(log_started):
     """
     Resets the global TestHandler instance for each test.
     """
-    log_started.messages = []
+    log_started.truncate(0)
+    log_started.seek(0)
     return log_started
 
 
@@ -80,7 +80,7 @@ def test_critical(handler):
     )
 
     assert len(handler.messages) == 1
-    assert handler.messages[0].endswith("hilarious wombat")
+    assert handler.messages[0].endswith(b"hilarious wombat")
 
 
 def test_info(handler):
@@ -94,7 +94,7 @@ def test_info(handler):
     )
 
     assert len(handler.messages) == 1
-    assert handler.messages[0].endswith("hilarious elephant")
+    assert handler.messages[0].endswith(b"hilarious elephant")
 
 
 def test_bad_failures(handler):
@@ -117,7 +117,7 @@ def test_debug_with_object(handler):
     )
 
     assert len(handler.messages) == 1
-    assert handler.messages[0].endswith("bar 4 bamboozle")
+    assert handler.messages[0].endswith(b"bar 4 bamboozle")
 
 
 def test_log_noop_trace(handler):
@@ -148,6 +148,7 @@ def test_invalid_level():
 def test_class_descriptor(handler):
     class Something(object):
         log = txaio.make_logger()
+
         def do_a_thing(self):
             self.log.info("doing a thing")
 
@@ -155,7 +156,7 @@ def test_class_descriptor(handler):
     s.do_a_thing()
 
     assert len(handler.messages) == 1
-    assert handler.messages[0].endswith("doing a thing")
+    assert handler.messages[0].endswith(b"doing a thing")
 
 
 def test_class_attribute(handler):
@@ -170,7 +171,7 @@ def test_class_attribute(handler):
     s.do_a_thing()
 
     assert len(handler.messages) == 1
-    assert handler.messages[0].endswith("doing a thing")
+    assert handler.messages[0].endswith(b"doing a thing")
 
 
 def test_log_converter(handler):
@@ -192,3 +193,85 @@ def test_log_converter(handler):
     output = out.getvalue()
     assert "failed on purpose" in output
     assert "Traceback" in output
+
+
+def test_txlog_write_binary(handler):
+    """
+    Writing to a binary stream is supported.
+    """
+    pytest.importorskip("twisted.logger")
+    from txaio.tx import _LogObserver
+
+    out_file = BytesIO()
+    observer = _LogObserver(out_file)
+
+    observer({
+        "log_format": "hi: {testentry}",
+        "testentry": "hello",
+        "log_level": observer.to_tx["info"],
+        "log_time": 1442890018.002233
+    })
+
+    output = out_file.getvalue()
+    assert b"hi: hello" in output
+
+
+def test_txlog_write_text(handler):
+    """
+    Writing to a text stream is supported.
+    """
+    pytest.importorskip("twisted.logger")
+    from txaio.tx import _LogObserver
+
+    out_file = StringIO()
+    observer = _LogObserver(out_file)
+
+    observer({
+        "log_format": "hi: {testentry}",
+        "testentry": "hello",
+        "log_level": observer.to_tx["info"],
+        "log_time": 1442890018.002233
+    })
+
+    output = out_file.getvalue()
+    assert u"hi: hello" in output
+
+
+def test_aiolog_write_binary(handler):
+    """
+    Writing to a binary stream is supported.
+    """
+    pytest.importorskip("txaio.aio")
+    from txaio.aio import _TxaioFileHandler
+
+    out_file = BytesIO()
+    observer = _TxaioFileHandler(out_file)
+
+    observer.emit(Log(args={
+        "log_message": "hi: {testentry}",
+        "testentry": "hello",
+        "log_time": 1442890018.002233
+    }))
+
+    output = out_file.getvalue()
+    assert b"hi: hello" in output
+
+
+def test_aiolog_write_text(handler):
+    """
+    Writing to a text stream is supported.
+    """
+    pytest.importorskip("txaio.aio")
+    from txaio.aio import _TxaioFileHandler
+
+    out_file = StringIO()
+    observer = _TxaioFileHandler(out_file)
+
+    observer.emit(Log(args={
+        "log_message": "hi: {testentry}",
+        "testentry": "hello",
+        "log_time": 1442890018.002233
+    }))
+
+    output = out_file.getvalue()
+    assert u"hi: hello" in output

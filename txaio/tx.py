@@ -24,6 +24,9 @@
 #
 ###############################################################################
 
+from __future__ import absolute_import, division, print_function
+
+import os
 import sys
 import weakref
 import inspect
@@ -36,6 +39,7 @@ from twisted.internet.interfaces import IReactorTime
 from zope.interface import provider
 
 from txaio.interfaces import IFailedFuture, ILogger, log_levels
+from txaio._iotype import guess_stream_needs_encoding
 from txaio import _Config
 
 import six
@@ -71,7 +75,6 @@ except ImportError:
     from functools import partial
     from zope.interface import Interface
     from datetime import datetime
-    import logging
     import time
 
     # provide our own simple versions of what Twisted new-logger does
@@ -194,6 +197,8 @@ class _LogObserver(object):
 
     def __init__(self, out):
         self._file = out
+        self._encode = guess_stream_needs_encoding(out)
+
         self._levels = None
 
     def _acceptable_level(self, level):
@@ -208,19 +213,25 @@ class _LogObserver(object):
         # "Unhandled error in Deferred" -- perhaps this is a Twisted
         # bug?
         if event['log_format'] is None:
-            msg = '{0} {1}\n'.format(
+            msg = u'{0} {1}{2}'.format(
                 formatTime(event["log_time"]),
                 failure_format_traceback(event['log_failure']),
+                os.sep
             )
+            if self._encode:
+                msg = msg.encode('utf8')
             self._file.write(msg)
         else:
             # although _TxLogger will already have filtered out unwanted
             # levels, bare Logger instances from Twisted code won't have.
             if 'log_level' in event and self._acceptable_level(event['log_level']):
-                msg = '{0} {1}\n'.format(
+                msg = u'{0} {1}{2}'.format(
                     formatTime(event["log_time"]),
                     formatEvent(event),
+                    os.sep
                 )
+                if self._encode:
+                    msg = msg.encode('utf8')
                 self._file.write(msg)
 
 
@@ -266,7 +277,7 @@ def failure_message(fail):
     returns a unicode error-message
     """
     try:
-        return '{0}: {1}'.format(
+        return u'{0}: {1}'.format(
             fail.value.__class__.__name__,
             fail.getErrorMessage(),
         )

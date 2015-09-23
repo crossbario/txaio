@@ -53,3 +53,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+*~
+_trial_temp/

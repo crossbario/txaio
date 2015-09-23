@@ -26,15 +26,18 @@
 
 from __future__ import absolute_import, print_function
 
+import os
 import sys
 import time
 import weakref
 import functools
 import traceback
 import logging
+
 from datetime import datetime
 
 from txaio.interfaces import IFailedFuture, ILogger, log_levels
+from txaio._iotype import guess_stream_needs_encoding
 from txaio import _Config
 
 import six
@@ -132,18 +135,22 @@ class _TxaioLogWrapper(ILogger):
             setattr(self, name, log_method)
 
 
-class _TxaioFileHandler(logging.Handler):
+class _TxaioFileHandler(logging.Handler, object):
     def __init__(self, fileobj, **kw):
         super(_TxaioFileHandler, self).__init__(**kw)
         self._file = fileobj
+        self._encode = guess_stream_needs_encoding(fileobj)
 
     def emit(self, record):
         fmt = record.args['log_message']
         dt = datetime.fromtimestamp(record.args['log_time'])
-        msg = '{} {}\n'.format(
+        msg = u'{0} {1}{2}'.format(
             dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
             fmt.format(**record.args),
+            os.sep
         )
+        if self._encode:
+            msg = msg.encode('utf8')
         self._file.write(msg)
 
 
@@ -166,7 +173,7 @@ def start_logging(out=None, level='info'):
     global _log_level, _loggers
     if level not in log_levels:
         raise RuntimeError(
-            "Invalid log level '{}'; valid are: {}".format(
+            "Invalid log level '{0}'; valid are: {1}".format(
                 level, ', '.join(log_levels)
             )
         )
@@ -206,12 +213,12 @@ def failure_message(fail):
     returns a unicode error-message
     """
     try:
-        return '{}: {}'.format(
+        return u'{0}: {1}'.format(
             fail._value.__class__.__name__,
             str(fail._value),
         )
     except Exception:
-        return 'Failed to produce failure message for "{}"'.format(fail)
+        return u'Failed to produce failure message for "{0}"'.format(fail)
 
 
 def failure_traceback(fail):
@@ -237,7 +244,7 @@ def failure_format_traceback(fail):
         )
         return f.getvalue()
     except Exception:
-        return u"Failed to format failure traceback for '{}'".format(fail)
+        return u"Failed to format failure traceback for '{0}'".format(fail)
 
 
 _unspecified = object()

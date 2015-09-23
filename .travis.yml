@@ -1,0 +1,32 @@
+language: python
+sudo: false
+
+install:
+  - pip install tox codecov
+
+env:
+  - TOX_ENV=flake8
+  - TOX_ENV=py26-tw132
+  - TOX_ENV=py26-tw154
+  - TOX_ENV=py26-asyncio
+  - TOX_ENV=py27-tw132
+  - TOX_ENV=py27-twcurrent
+  - TOX_ENV=py27-asyncio
+  - TOX_ENV=pypy-tw132
+  - TOX_ENV=pypy-twcurrent
+  - TOX_ENV=pypy-asyncio
+  - TOX_ENV=py33-twcurrent
+  - TOX_ENV=py33-asyncio
+  - TOX_ENV=py34-twcurrent
+  - TOX_ENV=py34-asyncio
+  - TOX_ENV=py35-twcurrent
+  - TOX_ENV=py35-asyncio
+
+script:
+  - tox -c tox.ini -e $TOX_ENV
+
+after_success:
+  - codecov
+
+matrix:
+  fast_finish: true
