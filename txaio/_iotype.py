@@ -36,7 +36,8 @@ else:
 
 def guess_stream_needs_encoding(fileobj, default=True):
     """
-    Guess the type (bytes/unicode) of this stream. If
+    Guess the type (bytes/unicode) of this stream, and return whether or not it
+    requires text to be encoded before written into it.
     """
     # XXX: Unicode
     # On Python 2, stdout is bytes. However, we can't wrap it in a
@@ -65,8 +66,6 @@ def guess_stream_needs_encoding(fileobj, default=True):
 
         if PY2 and mode == "w":
             mode = "wb"
-
-        print(mode)
 
         if "b" in mode:
             return True
