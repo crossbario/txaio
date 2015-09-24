@@ -321,18 +321,19 @@ def create_future(result=_unspecified, error=_unspecified):
     return f
 
 
-# maybe delete, just use create_future()
 def create_future_success(result):
     return succeed(result)
 
 
-# maybe delete, just use create_future()
 def create_future_error(error=None):
     return fail(create_failure(error))
 
 
-# maybe rename to call()?
 def as_future(fun, *args, **kwargs):
+    if inspect.isgeneratorfunction(fun):
+        msg = "Function '{0}.{1}' is a generator function; did you miss @inlineCallbacks?".format(
+            fun.__module__, fun.func_name)
+        raise RuntimeError(msg)
     return maybeDeferred(fun, *args, **kwargs)
 
 
