@@ -147,7 +147,7 @@ class _TxaioFileHandler(logging.Handler, object):
         msg = u'{0} {1}{2}'.format(
             dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
             fmt.format(**record.args),
-            os.sep
+            os.linesep
         )
         if self._encode:
             msg = msg.encode('utf8')

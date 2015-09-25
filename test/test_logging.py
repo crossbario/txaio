@@ -43,7 +43,7 @@ class TestHandler(BytesIO):
     def messages(self):
         # Because we print the \n after, there will always be an empty
         # 'message', so just don't include it.
-        return self.getvalue().split(os.sep.encode('ascii'))[:-1]
+        return self.getvalue().split(os.linesep.encode('ascii'))[:-1]
 
 
 @pytest.fixture(scope='session')

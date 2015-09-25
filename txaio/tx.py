@@ -216,7 +216,7 @@ class _LogObserver(object):
             msg = u'{0} {1}{2}'.format(
                 formatTime(event["log_time"]),
                 failure_format_traceback(event['log_failure']),
-                os.sep
+                os.linesep,
             )
             if self._encode:
                 msg = msg.encode('utf8')
@@ -228,7 +228,7 @@ class _LogObserver(object):
                 msg = u'{0} {1}{2}'.format(
                     formatTime(event["log_time"]),
                     formatEvent(event),
-                    os.sep
+                    os.linesep,
                 )
                 if self._encode:
                     msg = msg.encode('utf8')
