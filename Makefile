@@ -17,10 +17,10 @@ install:
 	pip install --upgrade -e .[twisted,dev]
 
 docs:
-	cd doc && make html
+	cd docs && make html
 
 spelling:
-	cd doc && sphinx-build -b spelling . _spelling
+	cd docs && sphinx-build -b spelling . _spelling
 
 pep8:
 	pep8 test/*.py txaio/*.py
@@ -40,8 +40,8 @@ clean:
 	rm -rf ./.eggs
 	rm -rf ./.cache
 	rm -rf ./test/.coverage.*.*
-	rm -rf ./doc/_build
-	rm -rf ./doc/_spelling
+	rm -rf ./docs/_build
+	rm -rf ./docs/_spelling
 	find . -name "*.tar.gz" -type f -exec rm -f {} \;
 	find . -name "*.egg" -type f -exec rm -f {} \;
 	find . -name "*.pyc" -type f -exec rm -f {} \;
