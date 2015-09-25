@@ -78,7 +78,7 @@ setup(
             'sphinx>=1.2.3',        # BSD
             'pyenchant>=1.6.6',     # LGPL
             'sphinxcontrib-spelling>=2.1.2',    # BSD
-            'alabaster>=0.6.3',     # BSD
+            'sphinx_rtd_theme>=0.1.9',          # BSD
             'tox>=2.1.1'            # MIT
         ],
         'twisted': [
