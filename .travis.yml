@@ -19,8 +19,9 @@ env:
   - TOX_ENV=py33-asyncio
   - TOX_ENV=py34-twcurrent
   - TOX_ENV=py34-asyncio
-  - TOX_ENV=py35-twcurrent
-  - TOX_ENV=py35-asyncio
+# Travis still lacks CPy 3.5 currently (09/25/15)  
+#  - TOX_ENV=py35-twcurrent
+#  - TOX_ENV=py35-asyncio
 
 script:
   - tox -c tox.ini -e $TOX_ENV
