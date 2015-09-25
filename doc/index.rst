@@ -1,7 +1,7 @@
 txaio: Twisted/asyncio helper
 =============================
 
-| |Version| |Downloads| |Build Status| |Coverage|
+| |Version| |Docs| |Downloads| |Build Status| |Coverage|
 
 --------------
 
@@ -73,3 +73,6 @@ Code like the following can then run on *either* system:
 
 .. |Coverage| image:: https://img.shields.io/codecov/c/github/tavendo/txaio/master.svg
    :target: https://codecov.io/github/tavendo/txaio
+
+.. |Docs| image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+   :target: http://txaio.readthedocs.org/en/latest/

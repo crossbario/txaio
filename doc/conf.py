@@ -58,8 +58,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'txaio'
-copyright = '2015, tavendo'
-author = 'tavendo'
+copyright = '2015, Tavendo GmbH'
+author = 'Tavendo'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
