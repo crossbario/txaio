@@ -35,6 +35,8 @@ script:
   - tox -c tox.ini -e $TOX_ENV
 
 after_success:
+  # since we use --parallel-mode to coverage inside Tox, and "codecov"
+  # only looks for .coverage, we need to combine
   - coverage combine
   - codecov
 
