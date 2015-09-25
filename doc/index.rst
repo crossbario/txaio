@@ -6,7 +6,7 @@ txaio: Twisted/asyncio helper
 --------------
 
 ``txaio`` is a helper library for writing code that runs unmodified on
-both Twisted and asyncio.
+both `Twisted <https://twistedmatrix.com/>`__ and `asyncio <https://docs.python.org/3/library/asyncio.html>`__ / `Trollius <http://trollius.readthedocs.org/en/latest/index.html>`__.
 
 This is like `six <http://pythonhosted.org/six/>`_, but for wrapping
 over differences between Twisted and asyncio so one can write code
@@ -19,8 +19,17 @@ as a dependency.
     attaching either one's event loop to the other using some event
     loop adapter.
 
-**Support:** either asyncio *or* Twisted on any of Python 2.7, 3.4 and
-PyPy.
+
+Supported Platforms
+-------------------
+
+``txaio`` runs on CPython 2.6+ and PyPy 2, on top of Twisted or asyncio. Specifically, ``txaio`` is tested on the following platforms:
+
+* CPython 2.6 on Twisted 12.1, 13.2, 15.4 and Trollius 2.0
+* CPython 2.7 on Twisted 12.1, 13.2, 15.4, trunk and Trollius 2.0
+* CPython 3.3 on Twisted 15.4, trunk and Trollius 2.0
+* CPython 3.4 on Twisted 15.4, trunk and asyncio (stdlib)
+* PyPy 2.5 on Twisted 12.1, 13.2, 15.4, trunk and Trollius 2.0
 
 
 How txaio Works
