@@ -39,3 +39,10 @@ after_success:
 
 matrix:
   fast_finish: true
+
+notifications:
+   irc:
+      channels:
+         - "irc.freenode.org#autobahn"
+      use_notice: true
+      skip_join: true
