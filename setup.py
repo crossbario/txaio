@@ -31,26 +31,13 @@ from setuptools import setup, find_packages
 
 with open('txaio/_version.py') as f:
     exec(f.read())  # defines __version__
-verstr = __version__
-docstr = """
-``txaio`` is a helper library for writing code that runs unmodified on
-both Twisted and asyncio.
 
-This is like `six <http://pythonhosted.org/six/>`_, but for wrapping
-over differences between Twisted and asyncio so one can write code
-that runs unmodified on both (*aka* "source code compatibility"). In
-other words: your users can choose if they want asyncio **or** Twisted
-as a dependency.
-
-    Note that, with this approach, user code runs under the native
-    event loop of either Twisted or asyncio. This is different from
-    attaching either one's event loop to the other using some event
-    loop adapter.
-"""
+with open('README.rst') as f:
+    docstr = f.read()
 
 setup (
     name='txaio',
-    version=verstr,
+    version=__version__,
     description='Compatibility API between asyncio/Twisted/Trollius',
     long_description=docstr,
     author='Tavendo GmbH',

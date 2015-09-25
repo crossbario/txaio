@@ -1,6 +1,10 @@
 txaio: Twisted/asyncio helper
 =============================
 
+| |Version| |Downloads| |Build Status| |Coverage|
+
+--------------
+
 ``txaio`` is a helper library for writing code that runs unmodified on
 both Twisted and asyncio.
 
@@ -50,3 +54,22 @@ Code like the following can then run on *either* system:
 
    overview
    api
+
+
+.. |Version| image:: https://img.shields.io/pypi/v/txaio.svg
+   :target: https://pypi.python.org/pypi/txaio
+
+.. |Downloads| image:: https://img.shields.io/pypi/dm/txaio.svg
+   :target: https://pypi.python.org/pypi/txaio
+
+.. |GitHub Stars| image:: https://img.shields.io/github/stars/tavendo/txaio.svg?style=social&label=Star
+   :target: https://github.com/tavendo/txaio
+
+.. |Master Branch| image:: https://img.shields.io/badge/branch-master-orange.svg
+   :target: https://travis-ci.org/tavendo/txaio.svg?branch=master
+
+.. |Build Status| image:: https://travis-ci.org/tavendo/txaio.svg?branch=master
+   :target: https://travis-ci.org/tavendo/txaio
+
+.. |Coverage| image:: https://img.shields.io/codecov/c/github/tavendo/txaio/master.svg
+   :target: https://codecov.io/github/tavendo/txaio
