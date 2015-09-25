@@ -31,6 +31,16 @@ clean:
 	rm -rf ./txaio.egg-info
 	rm -rf ./build
 	rm -rf ./dist
+	rm -rf ./temp
+	rm -rf ./_trial_temp
+	rm -rf ./.tox
+	rm -rf ./.eggs
+	rm -rf ./.cache
+	rm -rf ./test/.coverage.*.*
+	find . -name "*.tar.gz" -type f -exec rm -f {} \;
+	find . -name "*.egg" -type f -exec rm -f {} \;
+	find . -name "*.pyc" -type f -exec rm -f {} \;
+	find . -name "*__pycache__" -type d -exec rm -rf {} \;
 
 # publish to PyPI
 publish: clean
