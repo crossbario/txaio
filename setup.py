@@ -67,6 +67,7 @@ setup (
             'pep8>=1.6.2',       # MIT
             'Sphinx>=1.2.3',     # BSD
             'alabaster>=0.6.3',  # BSD
+            'tox>=2.1.1'         # MIT
         ],
         'twisted': [
             'twisted',          # MIT
@@ -77,7 +78,7 @@ setup (
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         "License :: OSI Approved :: MIT License",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Framework :: Twisted",
         "Intended Audience :: Developers",
