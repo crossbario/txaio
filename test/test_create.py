@@ -23,3 +23,5 @@ def test_create_error():
         assert f.called
     else:
         assert f.done()
+    # cancel the error; we expected it
+    txaio.add_callbacks(f, None, lambda _: None)
