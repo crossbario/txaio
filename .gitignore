@@ -49,8 +49,8 @@ coverage.xml
 *.log
 
 # Sphinx documentation
-doc/_build/
-doc/_spelling/
+docs/_build/
+docs/_spelling/
 
 # PyBuilder
 target/
