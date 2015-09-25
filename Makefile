@@ -19,6 +19,9 @@ install:
 docs:
 	cd doc && make html
 
+spelling:
+	cd doc && sphinx-build -b spelling . _spelling
+
 pep8:
 	pep8 test/*.py txaio/*.py
 
@@ -37,6 +40,8 @@ clean:
 	rm -rf ./.eggs
 	rm -rf ./.cache
 	rm -rf ./test/.coverage.*.*
+	rm -rf ./doc/_build
+	rm -rf ./doc/_spelling
 	find . -name "*.tar.gz" -type f -exec rm -f {} \;
 	find . -name "*.egg" -type f -exec rm -f {} \;
 	find . -name "*.pyc" -type f -exec rm -f {} \;

@@ -1,5 +1,5 @@
-txaio API
-=========
+API
+===
 
 The API is identical whether you're using Twisted or asyncio under the
 hood. Two ``bool`` variables are available if you need to know which
@@ -26,7 +26,7 @@ Set an Event Loop / Reactor
 ---------------------------
 
 You can set ``txaio.config.loop`` to either an EventLoop instance (if
-using asyncio) or an explicit reactor (if using Twisted). By defualt,
+using asyncio) or an explicit reactor (if using Twisted). By default,
 ``reactor`` is imported from ``twisted.internet`` on the first
 ``call_later`` invocation. For asyncio, ``asyncio.get_event_loop()``
 is called at import time.
@@ -107,7 +107,7 @@ txaio module
         txaio.add_callbacks(p, do_something, it_failed)
 
     You therefore don't have to worry if the underlying function was
-    itself asynchronous or not -- your code always treats it as async.
+    itself asynchronous or not -- your code always treats it as asynchronous.
 
 
 .. py:function:: reject(future, error=None)

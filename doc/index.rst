@@ -1,5 +1,5 @@
-txaio: Twisted/asyncio helper
-=============================
+txaio
+=====
 
 | |Version| |Downloads| |Build Status| |Coverage| |Docs|
 
@@ -19,8 +19,8 @@ loop of either Twisted or asyncio**. This is different from attaching
 either one's event loop to the other using some event loop adapter.
 
 
-Supported Platforms
--------------------
+Platform support
+----------------
 
 **txaio** runs on CPython 2.6+ and PyPy 2, on top of Twisted or asyncio. Specifically, **txaio** is tested on the following platforms:
 
@@ -31,8 +31,8 @@ Supported Platforms
 * PyPy 2.5 on Twisted 12.1, 13.2, 15.4, trunk and Trollius 2.0
 
 
-How txaio Works
----------------
+How it works
+------------
 
 Instead of directly importing, instantiating and using ``Deferred``
 (for Twisted) or ``Future`` (for asyncio) objects, **txaio** provides
@@ -55,6 +55,9 @@ Code like the following can then run on *either* system:
     # ...
     txaio.resolve(f0, "value")
     txaio.reject(f1, RuntimeError("it failed"))
+
+
+.. toctree::
 
 
 .. |Version| image:: https://img.shields.io/pypi/v/txaio.svg

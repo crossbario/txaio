@@ -122,7 +122,7 @@ class IFailedFuture(object):
     Deferred.
 
     An instance implementing this interface is given to any
-    ``errback`` callables you provde via :meth:`txaio.add_callbacks`
+    ``errback`` callables you provide via :meth:`txaio.add_callbacks`
 
     In your errback you can extract information from an IFailedFuture
     with :meth:`txaio.failure_message` and

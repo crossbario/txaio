@@ -1,6 +1,5 @@
-txaio Overview
-==============
-
+Overview
+========
 
 Brief History
 -------------
@@ -18,7 +17,7 @@ own to other projects using event-based Python.
 Overview by Example
 -------------------
 
-The simplest way to use ``txaio`` is to ``import txaio`` and use the
+The simplest way to use **txaio** is to ``import txaio`` and use the
 helper functions directly. Using the library in this manner will
 automatically select the event-loop to use: Twisted if it's available,
 then asyncio and finally Trollius if those fail.
@@ -28,7 +27,7 @@ If you wish to be explicit about the event-loop you want, call
 (with an ``ImportError``) if that implementation isn't available.
 
 Note that to use this library successfully you *shouldn't* call
-methods on futures -- use *only* ``txaio`` methods to operate on them.
+methods on futures -- use *only* **txaio** methods to operate on them.
 
 .. sourcecode:: python
 
@@ -66,8 +65,8 @@ methods on futures -- use *only* ``txaio`` methods to operate on them.
 Restrictions and Caveats
 ------------------------
 
-``txaio`` is not a new event-based programming solution. It is not a
-complete box-set of async tools.
+**txaio** is not a new event-based programming solution. It is not a
+complete box-set of asynchronous programming tools.
 
 It is **one piece** that *can* help you to write cross-event-loop
 asynchronous code. For example, you'll note that there's no way to run
@@ -101,12 +100,12 @@ callback. Similarly, errbacks in Twisted can cancel the error. There
 are not equivalent facilities in ``asyncio``: if you add multiple
 callbacks, they all get the same value (or exception).
 
-When using ``txaio``, **don't depend on chaining**. This means that
+When using **txaio**, **don't depend on chaining**. This means that
 your ``callback`` and ``errback`` methods must **always return their
 input argument** so that Twisted works if you add multiple callbacks
 or errbacks (and doesn't unexpectedly cancel errors).
 
-``txaio`` does add the concept of an ``errback`` for handling errors
+**txaio** does add the concept of an ``errback`` for handling errors
 (a concept asyncio does not have) and therefore adds one helper to
 encapsulate exceptions (similar to Twisted's `Failure`_ object) which
 only exists in the asyncio implementation.
@@ -139,17 +138,17 @@ You are encouraged to look at `Autobahn|Python`_ for an example of a
 system that can run on both Twisted and asyncio. In particular, look
 at the difference between ``autobahn/twisted/websocket.py`` and
 ``autobahn/asyncio/websocket.py`` and the compatibility super-class in
-``autobahn/wamp/protocol.py`` which is the piece that uses ``txaio``
+``autobahn/wamp/protocol.py`` which is the piece that uses **txaio**
 to provide an event-loop agnostic implementation that both the Twisted
 and asyncio concrete ``ApplicationSession`` objects inherit from.
 
 ``autobahn.wamp.protocol.ApplicationSession`` is glued to a particular
 event-loop via ``autobahn.twisted.wamp.ApplicationSession`` which
-takes advantage of ``txaio.tx.LoopMixin`` to provde the
+takes advantage of ``txaio.tx.LoopMixin`` to provide the
 helpers-methods attached to ``self``.
 
 In this manner, code in the generic implementation simply always calls
-``txaio`` methods via ``self.create_future()`` or similar and users of
+**txaio** methods via ``self.create_future()`` or similar and users of
 `Autobahn|Python`_ can choose between asyncio and Twisted as they prefer
 by either ``from autobahn.twisted.wamp import ApplicationSession`` or
 ``from autobahn.asyncio.wamp import ApplicationSession``

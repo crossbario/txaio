@@ -72,12 +72,14 @@ setup(
     ],
     extras_require={
         'dev': [
-            'pytest>=2.6.4',     # MIT
-            'pytest-cov>=1.8.1', # MIT
-            'pep8>=1.6.2',       # MIT
-            'Sphinx>=1.2.3',     # BSD
-            'alabaster>=0.6.3',  # BSD
-            'tox>=2.1.1'         # MIT
+            'pytest>=2.6.4',        # MIT
+            'pytest-cov>=1.8.1',    # MIT
+            'pep8>=1.6.2',          # MIT
+            'sphinx>=1.2.3',        # BSD
+            'pyenchant>=1.6.6',     # LGPL
+            'sphinxcontrib-spelling>=2.1.2',    # BSD
+            'alabaster>=0.6.3',     # BSD
+            'tox>=2.1.1'            # MIT
         ],
         'twisted': [
             'zope.interface>=3.6',  # Zope Public License
