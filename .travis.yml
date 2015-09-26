@@ -37,8 +37,8 @@ script:
 after_success:
   # since we use --parallel-mode to coverage inside Tox we use
   # "coverage combine" so the filename is always ".coverage"
-  - coverage combine
-  - codecov
+  - cd test && coverage combine
+  - cd test && codecov
 
 matrix:
   fast_finish: true
