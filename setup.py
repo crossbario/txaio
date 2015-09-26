@@ -101,5 +101,5 @@ setup(
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Application Frameworks",
     ],
-    keywords='asyncio twisted coroutine',
+    keywords='asyncio twisted trollius coroutine',
 )
