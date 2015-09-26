@@ -35,11 +35,10 @@ script:
   - tox -c tox.ini -e $TOX_ENV
 
 after_success:
-  # since we use --parallel-mode to coverage inside Tox, and "codecov"
-  # only looks for .coverage, we need to combine
+  # since we use --parallel-mode to coverage inside Tox we use
+  # "coverage combine" so the filename is always ".coverage"
   - coverage combine
-  - ls .coverage*
-  - codecov
+  - codecov --file .coverage
 
 matrix:
   fast_finish: true
