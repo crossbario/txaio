@@ -38,6 +38,7 @@ after_success:
   # since we use --parallel-mode to coverage inside Tox, and "codecov"
   # only looks for .coverage, we need to combine
   - coverage combine
+  - ls .coverage*
   - codecov
 
 matrix:
