@@ -1,8 +1,9 @@
 include Makefile
+include README.rst
 include tox.ini
 include LICENSE
-include doc/*.rst
-include doc/conf.py
-include doc/Makefile
+include docs/*.rst
+include docs/conf.py
+include docs/Makefile
 recursive-include examples *.py
 recursive-include test *.py
