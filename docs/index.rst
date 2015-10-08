@@ -6,9 +6,9 @@ txaio
 --------------
 
 **txaio** is a helper library for writing code that runs unmodified on
-both `Twisted <https://twistedmatrix.com/>`__ and `asyncio <https://docs.python.org/3/library/asyncio.html>`__ / `Trollius <http://trollius.readthedocs.org/en/latest/index.html>`__.
+both `Twisted <https://twistedmatrix.com/>`_ and `asyncio <https://docs.python.org/3/library/asyncio.html>`_ / `Trollius <http://trollius.readthedocs.org/en/latest/index.html>`_.
 
-This is like `six <http://pythonhosted.org/six/>`__, but for wrapping
+This is like `six <http://pythonhosted.org/six/>`_, but for wrapping
 over differences between Twisted and asyncio so one can write code
 that runs unmodified on both (aka *source code compatibility*). In
 other words: your *users* can choose if they want asyncio **or** Twisted
