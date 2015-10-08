@@ -57,9 +57,6 @@ Code like the following can then run on *either* system:
     txaio.reject(f1, RuntimeError("it failed"))
 
 
-.. toctree::
-
-
 .. |Version| image:: https://img.shields.io/pypi/v/txaio.svg
    :target: https://pypi.python.org/pypi/txaio
 
