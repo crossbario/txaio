@@ -73,6 +73,8 @@ __all__ = (
     'gather',          # return a Future waiting for several other Futures
     'is_called',       # True if the Future has a result
 
+    'call_later',      # call the callback after the given delay seconds
+
     'failure_message',    # a printable error-message from a IFailedFuture
     'failure_traceback',  # returns a traceback instance from an IFailedFuture
     'failure_format_traceback',  # a string, the formatted traceback
