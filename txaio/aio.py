@@ -254,7 +254,7 @@ def create_future(result=_unspecified, error=_unspecified):
     if result is not _unspecified and error is not _unspecified:
         raise ValueError("Cannot have both result and error.")
 
-    f = Future()
+    f = Future(loop=config.loop)
     if result is not _unspecified:
         resolve(f, result)
     elif error is not _unspecified:
@@ -282,7 +282,7 @@ def as_future(fun, *args, **kwargs):
         if isinstance(res, Future):
             return res
         elif iscoroutine(res):
-            return asyncio.Task(res)
+            return asyncio.Task(res, loop=config.loop)
         else:
             return create_future_success(res)
 

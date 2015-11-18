@@ -24,6 +24,8 @@
 #
 ###############################################################################
 
+from mock import patch
+
 import pytest
 import txaio
 from txaio.testutil import replace_loop
@@ -40,6 +42,45 @@ def test_default_reactor():
 
     from twisted.internet import reactor
     assert txaio.config.loop is reactor
+
+
+def test_explicit_reactor_future():
+    """
+    If we set an event-loop, Futures + Tasks should use it.
+    """
+    pytest.importorskip('asyncio')
+    if txaio.using_twisted:
+        pytest.skip()
+
+    with patch.object(txaio.config, 'loop') as fake_loop:
+        f = txaio.create_future('result')
+        f.add_done_callback(lambda _: None)
+
+        assert len(fake_loop.method_calls) == 2
+        c = fake_loop.method_calls[1]
+        assert c[0] == 'call_soon'
+
+
+def test_explicit_reactor_coroutine():
+    """
+    If we set an event-loop, Futures + Tasks should use it.
+    """
+    pytest.importorskip('asyncio')
+    if txaio.using_twisted:
+        pytest.skip()
+
+    from asyncio import coroutine
+
+    @coroutine
+    def some_coroutine():
+        yield 'nothing'
+
+    with patch.object(txaio.config, 'loop') as fake_loop:
+        txaio.as_future(some_coroutine)
+
+        assert len(fake_loop.method_calls) == 2
+        c = fake_loop.method_calls[1]
+        assert c[0] == 'call_soon'
 
 
 def test_call_later():
