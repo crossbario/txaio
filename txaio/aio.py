@@ -272,7 +272,6 @@ def create_future_error(error=None):
     return f
 
 
-# XXX maybe rename to call()?
 def as_future(fun, *args, **kwargs):
     try:
         res = fun(*args, **kwargs)
@@ -285,6 +284,10 @@ def as_future(fun, *args, **kwargs):
             return asyncio.Task(res)
         else:
             return create_future_success(res)
+
+
+def is_future(obj):
+    return iscoroutine(obj) or isinstance(obj, Future)
 
 
 def call_later(delay, fun, *args, **kwargs):
