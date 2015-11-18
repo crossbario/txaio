@@ -63,7 +63,7 @@ except ImportError:
 config = _Config()
 config.loop = asyncio.get_event_loop()
 _stderr, _stdout = sys.stderr, sys.stdout
-_loggers = []  # weak-references of each logger we've created before start_logging()
+_loggers = []  # weak-ref's of each logger we've created before start_logging()
 _log_level = 'info'  # re-set by start_logging
 
 using_twisted = False
