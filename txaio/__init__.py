@@ -67,6 +67,7 @@ __all__ = (
 
     'create_future',   # create a Future (can be already resolved/errored)
     'as_future',       # call a method, and always return a Future
+    'is_future',       # True for Deferreds in tx and Futures, @coroutines in asyncio
     'reject',          # errback a Future
     'resolve',         # callback a Future
     'add_callbacks',   # add callback and/or errback

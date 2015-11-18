@@ -330,9 +330,12 @@ def create_future_error(error=None):
     return fail(create_failure(error))
 
 
-# maybe rename to call()?
 def as_future(fun, *args, **kwargs):
     return maybeDeferred(fun, *args, **kwargs)
+
+
+def is_future(obj):
+    return isinstance(obj, Deferred)
 
 
 def call_later(delay, fun, *args, **kwargs):
