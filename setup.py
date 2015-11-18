@@ -79,7 +79,8 @@ setup(
             'pyenchant>=1.6.6',                 # LGPL
             'sphinxcontrib-spelling>=2.1.2',    # BSD
             'sphinx_rtd_theme>=0.1.9',          # BSD
-            'tox>=2.1.1'                        # MIT
+            'tox>=2.1.1',                       # MIT
+            'mock==1.3.0',                      # BSD
         ],
         'twisted': [
             'zope.interface>=3.6',              # Zope Public License
