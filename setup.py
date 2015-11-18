@@ -65,7 +65,7 @@ setup(
     long_description=docstr,
     author='Tavendo GmbH',
     author_email='autobahnws@googlegroups.com',
-    url='https://github.com/tavendo/txaio',
+    url='https://github.com/crossbario/txaio',
     platforms=('Any'),
     install_requires=[
         'six'
@@ -93,7 +93,7 @@ setup(
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         "License :: OSI Approved :: MIT License",
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Framework :: Twisted",
         "Intended Audience :: Developers",
