@@ -24,11 +24,10 @@
 #
 ###############################################################################
 
-import pytest
 import txaio
 
 
-def test_is_future_generic():
+def test_is_future_generic(framework):
     '''
     Returning an immediate value from as_future
     '''
@@ -37,14 +36,10 @@ def test_is_future_generic():
     assert txaio.is_future(f)
 
 
-def test_is_future_coroutine():
+def test_is_future_coroutine(framework_aio):
     '''
     Returning an immediate value from as_future
     '''
-    pytest.importorskip('asyncio')
-    if not txaio.using_asyncio:
-        pytest.skip()
-
     from asyncio import coroutine
 
     @coroutine

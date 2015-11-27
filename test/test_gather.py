@@ -29,7 +29,7 @@ import txaio
 from util import await
 
 
-def test_gather_two():
+def test_gather_two(framework_tx):
     '''
     Wait for two Futures.
     '''
@@ -72,7 +72,7 @@ def test_gather_two():
     assert calls[1] == (tuple(), dict())
 
 
-def test_gather_no_consume():
+def test_gather_no_consume(framework_tx):
     '''
     consume_exceptions=False
     '''

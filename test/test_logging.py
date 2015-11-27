@@ -46,8 +46,8 @@ class TestHandler(BytesIO):
         return self.getvalue().split(os.linesep.encode('ascii'))[:-1]
 
 
-@pytest.fixture(scope='session')
-def log_started():
+@pytest.fixture
+def log_started(framework):
     """
     Sets up the logging, which we can only do once per run.
     """
@@ -69,7 +69,7 @@ def handler(log_started):
     return log_started
 
 
-def test_critical(handler):
+def test_critical(handler, framework):
     logger = txaio.make_logger()
 
     # do something a little fancy, with attribute access etc.
@@ -83,7 +83,7 @@ def test_critical(handler):
     assert handler.messages[0].endswith(b"hilarious wombat")
 
 
-def test_info(handler):
+def test_info(handler, framework):
     logger = txaio.make_logger()
 
     # do something a little fancy, with attribute access etc.
@@ -97,13 +97,13 @@ def test_info(handler):
     assert handler.messages[0].endswith(b"hilarious elephant")
 
 
-def test_bad_failures(handler):
+def test_bad_failures(handler, framework):
     # just ensuring this doesn't explode
     txaio.failure_format_traceback("not a failure")
     txaio.failure_message("not a failure")
 
 
-def test_debug_with_object(handler):
+def test_debug_with_object(handler, framework):
     logger = txaio.make_logger()
 
     class Shape(object):
@@ -120,7 +120,7 @@ def test_debug_with_object(handler):
     assert handler.messages[0].endswith(b"bar 4 bamboozle")
 
 
-def test_log_noop_trace(handler):
+def test_log_noop_trace(handler, framework):
     # trace should be a no-op, because we set the level to 'debug' in
     # the fixture
     logger = txaio.make_logger()
@@ -130,14 +130,14 @@ def test_log_noop_trace(handler):
     assert len(handler.messages) == 0
 
 
-def test_double_start(handler):
+def test_double_start(handler, framework):
     try:
         txaio.start_logging()
     except RuntimeError:
         assert False, "shouldn't get exception"
 
 
-def test_invalid_level():
+def test_invalid_level(framework):
     try:
         txaio.start_logging(level='foo')
         assert False, "should get exception"
@@ -145,7 +145,7 @@ def test_invalid_level():
         assert 'Invalid log level' in str(e)
 
 
-def test_class_descriptor(handler):
+def test_class_descriptor(handler, framework):
     class Something(object):
         log = txaio.make_logger()
 
@@ -159,7 +159,7 @@ def test_class_descriptor(handler):
     assert handler.messages[0].endswith(b"doing a thing")
 
 
-def test_class_attribute(handler):
+def test_class_attribute(handler, framework):
     class Something(object):
         def __init__(self):
             self.log = txaio.make_logger()
@@ -174,7 +174,7 @@ def test_class_attribute(handler):
     assert handler.messages[0].endswith(b"doing a thing")
 
 
-def test_log_converter(handler):
+def test_log_converter(handler, framework):
     pytest.importorskip("twisted.logger")
     # this checks that we can convert a plain Twisted Logger calling
     # failure() into a traceback on our observers.
@@ -195,7 +195,7 @@ def test_log_converter(handler):
     assert "Traceback" in output
 
 
-def test_txlog_write_binary(handler):
+def test_txlog_write_binary(handler, framework):
     """
     Writing to a binary stream is supported.
     """
@@ -216,7 +216,7 @@ def test_txlog_write_binary(handler):
     assert b"hi: hello" in output
 
 
-def test_txlog_write_text(handler):
+def test_txlog_write_text(handler, framework_tx):
     """
     Writing to a text stream is supported.
     """
@@ -237,7 +237,7 @@ def test_txlog_write_text(handler):
     assert u"hi: hello" in output
 
 
-def test_aiolog_write_binary(handler):
+def test_aiolog_write_binary(handler, framework_aio):
     """
     Writing to a binary stream is supported.
     """
@@ -257,7 +257,7 @@ def test_aiolog_write_binary(handler):
     assert b"hi: hello" in output
 
 
-def test_aiolog_write_text(handler):
+def test_aiolog_write_text(handler, framework_aio):
     """
     Writing to a text stream is supported.
     """

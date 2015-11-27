@@ -31,20 +31,23 @@ import txaio
 from txaio.testutil import replace_loop
 
 
-def test_default_reactor():
+def test_default_reactor(framework_tx):
     """
     run the code that defaults txaio.config.loop
     """
     pytest.importorskip('twisted')
 
     assert txaio.config.loop is None
-    txaio.call_later(1, lambda: None)
+    try:
+        txaio.call_later(1, lambda: None)
 
-    from twisted.internet import reactor
-    assert txaio.config.loop is reactor
+        from twisted.internet import reactor
+        assert txaio.config.loop is reactor
+    finally:
+        txaio.config.loop = None
 
 
-def test_explicit_reactor_future():
+def test_explicit_reactor_future(framework):
     """
     If we set an event-loop, Futures + Tasks should use it.
     """
@@ -61,7 +64,7 @@ def test_explicit_reactor_future():
         assert c[0] == 'call_soon'
 
 
-def test_explicit_reactor_coroutine():
+def test_explicit_reactor_coroutine(framework):
     """
     If we set an event-loop, Futures + Tasks should use it.
     """
@@ -83,7 +86,7 @@ def test_explicit_reactor_coroutine():
         assert c[0] == 'call_soon'
 
 
-def test_call_later():
+def test_call_later(framework_tx):
     '''
     Wait for two Futures.
     '''

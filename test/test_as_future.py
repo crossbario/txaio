@@ -30,7 +30,7 @@ import txaio
 from util import run_once
 
 
-def test_as_future_immediate():
+def test_as_future_immediate(framework):
     '''
     Returning an immediate value from as_future
     '''
@@ -59,7 +59,7 @@ def test_as_future_immediate():
     assert calls[0] == ((1, 2, 3), dict(key='word'))
 
 
-def test_as_future_immediate_none():
+def test_as_future_immediate_none(framework):
     '''
     Returning None immediately from as_future
     '''
@@ -88,7 +88,7 @@ def test_as_future_immediate_none():
     assert calls[0] == ((1, 2, 3), dict(key='word'))
 
 
-def test_as_future_coroutine():
+def test_as_future_coroutine(framework):
     '''
     call a coroutine (asyncio)
     '''
@@ -127,7 +127,7 @@ def test_as_future_coroutine():
     assert calls[0] == ((1, 2, 3), dict(key='word'))
 
 
-def test_as_future_exception():
+def test_as_future_exception(framework):
     '''
     Raises an exception from as_future
     '''
@@ -157,7 +157,7 @@ def test_as_future_exception():
     assert calls[0] == ((1, 2, 3), dict(key='word'))
 
 
-def test_as_future_recursive():
+def test_as_future_recursive(framework):
     '''
     Returns another Future from as_future
     '''
