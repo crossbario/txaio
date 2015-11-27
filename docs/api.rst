@@ -9,17 +9,16 @@ framework is in use, and two helpers to enforce one or the other framework.
 Explicitly Selecting a Framework
 --------------------------------
 
-You can simply ``import txaio`` to get an auto-selected framework
-(Twisted if available, else asyncio/trollius). If you want to
-guarantee one or the other, you can do this:
+Until you explicitly select a framework, all txaio API methods just
+throw a usage error. So, you must call ``.use_twisted()`` or
+``.use_asyncio()`` as appropriate. These will fail with
+``ImportError`` if you don't have the correct dependencies.
 
 .. sourcecode:: python
 
-    import txaio               # automatically select framework
+    import txaio
     txaio.use_twisted()
     txaio.use_asyncio()
-
-For most cases, a simple ``import txaio`` will be sufficient.
 
 
 Set an Event Loop / Reactor
@@ -64,12 +63,12 @@ txaio module
 
 .. py:function:: use_asyncio()
 
-    Force the use of ``asyncio``.
+    Select ``asyncio`` framework (uses trollius/tulip on Pythons that lack asyncio).
 
 
 .. py:function:: use_twisted()
 
-    Force the use of Twisted.
+    Select the Twisted framework (will fail if Twisted is not installed).
 
 
 .. py:function:: create_future(value=None, error=None)

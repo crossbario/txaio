@@ -18,13 +18,9 @@ Overview by Example
 -------------------
 
 The simplest way to use **txaio** is to ``import txaio`` and use the
-helper functions directly. Using the library in this manner will
-automatically select the event-loop to use: Twisted if it's available,
-then asyncio and finally Trollius if those fail.
-
-If you wish to be explicit about the event-loop you want, call
-:func:`txaio.use_twisted` or :func:`txaio.use_asyncio` which will fail
-(with an ``ImportError``) if that implementation isn't available.
+helper functions directly. You must select the framework you wish to
+use by calling ``txaio.use_twisted()`` or ``txaio.use_asyncio()``
+(which means asyncio, or trollius/tuplip if asyncio import fails).
 
 Note that to use this library successfully you *shouldn't* call
 methods on futures -- use *only* **txaio** methods to operate on them.
@@ -32,6 +28,7 @@ methods on futures -- use *only* **txaio** methods to operate on them.
 .. sourcecode:: python
 
     import txaio
+    txaio.use_twisted()  # or .use_asyncio()
 
     def cb(value):
         print("Callback:", value)

@@ -48,6 +48,9 @@ Code like the following can then run on *either* system:
 
 .. sourcecode:: python
 
+    import txaio
+    txaio.use_twisted()  # or .use_asyncio()
+
     f0 = txaio.create_future()
     f1 = txaio.as_future(some_func, 1, 2, key='word')
     txaio.add_callbacks(f0, callback, errback)
