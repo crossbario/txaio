@@ -1,7 +1,7 @@
 import txaio
 
 
-def test_illegal_args():
+def test_illegal_args(framework):
     try:
         txaio.create_future(result=1, error=RuntimeError("foo"))
         assert False
@@ -9,7 +9,7 @@ def test_illegal_args():
         pass
 
 
-def test_create_result():
+def test_create_result(framework):
     f = txaio.create_future(result='foo')
     if txaio.using_twisted:
         assert f.called
@@ -17,7 +17,7 @@ def test_create_result():
         assert f.done()
 
 
-def test_create_error():
+def test_create_error(framework):
     f = txaio.create_future(error=RuntimeError("test"))
     if txaio.using_twisted:
         assert f.called

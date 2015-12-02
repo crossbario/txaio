@@ -29,7 +29,7 @@ import txaio
 from util import run_once
 
 
-def test_default_resolve():
+def test_default_resolve(framework):
     f = txaio.create_future()
     results = []
 
@@ -44,7 +44,7 @@ def test_default_resolve():
     assert results[0] is None
 
 
-def test_callback():
+def test_callback(framework):
     f = txaio.create_future()
     results = []
 
@@ -59,7 +59,7 @@ def test_callback():
     assert results[0] == "it worked"
 
 
-def test_chained_callback():
+def test_chained_callback(framework):
     """
     Chain two callbacks where the first one alters the value.
     """
@@ -84,7 +84,7 @@ def test_chained_callback():
     assert calls[1] == "the deal pray I do not alter it futher"
 
 
-def test_immediate_result():
+def test_immediate_result(framework):
     f = txaio.create_future_success("it worked")
     results = []
 

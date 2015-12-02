@@ -31,20 +31,23 @@ import txaio
 from txaio.testutil import replace_loop
 
 
-def test_default_reactor():
+def test_default_reactor(framework_tx):
     """
     run the code that defaults txaio.config.loop
     """
     pytest.importorskip('twisted')
 
     assert txaio.config.loop is None
-    txaio.call_later(1, lambda: None)
+    try:
+        txaio.call_later(1, lambda: None)
 
-    from twisted.internet import reactor
-    assert txaio.config.loop is reactor
+        from twisted.internet import reactor
+        assert txaio.config.loop is reactor
+    finally:
+        txaio.config.loop = None
 
 
-def test_explicit_reactor_future():
+def test_explicit_reactor_future(framework):
     """
     If we set an event-loop, Futures + Tasks should use it.
     """
@@ -61,7 +64,7 @@ def test_explicit_reactor_future():
         assert c[0] == 'call_soon'
 
 
-def test_explicit_reactor_coroutine():
+def test_explicit_reactor_coroutine(framework):
     """
     If we set an event-loop, Futures + Tasks should use it.
     """
@@ -83,31 +86,45 @@ def test_explicit_reactor_coroutine():
         assert c[0] == 'call_soon'
 
 
-def test_call_later():
+def test_call_later_tx(framework_tx):
     '''
     Wait for two Futures.
     '''
 
-    # set up a test reactor or event-loop depending on asyncio or
-    # Twisted
-    twisted = False
-    try:
-        from twisted.internet.task import Clock
-        new_loop = Clock()
-        twisted = True
-    except ImportError:
-        # Trollius doesn't come with this, so won't work on py2
-        pytest.importorskip('asyncio.test_utils')
+    from twisted.internet.task import Clock
+    new_loop = Clock()
+    calls = []
+    with replace_loop(new_loop) as fake_loop:
+        def foo(*args, **kw):
+            calls.append((args, kw))
 
-        def time_gen():
-            when = yield
-            assert when == 1
-            # even though we only do one call, I guess TestLoop needs
-            # a "trailing" yield? "or something"
-            when = yield 0
-            print("Hmmm", when)
-        from asyncio.test_utils import TestLoop
-        new_loop = TestLoop(time_gen)
+        delay = txaio.call_later(1, foo, 5, 6, 7, foo="bar")
+        assert len(calls) == 0
+        assert hasattr(delay, 'cancel')
+        fake_loop.advance(2)
+
+        assert len(calls) == 1
+        assert calls[0][0] == (5, 6, 7)
+        assert calls[0][1] == dict(foo="bar")
+
+
+def test_call_later_aio(framework_aio):
+    '''
+    Wait for two Futures.
+    '''
+
+    # Trollius doesn't come with this, so won't work on py2
+    pytest.importorskip('asyncio.test_utils')
+
+    def time_gen():
+        when = yield
+        assert when == 1
+        # even though we only do one call, I guess TestLoop needs
+        # a "trailing" yield? "or something"
+        when = yield 0
+        print("Hmmm", when)
+    from asyncio.test_utils import TestLoop
+    new_loop = TestLoop(time_gen)
 
     calls = []
     with replace_loop(new_loop) as fake_loop:
@@ -117,13 +134,8 @@ def test_call_later():
         delay = txaio.call_later(1, foo, 5, 6, 7, foo="bar")
         assert len(calls) == 0
         assert hasattr(delay, 'cancel')
-        if twisted:
-            fake_loop.advance(2)
-        else:
-            # XXX maybe we monkey-patch a ".advance()" onto asyncio
-            # loops that does both of these?
-            fake_loop.advance_time(2)
-            fake_loop._run_once()
+        fake_loop.advance_time(2)
+        fake_loop._run_once()
 
         assert len(calls) == 1
         assert calls[0][0] == (5, 6, 7)

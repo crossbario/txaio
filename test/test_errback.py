@@ -29,7 +29,7 @@ import txaio
 from util import run_once
 
 
-def test_errback():
+def test_errback(framework):
     f = txaio.create_future()
     exception = RuntimeError("it failed")
     errors = []
@@ -58,7 +58,7 @@ def test_errback():
     assert 'it failed' in str(errors[0])
 
 
-def test_errback_without_except():
+def test_errback_without_except(framework):
     '''
     Create a failure without an except block
     '''
@@ -84,7 +84,7 @@ def test_errback_without_except():
     assert 'it failed' in str(errors[0])
 
 
-def test_errback_plain_exception():
+def test_errback_plain_exception(framework):
     '''
     reject a future with just an Exception
     '''
@@ -109,7 +109,7 @@ def test_errback_plain_exception():
     assert 'it failed' in str(errors[0])
 
 
-def test_errback_illegal_args():
+def test_errback_illegal_args(framework):
     '''
     non-Exception/Failures should be rejected
     '''
@@ -121,7 +121,7 @@ def test_errback_illegal_args():
         pass
 
 
-def test_errback_reject_no_args():
+def test_errback_reject_no_args(framework):
     """
     txaio.reject() with no args
     """
@@ -151,7 +151,7 @@ def test_errback_reject_no_args():
     assert 'it failed' in str(errors[0])
 
 
-def test_immediate_failure():
+def test_immediate_failure(framework):
     exception = RuntimeError("it failed")
     try:
         raise exception

@@ -24,33 +24,47 @@
 #
 ###############################################################################
 
-import pytest
-import txaio
+"""
+This provides a version of the API which only throws exceptions;
+this is the default so that you have to pick asyncio or twisted
+explicitly by calling .use_twisted() or .use_asyncio()
+"""
+
+from __future__ import absolute_import, division, print_function
+from txaio import _Config
+
+using_twisted = False
+using_asyncio = False
+config = _Config()
 
 
-def test_is_future_generic(framework):
-    '''
-    Returning an immediate value from as_future
-    '''
-    f = txaio.create_future('result')
+def _throw_usage_error(*args, **kw):
+    raise RuntimeError(
+        "To use txaio, you must first select a framework "
+        "with .use_twisted() or .use_txaio()"
+    )
 
-    assert txaio.is_future(f)
+# all the txaio API methods just raise the error
+create_future = _throw_usage_error
+create_future_success = _throw_usage_error
+create_future_error = _throw_usage_error
+create_failure = _throw_usage_error
+as_future = _throw_usage_error
+is_future = _throw_usage_error
+reject = _throw_usage_error
+resolve = _throw_usage_error
+add_callbacks = _throw_usage_error
+gather = _throw_usage_error
+is_called = _throw_usage_error
 
+call_later = _throw_usage_error
 
-def test_is_future_coroutine(framework_aio):
-    '''
-    Returning an immediate value from as_future
-    '''
-    pytest.importorskip('asyncio')  # 'aio' might be using trollius
-    from asyncio import coroutine
+failure_message = _throw_usage_error
+failure_traceback = _throw_usage_error
+failure_format_traceback = _throw_usage_error
 
-    @coroutine
-    def some_coroutine():
-        yield 'answer'
-    obj = some_coroutine()
-    assert txaio.is_future(obj)
+make_logger = _throw_usage_error
+start_logging = _throw_usage_error
 
-
-def test_is_called(framework):
-    f = txaio.create_future_success(None)
-    assert txaio.is_called(f)
+IFailedFuture = _throw_usage_error
+ILogger = _throw_usage_error

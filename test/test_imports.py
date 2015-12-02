@@ -1,7 +1,7 @@
 import pytest
 
 
-def test_use_twisted():
+def test_use_twisted(framework_tx):
     pytest.importorskip('twisted')
 
     import txaio
@@ -10,7 +10,7 @@ def test_use_twisted():
     assert not txaio.using_asyncio
 
 
-def test_use_twisted_no_twisted():
+def test_use_twisted_no_twisted(framework_uninitialized):
     # make sure we DO NOT have Twisted installed
     try:
         import twisted  # noqa
@@ -26,20 +26,12 @@ def test_use_twisted_no_twisted():
         pass
 
     assert not txaio.using_twisted
-    assert txaio.using_asyncio
 
 
-def test_use_asyncio():
+def test_use_asyncio(framework_aio):
     pytest.importorskip('asyncio')
 
-    # note: in the py34-twisted environments we have both, so make
-    # sure we "put it back"...
     import txaio
-    tx = txaio.using_twisted
-    try:
-        txaio.use_asyncio()
-        assert txaio.using_asyncio
-        assert not txaio.using_twisted
-    finally:
-        if tx:
-            txaio.use_twisted()
+    txaio.use_asyncio()
+    assert txaio.using_asyncio
+    assert not txaio.using_twisted
