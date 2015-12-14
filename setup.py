@@ -40,13 +40,21 @@ with open('txaio/_version.py') as f:
 with open('README.rst') as f:
     docstr = f.read()
 
+
+# Twisted dependencies
+#
+extras_require_twisted = [
+    'zope.interface>=3.6',              # Zope Public License
+    'twisted>=12.1.0',                  # MIT
+]
+
 # asyncio dependencies
 #
 if PY3:
     if PY33:
         # "Tulip"
         extras_require_asyncio = [
-            "asyncio>=3.4.3"                    # Apache 2.0
+            "asyncio>=3.4.3"            # Apache 2.0
         ]
     else:
         # Python 3.4+ has asyncio builtin
@@ -54,9 +62,28 @@ if PY3:
 else:
     # backport of asyncio for Python 2
     extras_require_asyncio = [
-        "trollius>=2.0",                        # Apache 2.0
-        "futures>=3.0.3"                        # BSD license
+        "trollius>=2.0",                # Apache 2.0
+        "futures>=3.0.3"                # BSD license
     ]
+
+# development dependencies
+#
+extras_require_dev = [
+    'pytest>=2.6.4',                    # MIT
+    'pytest-cov>=1.8.1',                # MIT
+    'pep8>=1.6.2',                      # MIT
+    'sphinx>=1.2.3',                    # BSD
+    'pyenchant>=1.6.6',                 # LGPL
+    'sphinxcontrib-spelling>=2.1.2',    # BSD
+    'sphinx_rtd_theme>=0.1.9',          # BSD
+    'tox>=2.1.1',                       # MIT
+    'mock==1.3.0',                      # BSD
+]
+
+# everything
+#
+extras_require_all = extras_require_twisted + extras_require_asyncio
+
 
 setup(
     name='txaio',
@@ -71,22 +98,10 @@ setup(
         'six'
     ],
     extras_require={
-        'dev': [
-            'pytest>=2.6.4',                    # MIT
-            'pytest-cov>=1.8.1',                # MIT
-            'pep8>=1.6.2',                      # MIT
-            'sphinx>=1.2.3',                    # BSD
-            'pyenchant>=1.6.6',                 # LGPL
-            'sphinxcontrib-spelling>=2.1.2',    # BSD
-            'sphinx_rtd_theme>=0.1.9',          # BSD
-            'tox>=2.1.1',                       # MIT
-            'mock==1.3.0',                      # BSD
-        ],
-        'twisted': [
-            'zope.interface>=3.6',              # Zope Public License
-            'twisted>=12.1.0',                  # MIT
-        ],
-        'asyncio': extras_require_asyncio
+        'twisted': extras_require_twisted,
+        'asyncio': extras_require_asyncio,
+        'dev': extras_require_dev,
+        'all': extras_require_all
     },
     packages=['txaio'],
     zip_safe=False,

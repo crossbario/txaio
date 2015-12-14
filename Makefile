@@ -14,7 +14,7 @@ coverage:
 	cd test && coverage report --show-missing
 
 install:
-	pip install --upgrade -e .[twisted,dev]
+	pip install --upgrade -e .[all,dev]
 
 docs:
 	cd docs && make html
