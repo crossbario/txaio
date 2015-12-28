@@ -41,7 +41,7 @@ config = _Config()
 def _throw_usage_error(*args, **kw):
     raise RuntimeError(
         "To use txaio, you must first select a framework "
-        "with .use_twisted() or .use_txaio()"
+        "with .use_twisted() or .use_asyncio()"
     )
 
 # all the txaio API methods just raise the error
