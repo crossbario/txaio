@@ -102,16 +102,16 @@ class FailedFuture(IFailedFuture):
 
 # API methods for txaio, exported via the top-level __init__.py
 
-def _log(logger, level, msg, **kwargs):
+def _log(logger, level, log_format=u'', **kwargs):
     kwargs['log_time'] = time.time()
     kwargs['log_level'] = level
-    kwargs['log_message'] = msg
+    kwargs['log_format'] = log_format
     # NOTE: turning kwargs into a single "argument which
     # is a dict" on purpose, since a LogRecord only keeps
     # args, not kwargs.
     if level == 'trace':
         level = 'debug'
-    getattr(logger._logger, level)(msg, kwargs)
+    getattr(logger._logger, level)(log_format, kwargs)
 
 
 def _no_op(*args, **kw):
@@ -142,7 +142,9 @@ class _TxaioFileHandler(logging.Handler, object):
         self._encode = guess_stream_needs_encoding(fileobj)
 
     def emit(self, record):
-        fmt = record.args['log_message']
+        fmt = record.args.get('log_format', None)
+        if fmt is None:
+            fmt = record.args.get('log_message', u'')
         dt = datetime.fromtimestamp(record.args['log_time'])
         msg = u'{0} {1}{2}'.format(
             dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
