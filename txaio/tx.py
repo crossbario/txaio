@@ -82,11 +82,11 @@ except ImportError:
     class ILogObserver(Interface):
         pass
 
-    def formatTime(t):
+    def formatTime(t):  # noqa
         dt = datetime.fromtimestamp(t)
         return six.u(dt.strftime("%Y-%m-%dT%H:%M:%S%z"))
 
-    def formatEvent(event):
+    def formatEvent(event):  # noqa
         msg = event['log_format']
         return msg.format(**event)
 
