@@ -134,5 +134,5 @@ def _use_framework(module):
 # use the "un-framework", which is neither asyncio nor twisted and
 # just throws an exception -- this forces you to call .use_twisted()
 # or .use_asyncio() to use the library.
-from txaio import _unframework
+from txaio import _unframework  # noqa
 _use_framework(_unframework)

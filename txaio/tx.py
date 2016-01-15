@@ -109,11 +109,11 @@ except ImportError:
             for name in log_levels:
                 setattr(self, name, partial(self._do_log, name))
 
-        def _do_log(self, level, message, **kwargs):
+        def _do_log(self, level, log_format='', **kwargs):
             global _observer
             kwargs['log_time'] = time.time()
             kwargs['log_level'] = level
-            kwargs['log_format'] = message
+            kwargs['log_format'] = log_format
             kwargs['log_namespace'] = self.namespace
             # NOTE: the other loggers are ignoring any log messages
             # before start_logging() as well
