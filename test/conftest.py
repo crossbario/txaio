@@ -1,6 +1,6 @@
-pytest_plugins = ""
-
 import pytest
+
+pytest_plugins = ""
 
 # here's a little voodoo -- any generic tests depend on this 'framework'
 # fixture, which (sneakily using internal-only APIs) ensures that each
