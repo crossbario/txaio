@@ -50,9 +50,10 @@ class ILogger(object):
 
     All the log methods have the same signature, they just differ in
     what "log level" they represent to the handlers/emitters. The
-    ``message`` argument is a format string using PEP3101-style
-    references to things from the ``kwargs``. Note that there are also
-    the following keys added to the ``kwargs``: log_time and log_level.
+    ``message`` argument is a format string using `PEP3101
+    <https://www.python.org/dev/peps/pep-3101/>`_-style references to
+    things from the ``kwargs``. Note that there are also the following
+    keys added to the ``kwargs``: ``log_time`` and ``log_level``.
 
     For example::
 

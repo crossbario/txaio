@@ -11,4 +11,5 @@ Contents
 
    index
    overview
+   programming-guide
    api
