@@ -156,6 +156,28 @@ txaio module
 
     :raises ValueError: if both callback and errback are None
 
+.. py:function:: failure_message(fail)
+
+    Takes an :class:`txaio.IFailedFuture` instance and returns a
+    formatted message suitable to show to a user. This will be a
+    ``str`` with no newlines for the form: ``{exception_name}:
+    {error_message}`` where ``error_message`` is the result of running
+    ``str()`` on the exception instance (under asyncio) or the result
+    of ``.getErrorMessage()`` on the Failure under Twisted.
+
+
+.. py:function:: failure_traceback(fail)
+
+    Take an :class:`txaio.IFailedFuture` instance and returns the
+    Python ``traceback`` instance associated with the failure.
+
+
+.. py:function:: failure_format_traceback(fail):
+
+    Take an :class:`txaio.IFailedFuture` instance and returns a
+    formatted string showing the traceback. Typically, this will have
+    many newlines in it and look like a "normal" Python traceback.
+
 
 .. py:function:: call_later(delay, func, *args, **kwargs)
 
