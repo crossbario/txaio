@@ -72,3 +72,16 @@ When you're using libraries that are already doing logging, but not using the ``
     txaio.start_logging(level='debug')
     existing_code()
 
+If you're using ``asyncio`` (or just built-in Python logging), it could look like this::
+
+    import txaio
+    txaio.use_asyncio()
+
+
+    def existing_code():
+        import logging
+        log = logging.getLogger("roy")
+        log.info("Python stdlib message: %s", "txaio was here")
+
+    txaio.start_logging(level='debug')
+    existing_code()
