@@ -133,8 +133,9 @@ def _no_op(*args, **kwargs):
 class _TxLogger(Logger):
     def __init__(self, *args, **kw):
         super(_TxLogger, self).__init__(*args, **kw)
-        self._set_log_level(_log_level)
-        if _loggers is not None:
+        if _loggers is None:
+            self._set_log_level(_log_level)
+        else:
             _loggers.append(weakref.ref(self))
 
     def __get__(self, oself, type=None):
