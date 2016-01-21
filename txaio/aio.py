@@ -142,13 +142,19 @@ class _TxaioFileHandler(logging.Handler, object):
         self._encode = guess_stream_needs_encoding(fileobj)
 
     def emit(self, record):
-        fmt = record.args.get('log_format', None)
-        if fmt is None:
-            fmt = record.args.get('log_message', u'')
-        dt = datetime.fromtimestamp(record.args['log_time'])
+        if isinstance(record.args, dict):
+            fmt = record.args.get(
+                'log_format',
+                record.args.get('log_message', u'')
+            )
+            message = fmt.format(**record.args)
+            dt = datetime.fromtimestamp(record.args.get('log_time', 0))
+        else:
+            message = record.getMessage()
+            dt = datetime.fromtimestamp(record.created)
         msg = u'{0} {1}{2}'.format(
             dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
-            fmt.format(**record.args),
+            message,
             os.linesep
         )
         if self._encode:
