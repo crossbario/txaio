@@ -210,7 +210,17 @@ txaio module
     asyncio.
 
 
-.. autoclass:: txaio.IFailedFuture
+.. py:function:: make_logger()
+
+    Creates and returns an instance of :class:`ILogger`. This can pick
+    up context from where it's instantiated (e.g. the containing class
+    or module) so the best way to use this is to create a logger for
+    each class that produces logs; see the example in
+    :class:`ILogger` 's documentation
+
+
+.. autoclass:: txaio.interfaces.ILogger
+.. autoclass:: txaio.interfaces.IFailedFuture
 
 
 .. _Autobahn|Python: http://autobahn.ws/python/
