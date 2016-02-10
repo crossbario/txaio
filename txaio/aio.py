@@ -111,7 +111,8 @@ def _log(logger, level, log_format=u'', **kwargs):
     # args, not kwargs.
     if level == 'trace':
         level = 'debug'
-    getattr(logger._logger, level)(log_format, kwargs)
+    msg = log_format.format(**kwargs)
+    getattr(logger._logger, level)(msg)
 
 
 def _no_op(*args, **kw):
@@ -128,7 +129,7 @@ class _TxaioLogWrapper(ILogger):
         # this binds either _log or _no_op above to this instance,
         # depending on the desired level.
         for (idx, name) in enumerate(log_levels):
-            if idx < target_level:
+            if idx <= target_level:
                 log_method = functools.partial(_log, self, name)
             else:
                 log_method = _no_op
