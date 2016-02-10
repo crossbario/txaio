@@ -85,3 +85,11 @@ If you're using ``asyncio`` (or just built-in Python logging), it could look lik
 
     txaio.start_logging(level='debug')
     existing_code()
+
+
+Starting Logging Yourself
+-------------------------
+
+If you are already starting your favourite logging system yourself (be that Twiste'd logger via ``globalLogBeginner`` or Python stdlib logging), any library using txaio's logging should play nicely with it. **Not** ever calling :func:`txaio.start_logging` has a slight drawback, however: as part of setting up logging, we re-bind all the "unused" logging methods to do-nothing. For example, if the log level is set to ``'info'`` than the ``.debug`` method on all txaio-created logger instances becomes a no-op.
+
+For fully-worked examples of this, look in ``examples/log_interop_stdlib.py`` and ``examples/log_interop_twisted.py``.
