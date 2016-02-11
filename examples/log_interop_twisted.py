@@ -25,33 +25,35 @@
 ###############################################################################
 
 from __future__ import print_function
+import sys
 import txaio
+
 txaio.use_twisted()
 
-def cb(value):
-    print("Callback:", value)
-    return value  # should always return input arg
+from twisted import logger
+from twisted.logger import ILogObserver
+from zope.interface import provider
 
-def eb(fail):
-    # fail will implement txaio.IFailedPromise
-    print("Errback:", fail)
-    # fail.printTraceback()
-    return fail  # should always return input arg
+# some library you use is using txaio logging stuff
+class Library(object):
+    log = txaio.make_logger()
 
-f0 = txaio.create_future()
-f1 = txaio.create_future()
-txaio.add_callbacks(f0, cb, eb)
-txaio.add_callbacks(f1, cb, eb)
+    def something(self):
+        self.log.info("info log from library foo={foo}", foo='bar')
+        self.log.debug("debug information")
 
-# ...
+# lets say you start your own observer
+@provider(ILogObserver)
+class Observer(object):
+    def __init__(self):
+        self._out = sys.stdout
+    def __call__(self, event):
+        self._out.write("Observe: {}\n".format(event))
 
-txaio.reject(f0, RuntimeError("it failed"))
-# or can just "txaio.reject(f0)" if inside an except: block
-txaio.resolve(f1, "The answer is: 42")
-
-if txaio.using_asyncio:
-    # for twisted, we don't need to enter the event-loop for this
-    # simple example (since all results are already available), but
-    # you'd simply use reactor.run()/.stop() or task.react() as normal
-    import asyncio
-    asyncio.get_event_loop().run_until_complete(f1)
+lib = Library()
+print("logging not started")
+logger.globalLogBeginner.beginLoggingTo([Observer()])
+print("logging started; calling library")
+lib.something()
+print("finished library call")
+# should see "Observe: " ...

@@ -25,33 +25,30 @@
 ###############################################################################
 
 from __future__ import print_function
+import sys
+import logging
+
 import txaio
-txaio.use_twisted()
+txaio.use_asyncio()
 
-def cb(value):
-    print("Callback:", value)
-    return value  # should always return input arg
 
-def eb(fail):
-    # fail will implement txaio.IFailedPromise
-    print("Errback:", fail)
-    # fail.printTraceback()
-    return fail  # should always return input arg
+# some library you use is using txaio logging stuff
+class Library(object):
+    log = txaio.make_logger()
 
-f0 = txaio.create_future()
-f1 = txaio.create_future()
-txaio.add_callbacks(f0, cb, eb)
-txaio.add_callbacks(f1, cb, eb)
+    def something(self):
+        self.log.info("info log from library foo={foo}", foo='bar')
+        self.log.debug("debug information")
+        self.log.error("An error in the library num={num}", num=42)
 
-# ...
+lib = Library()
+print("logging not started")
 
-txaio.reject(f0, RuntimeError("it failed"))
-# or can just "txaio.reject(f0)" if inside an except: block
-txaio.resolve(f1, "The answer is: 42")
-
-if txaio.using_asyncio:
-    # for twisted, we don't need to enter the event-loop for this
-    # simple example (since all results are already available), but
-    # you'd simply use reactor.run()/.stop() or task.react() as normal
-    import asyncio
-    asyncio.get_event_loop().run_until_complete(f1)
+# you start you own logging; this is about the simplest way to.
+lg = logging.getLogger()
+lg.setLevel(logging.DEBUG)
+logging.basicConfig()
+lg.info('info-level log from my program: %d', 42)
+print("logging started; calling library")
+lib.something()
+print("finished library call")
