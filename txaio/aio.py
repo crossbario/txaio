@@ -54,12 +54,6 @@ except ImportError:
     from trollius import iscoroutine
     from trollius import Future
 
-    class PrintHandler(logging.Handler):
-        def emit(self, record):
-            print(record)
-    logging.getLogger("trollius").addHandler(PrintHandler())
-
-
 config = _Config()
 config.loop = asyncio.get_event_loop()
 _stderr, _stdout = sys.stderr, sys.stdout
