@@ -57,7 +57,7 @@ _stderr, _stdout = sys.stderr, sys.stdout
 # then we call _set_log_level on each instance. After that,
 # _TxLogger's ctor uses _log_level directly.
 _observer = None     # for Twisted legacy logging support; see below
-_loggers = []        # list of weak-references of each logger we've created
+_loggers = weakref.WeakKeyDictionary()  # weak-references of each logger we've created
 _log_level = 'info'  # global log level; possibly changed in start_logging()
 
 IFailedFuture.register(Failure)
@@ -136,7 +136,7 @@ class _TxLogger(Logger):
         if _loggers is None:
             self._set_log_level(_log_level)
         else:
-            _loggers.append(weakref.ref(self))
+            _loggers[self] = True
 
     def __get__(self, oself, type=None):
         # this causes the Logger to lie about the "source=", but
@@ -158,7 +158,7 @@ class _TxLogger(Logger):
     def trace(self, *args, **kw):
         # there is no "trace" level in Twisted -- but this whole
         # method will be no-op'd unless we are at the 'trace' level.
-        self.debug(*args, **kw)
+        self.debug(*args, txaio_trace=True, **kw)
 
 
 def make_logger():
@@ -239,7 +239,7 @@ class _LogObserver(object):
                 self._file.write(msg)
 
 
-def start_logging(out=None, level='info'):
+def start_logging(out=_stdout, level='info'):
     """
     Start logging to the file-like object in ``out``. By default, this
     is stdout.
@@ -256,21 +256,20 @@ def start_logging(out=None, level='info'):
     if _loggers is None:
         return
 
-    if out is None:
-        out = _stdout
-
     if _loggers is not None:
-        for ref in _loggers:
-            instance = ref()
-            if instance:
-                instance._set_log_level(level)
+        for ref in _loggers.keys():
+            ref._set_log_level(level)
     _loggers = None
     _log_level = level
+    _observers = []
 
-    _observer = _LogObserver(out)
-    if _NEW_LOGGER:
-        globalLogBeginner.beginLoggingTo([_observer])
+    if NEW_LOGGER:
+        if out:
+            _observers.append(_LogObserver(out))
+
+        globalLogBeginner.beginLoggingTo(_observers)
     else:
+        assert out, "out needs to be given a value if using Twisteds before 15.2"
         from twisted.python import log
         log.startLogging(out)
 
@@ -424,3 +423,17 @@ def _get_loop():
         from twisted.internet import reactor
         config.loop = reactor
     return config.loop
+
+
+def set_global_log_level(level):
+    """
+    Set the global log level on all loggers instantiated by txaio.
+    """
+    for item in _loggers.keys():
+        item._set_log_level(level)
+    global _log_level
+    _log_level = level
+
+
+def get_global_log_level():
+    return _log_level
