@@ -46,6 +46,9 @@ class TestHandler(BytesIO):
         return self.getvalue().split(os.linesep.encode('ascii'))[:-1]
 
 
+_handler = TestHandler()
+
+
 @pytest.fixture
 def log_started(framework):
     """
@@ -54,9 +57,7 @@ def log_started(framework):
     early_log = txaio.make_logger()
     early_log.info("early log")
 
-    handler = TestHandler()
-    txaio.start_logging(out=handler, level='debug')
-    return handler
+    txaio.start_logging(out=_handler, level='debug')
 
 
 @pytest.fixture(scope='function')
@@ -64,9 +65,9 @@ def handler(log_started):
     """
     Resets the global TestHandler instance for each test.
     """
-    log_started.truncate(0)
-    log_started.seek(0)
-    return log_started
+    _handler.truncate(0)
+    _handler.seek(0)
+    return _handler
 
 
 def test_critical(handler, framework):
