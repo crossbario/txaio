@@ -31,6 +31,8 @@ import sys
 import weakref
 import inspect
 
+from functools import partial
+
 from twisted.python.failure import Failure
 from twisted.internet.defer import maybeDeferred, Deferred, DeferredList
 from twisted.internet.defer import succeed, fail
@@ -52,10 +54,10 @@ _stderr, _stdout = sys.stderr, sys.stdout
 
 # some book-keeping variables here. _observer is used as a global by
 # the "backwards compatible" (Twisted < 15) loggers. The _loggers object
-# is a weak-ref set; we add _TxLogger instances to this *until* such
+# is a weak-ref set; we add Logger instances to this *until* such
 # time as start_logging is called (with the desired log-level) and
 # then we call _set_log_level on each instance. After that,
-# _TxLogger's ctor uses _log_level directly.
+# Logger's ctor uses _log_level directly.
 _observer = None     # for Twisted legacy logging support; see below
 _loggers = weakref.WeakSet()  # weak-references of each logger we've created
 _log_level = 'info'  # global log level; possibly changed in start_logging()
@@ -66,14 +68,13 @@ IFailedFuture.register(Failure)
 _NEW_LOGGER = False
 try:
     # Twisted 15+
-    from twisted.logger import Logger, formatEvent, ILogObserver
+    from twisted.logger import Logger as _Logger, formatEvent, ILogObserver
     from twisted.logger import globalLogBeginner, formatTime, LogLevel
-    ILogger.register(Logger)
+    ILogger.register(_Logger)
     _NEW_LOGGER = True
 
 except ImportError:
     # we still support Twisted 12 and 13, which doesn't have new-logger
-    from functools import partial
     from zope.interface import Interface
     from datetime import datetime
     import time
@@ -99,10 +100,10 @@ except ImportError:
         debug = 'debug'
         trace = 'trace'
 
-    class Logger(ILogger):
+    class _Logger(ILogger):
         def __init__(self, **kwargs):
             self.namespace = kwargs.get('namespace', None)
-            # this class will get overridden by _TxLogger below, so we
+            # this class will get overridden by Logger below, so we
             # bind *every* level here; set_log_level will un-bind
             # some.
             for name in log_levels:
@@ -129,11 +130,22 @@ def _no_op(*args, **kwargs):
 # descriptor.  So, we override __get__ to just return ``self`` which
 # means ``log_source`` will be wrong, but we don't document that as a
 # key that you can depend on anyway :/
-class _TxLogger(Logger):
-    def __init__(self, *args, **kw):
-        super(_TxLogger, self).__init__(*args, **kw)
-        self._set_log_level(_log_level)
+class Logger(object):
+
+    def __init__(self, level=None, logger=None, namespace=None, observer=None):
+
+        assert logger, "Should not be instantiated directly."
+
+        self._logger = logger(observer=observer, namespace=namespace)
+        self._log_level_set_explicitly = False
+
+        if level:
+            self.set_log_level(level)
+        else:
+            self._set_log_level(_log_level)
+
         _loggers.add(self)
+
 
     def __get__(self, oself, type=None):
         # this causes the Logger to lie about the "source=", but
@@ -143,27 +155,61 @@ class _TxLogger(Logger):
         #     log = make_logger
         return self
 
+
+    def _log(self, level, *args, **kwargs):
+        self._logger.emit(level, *args, **kwargs)
+
+
+    def set_log_level(self, level, keep=True):
+        """
+        Set the log level. If keep is True, then it will not change along with
+        global log changes.
+        """
+        self._set_log_level(level)
+        self._log_level_set_explicitly = keep
+
+
     def _set_log_level(self, level):
         # up to the desired level, we don't do anything, as we're a
         # "real" Twisted new-logger; for methods *after* the desired
         # level, we bind to the no_op method
         desired_index = log_levels.index(level)
-        for (idx, name) in enumerate(log_levels):
-            if idx > desired_index:
-                if not getattr(self, name) == _no_op:
-                    setattr(self, "_old_" + name, getattr(self, name))
-                    setattr(self, name, _no_op)
-            else:
-                if getattr(self, name) == _no_op:
-                    setattr(self, name, getattr(self, "_old_" + name))
 
-    def trace(self, *args, **kw):
+        for (idx, name) in enumerate(log_levels):
+            if name == 'none':
+                continue
+
+            if idx > desired_index:
+                current = getattr(self, name, None)
+                if not current == _no_op or current == None:
+                    setattr(self, name, _no_op)
+                if name == 'error':
+                    setattr(self, 'failure', _no_op)
+
+            else:
+                if getattr(self, name, None) in (_no_op, None):
+                    if name == 'trace':
+                        setattr(self, "trace", self._trace)
+                    else:
+                        setattr(self, name,
+                                partial(self._log, LogLevel.lookupByName(name)))
+
+                    if name == 'error':
+                        setattr(self, "failure", self._failure)
+
+
+        self._log_level = level
+
+    def _failure(self, *args, **kw):
+        return self._logger.failure(*args, **kw)
+
+    def _trace(self, *args, **kw):
         # there is no "trace" level in Twisted -- but this whole
         # method will be no-op'd unless we are at the 'trace' level.
         self.debug(*args, txaio_trace=True, **kw)
 
 
-def make_logger():
+def make_logger(level=None, logger=_Logger, observer=None):
     # we want the namespace to be the calling context of "make_logger"
     # -- so we *have* to pass namespace kwarg to Logger (or else it
     # will always say the context is "make_logger")
@@ -178,7 +224,8 @@ def make_logger():
             # If it's not the module, and not in a class instance, add the code
             # object's name.
             namespace = namespace + "." + cf.f_code.co_name
-    logger = _TxLogger(namespace=namespace)
+    logger = Logger(level=level, namespace=namespace, logger=logger,
+                    observer=observer)
     return logger
 
 
@@ -210,7 +257,7 @@ class _LogObserver(object):
             self._levels = [
                 self.to_tx[lvl]
                 for lvl in log_levels
-                if log_levels.index(lvl) <= target_level
+                if log_levels.index(lvl) <= target_level and lvl != "none"
             ]
         return level in self._levels
 
@@ -229,7 +276,7 @@ class _LogObserver(object):
                 msg = msg.encode('utf8')
             self._file.write(msg)
         else:
-            # although _TxLogger will already have filtered out unwanted
+            # although Logger will already have filtered out unwanted
             # levels, bare Logger instances from Twisted code won't have.
             if 'log_level' in event and self._acceptable_level(event['log_level']):
                 msg = u'{0} {1}{2}'.format(
@@ -435,7 +482,8 @@ def set_global_log_level(level):
     Set the global log level on all loggers instantiated by txaio.
     """
     for item in _loggers:
-        item._set_log_level(level)
+        if not item._log_level_set_explicitly:
+            item._set_log_level(level)
     global _log_level
     _log_level = level
 
