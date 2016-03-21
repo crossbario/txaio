@@ -59,6 +59,7 @@ config.loop = asyncio.get_event_loop()
 _stderr, _stdout = sys.stderr, sys.stdout
 _loggers = weakref.WeakSet()  # weak-ref's of each logger we've created before start_logging()
 _log_level = 'info'  # re-set by start_logging
+_started_logging = False
 
 using_twisted = False
 using_asyncio = True
@@ -105,6 +106,7 @@ def _log(logger, level, log_format=u'', **kwargs):
     # args, not kwargs.
     if level == 'trace':
         level = 'debug'
+        kwargs['txaio_trace'] = True
     msg = log_format.format(**kwargs)
     getattr(logger._logger, level)(msg)
 
@@ -116,9 +118,9 @@ def _no_op(*args, **kw):
 class _TxaioLogWrapper(ILogger):
     def __init__(self, logger):
         self._logger = logger
-        self._set_level(_log_level)
+        self._set_log_level(_log_level)
 
-    def _set_level(self, level):
+    def _set_log_level(self, level):
         target_level = log_levels.index(level)
         # this binds either _log or _no_op above to this instance,
         # depending on the desired level.
@@ -160,9 +162,8 @@ class _TxaioFileHandler(logging.Handler, object):
 def make_logger():
     logger = _TxaioLogWrapper(logging.getLogger())
     # remember this so we can set their levels properly once
-    # start_logging is actually called.
-    if _loggers is not None:
-        _loggers.add(logger)
+    # start_logging is actually called
+    _loggers.add(logger)
     return logger
 
 
@@ -173,7 +174,7 @@ def start_logging(out=None, level='info'):
     :param out: if provided, a file-like object to log to
     :param level: the maximum log-level to emit (a string)
     """
-    global _log_level, _loggers
+    global _log_level, _loggers, _started_logging
     if level not in log_levels:
         raise RuntimeError(
             "Invalid log level '{0}'; valid are: {1}".format(
@@ -181,8 +182,10 @@ def start_logging(out=None, level='info'):
             )
         )
 
-    if _loggers is None:
+    if _started_logging:
         return
+
+    _started_logging = True
     _log_level = level
 
     if out is None:
@@ -204,8 +207,7 @@ def start_logging(out=None, level='info'):
     # make sure any loggers we created before now have their log-level
     # set (any created after now will get it from _log_level
     for logger in _loggers:
-        logger._set_level(level)
-    _loggers = None
+        logger._set_log_level(level)
 
 
 def failure_message(fail):

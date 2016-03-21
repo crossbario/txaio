@@ -97,6 +97,21 @@ def test_info(handler, framework):
     assert handler.messages[0].endswith(b"hilarious elephant")
 
 
+def test_trace(handler, framework):
+    logger = txaio.make_logger()
+    old_log = txaio.get_global_log_level()
+    txaio.set_global_log_level("trace")
+
+    # the txaio_trace variable should be in it
+    logger.trace(
+        "trace {txaio_trace}",
+    )
+
+    assert len(handler.messages) == 1
+    assert handler.messages[0].endswith(b"trace True")
+    txaio.set_global_log_level(old_log)
+
+
 def test_bad_failures(handler, framework):
     # just ensuring this doesn't explode
     txaio.failure_format_traceback("not a failure")

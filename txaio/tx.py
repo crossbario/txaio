@@ -59,6 +59,7 @@ _stderr, _stdout = sys.stderr, sys.stdout
 _observer = None     # for Twisted legacy logging support; see below
 _loggers = weakref.WeakSet()  # weak-references of each logger we've created
 _log_level = 'info'  # global log level; possibly changed in start_logging()
+_started_logging = False
 
 IFailedFuture.register(Failure)
 
@@ -101,8 +102,7 @@ except ImportError:
     class Logger(ILogger):
         def __init__(self, **kwargs):
             self.namespace = kwargs.get('namespace', None)
-            if _loggers is not None:
-                _loggers.add(self)
+            _loggers.add(self)
             # this class will get overridden by _TxLogger below, so we
             # bind *every* level here; set_log_level will un-bind
             # some.
@@ -133,10 +133,8 @@ def _no_op(*args, **kwargs):
 class _TxLogger(Logger):
     def __init__(self, *args, **kw):
         super(_TxLogger, self).__init__(*args, **kw)
-        if _loggers is None:
-            self._set_log_level(_log_level)
-        else:
-            _loggers.add(self)
+        self._set_log_level(_log_level)
+        _loggers.add(self)
 
     def __get__(self, oself, type=None):
         # this causes the Logger to lie about the "source=", but
@@ -153,7 +151,12 @@ class _TxLogger(Logger):
         desired_index = log_levels.index(level)
         for (idx, name) in enumerate(log_levels):
             if idx > desired_index:
-                setattr(self, name, _no_op)
+                if not getattr(self, name) == _no_op:
+                    setattr(self, "_old_" + name, getattr(self, name))
+                    setattr(self, name, _no_op)
+            else:
+                if getattr(self, name) == _no_op:
+                    setattr(self, name, getattr(self, "_old_" + name))
 
     def trace(self, *args, **kw):
         # there is no "trace" level in Twisted -- but this whole
@@ -176,7 +179,8 @@ def make_logger():
             # If it's not the module, and not in a class instance, add the code
             # object's name.
             namespace = namespace + "." + cf.f_code.co_name
-    return _TxLogger(namespace=namespace)
+    logger = _TxLogger(namespace=namespace)
+    return logger
 
 
 @provider(ILogObserver)
@@ -244,7 +248,7 @@ def start_logging(out=_stdout, level='info'):
     Start logging to the file-like object in ``out``. By default, this
     is stdout.
     """
-    global _loggers, _observer, _log_level
+    global _loggers, _observer, _log_level, _started_logging
 
     if level not in log_levels:
         raise RuntimeError(
@@ -253,14 +257,14 @@ def start_logging(out=_stdout, level='info'):
             )
         )
 
-    if _loggers is None:
+    if _started_logging:
         return
 
-    if _loggers is not None:
-        for logger in _loggers:
-            logger._set_log_level(level)
-    _loggers = None
+    _started_logging = True
+
     _log_level = level
+    set_global_log_level(_log_level)
+
     _observers = []
 
     if _NEW_LOGGER:
