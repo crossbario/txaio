@@ -57,7 +57,7 @@ except ImportError:
 config = _Config()
 config.loop = asyncio.get_event_loop()
 _stderr, _stdout = sys.stderr, sys.stdout
-_loggers = weakref.WeakKeyDictionary() # weak-ref's of each logger we've created before start_logging()
+_loggers = weakref.WeakSet()  # weak-ref's of each logger we've created before start_logging()
 _log_level = 'info'  # re-set by start_logging
 
 using_twisted = False
@@ -162,7 +162,7 @@ def make_logger():
     # remember this so we can set their levels properly once
     # start_logging is actually called.
     if _loggers is not None:
-        _loggers[logger] = True
+        _loggers.add(logger)
     return logger
 
 
@@ -203,8 +203,8 @@ def start_logging(out=None, level='info'):
     logging.getLogger().setLevel(level_to_stdlib[level])
     # make sure any loggers we created before now have their log-level
     # set (any created after now will get it from _log_level
-    for ref in _loggers.keys():
-        ref._set_level(level)
+    for logger in _loggers:
+        logger._set_level(level)
     _loggers = None
 
 
@@ -373,8 +373,8 @@ def set_global_log_level(level):
     """
     Set the global log level on all loggers instantiated by txaio.
     """
-    for item in _loggers.keys():
-        item._set_log_level(level)
+    for logger in _loggers:
+        logger._set_log_level(level)
     global _log_level
     _log_level = level
 

@@ -51,13 +51,13 @@ config = _Config()
 _stderr, _stdout = sys.stderr, sys.stdout
 
 # some book-keeping variables here. _observer is used as a global by
-# the "backwards compatible" (Twisted < 15) loggers. The _loggers list
-# contains weakrefs; we add _TxLogger instances to this *until* such
+# the "backwards compatible" (Twisted < 15) loggers. The _loggers object
+# is a weak-ref set; we add _TxLogger instances to this *until* such
 # time as start_logging is called (with the desired log-level) and
 # then we call _set_log_level on each instance. After that,
 # _TxLogger's ctor uses _log_level directly.
 _observer = None     # for Twisted legacy logging support; see below
-_loggers = weakref.WeakKeyDictionary()  # weak-references of each logger we've created
+_loggers = weakref.WeakSet()  # weak-references of each logger we've created
 _log_level = 'info'  # global log level; possibly changed in start_logging()
 
 IFailedFuture.register(Failure)
@@ -102,7 +102,7 @@ except ImportError:
         def __init__(self, **kwargs):
             self.namespace = kwargs.get('namespace', None)
             if _loggers is not None:
-                _loggers.append(weakref.ref(self))
+                _loggers.add(self)
             # this class will get overridden by _TxLogger below, so we
             # bind *every* level here; set_log_level will un-bind
             # some.
@@ -136,7 +136,7 @@ class _TxLogger(Logger):
         if _loggers is None:
             self._set_log_level(_log_level)
         else:
-            _loggers[self] = True
+            _loggers.add(self)
 
     def __get__(self, oself, type=None):
         # this causes the Logger to lie about the "source=", but
@@ -257,13 +257,13 @@ def start_logging(out=_stdout, level='info'):
         return
 
     if _loggers is not None:
-        for ref in _loggers.keys():
-            ref._set_log_level(level)
+        for logger in _loggers:
+            logger._set_log_level(level)
     _loggers = None
     _log_level = level
     _observers = []
 
-    if NEW_LOGGER:
+    if _NEW_LOGGER:
         if out:
             _observers.append(_LogObserver(out))
 
@@ -429,7 +429,7 @@ def set_global_log_level(level):
     """
     Set the global log level on all loggers instantiated by txaio.
     """
-    for item in _loggers.keys():
+    for item in _loggers:
         item._set_log_level(level)
     global _log_level
     _log_level = level

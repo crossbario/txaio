@@ -48,7 +48,7 @@ def framework_tx():
     try:
         import txaio
         from txaio import tx
-        tx._loggers = []
+        tx._loggers = set()
         txaio._use_framework(tx)
         txaio._explicit_framework = 'twisted'
         return tx
@@ -61,7 +61,7 @@ def framework_aio():
     try:
         import txaio
         from txaio import aio
-        aio._loggers = []
+        aio._loggers = set()
         txaio._use_framework(aio)
         txaio._explicit_framework = 'asyncio'
         return aio
