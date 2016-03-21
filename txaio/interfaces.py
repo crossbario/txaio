@@ -31,6 +31,7 @@ import six
 
 #: all the log-levels that txaio recognizes
 log_levels = [
+    'none',
     'critical',
     'error',
     'warn',
