@@ -167,11 +167,12 @@ def make_logger():
     return logger
 
 
-def start_logging(out=None, level='info'):
+def start_logging(out=_stdout, level='info'):
     """
     Begin logging.
 
-    :param out: if provided, a file-like object to log to
+    :param out: if provided, a file-like object to log to. By default, this is
+                stdout.
     :param level: the maximum log-level to emit (a string)
     """
     global _log_level, _loggers, _started_logging
@@ -188,8 +189,6 @@ def start_logging(out=None, level='info'):
     _started_logging = True
     _log_level = level
 
-    if out is None:
-        out = _stdout
     handler = _TxaioFileHandler(out)
     logging.getLogger().addHandler(handler)
     # note: Don't need to call basicConfig() or similar, because we've
