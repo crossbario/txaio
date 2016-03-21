@@ -102,15 +102,14 @@ except ImportError:
     class Logger(ILogger):
         def __init__(self, **kwargs):
             self.namespace = kwargs.get('namespace', None)
-            _loggers.add(self)
             # this class will get overridden by _TxLogger below, so we
             # bind *every* level here; set_log_level will un-bind
             # some.
             for name in log_levels:
-                setattr(self, name, partial(self._do_log, name))
+                if name != "trace":
+                    setattr(self, name, partial(self._do_log, name))
 
         def _do_log(self, level, log_format='', **kwargs):
-            global _observer
             kwargs['log_time'] = time.time()
             kwargs['log_level'] = level
             kwargs['log_format'] = log_format
@@ -240,6 +239,7 @@ class _LogObserver(object):
                 )
                 if self._encode:
                     msg = msg.encode('utf8')
+
                 self._file.write(msg)
 
 
@@ -265,12 +265,13 @@ def start_logging(out=_stdout, level='info'):
     _log_level = level
     set_global_log_level(_log_level)
 
-    _observers = []
+    if out:
+        _observer = _LogObserver(out)
 
     if _NEW_LOGGER:
-        if out:
-            _observers.append(_LogObserver(out))
-
+        _observers = []
+        if _observer:
+            _observers.append(_observer)
         globalLogBeginner.beginLoggingTo(_observers)
     else:
         assert out, "out needs to be given a value if using Twisteds before 15.2"
