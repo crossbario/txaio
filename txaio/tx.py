@@ -100,17 +100,15 @@ except ImportError:
         debug = 'debug'
         trace = 'trace'
 
+        @classmethod
+        def lookupByName(cls, name):
+            return getattr(cls, name)
+
     class _Logger(ILogger):
         def __init__(self, **kwargs):
             self.namespace = kwargs.get('namespace', None)
-            # this class will get overridden by Logger below, so we
-            # bind *every* level here; set_log_level will un-bind
-            # some.
-            for name in log_levels:
-                if name != "trace":
-                    setattr(self, name, partial(self._do_log, name))
 
-        def _do_log(self, level, log_format='', **kwargs):
+        def emit(self, level, log_format='', **kwargs):
             kwargs['log_time'] = time.time()
             kwargs['log_level'] = level
             kwargs['log_format'] = log_format
@@ -146,7 +144,6 @@ class Logger(object):
 
         _loggers.add(self)
 
-
     def __get__(self, oself, type=None):
         # this causes the Logger to lie about the "source=", but
         # otherwise we create a new Logger instance every time we do
@@ -155,10 +152,8 @@ class Logger(object):
         #     log = make_logger
         return self
 
-
     def _log(self, level, *args, **kwargs):
         self._logger.emit(level, *args, **kwargs)
-
 
     def set_log_level(self, level, keep=True):
         """
@@ -167,7 +162,6 @@ class Logger(object):
         """
         self._set_log_level(level)
         self._log_level_set_explicitly = keep
-
 
     def _set_log_level(self, level):
         # up to the desired level, we don't do anything, as we're a
@@ -181,7 +175,7 @@ class Logger(object):
 
             if idx > desired_index:
                 current = getattr(self, name, None)
-                if not current == _no_op or current == None:
+                if not current == _no_op or current is None:
                     setattr(self, name, _no_op)
                 if name == 'error':
                     setattr(self, 'failure', _no_op)
@@ -196,7 +190,6 @@ class Logger(object):
 
                     if name == 'error':
                         setattr(self, "failure", self._failure)
-
 
         self._log_level = level
 
