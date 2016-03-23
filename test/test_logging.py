@@ -140,11 +140,13 @@ def test_emit_ok(handler, framework):
     txaio.set_global_log_level("trace")
 
     logger.emit("trace", "foobar")
+    logger.emit("info", "barbaz")
 
     txaio.set_global_log_level(old_log)
 
-    assert len(handler.messages) == 1
+    assert len(handler.messages) == 2
     assert handler.messages[0].endswith(b"foobar")
+    assert handler.messages[1].endswith(b"barbaz")
 
 
 def test_bad_failures(handler, framework):
