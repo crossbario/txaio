@@ -121,10 +121,8 @@ class _TxaioLogWrapper(ILogger):
         self._set_log_level(_log_level)
 
     def emit(self, level, *args, **kwargs):
-
         func = getattr(self, level)
         return func(*args, **kwargs)
-
 
     def _set_log_level(self, level):
         target_level = log_levels.index(level)
