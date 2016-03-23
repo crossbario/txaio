@@ -155,6 +155,17 @@ class Logger(object):
     def _log(self, level, *args, **kwargs):
         self._logger.emit(level, *args, **kwargs)
 
+    def emit(self, level, *args, **kwargs):
+        if not self._log_level_const:
+            return
+
+        level = LogLevel.lookupByName(level)
+
+        if level < self._log_level_const:
+                return
+        else:
+            return self._log(level, *args, **kwargs)
+
     def set_log_level(self, level, keep=True):
         """
         Set the log level. If keep is True, then it will not change along with
@@ -192,6 +203,13 @@ class Logger(object):
                         setattr(self, "failure", self._failure)
 
         self._log_level = level
+
+        if level == "trace":
+            self._log_level_const = LogLevel.debug
+        elif level:
+            self._log_level_const = LogLevel.lookupByName(level)
+        else:
+            self._log_level_const = None
 
     def _failure(self, *args, **kw):
         return self._logger.failure(*args, **kw)

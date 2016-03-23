@@ -113,6 +113,37 @@ def test_trace(handler, framework):
     txaio.set_global_log_level(old_log)
 
 
+def test_emit_noop(handler, framework):
+    """
+    emit() with a too-low level is an no-op.
+    """
+    logger = txaio.make_logger()
+
+    old_log = txaio.get_global_log_level()
+    txaio.set_global_log_level("info")
+
+    logger.emit("debug", "foobar")
+
+    assert len(handler.messages) == 0
+    txaio.set_global_log_level(old_log)
+
+
+def test_emit_ok(handler, framework):
+    """
+    emit() with an OK level emits the message.
+    """
+    logger = txaio.make_logger()
+
+    old_log = txaio.get_global_log_level()
+    txaio.set_global_log_level("trace")
+
+    logger.emit("trace", "foobar")
+
+    assert len(handler.messages) == 1
+    assert handler.messages[0].endswith(b"foobar")
+    txaio.set_global_log_level(old_log)
+
+
 def test_bad_failures(handler, framework):
     # just ensuring this doesn't explode
     txaio.failure_format_traceback("not a failure")
