@@ -120,6 +120,10 @@ class _TxaioLogWrapper(ILogger):
         self._logger = logger
         self._set_log_level(_log_level)
 
+    def emit(self, level, *args, **kwargs):
+        func = getattr(self, level)
+        return func(*args, **kwargs)
+
     def _set_log_level(self, level):
         target_level = log_levels.index(level)
         # this binds either _log or _no_op above to this instance,
@@ -130,6 +134,7 @@ class _TxaioLogWrapper(ILogger):
             else:
                 log_method = _no_op
             setattr(self, name, log_method)
+        self._log_level = level
 
 
 class _TxaioFileHandler(logging.Handler, object):

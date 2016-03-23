@@ -155,6 +155,17 @@ class Logger(object):
     def _log(self, level, *args, **kwargs):
         self._logger.emit(level, *args, **kwargs)
 
+    def emit(self, level, *args, **kwargs):
+
+        if log_levels.index(self._log_level) < log_levels.index(level):
+            return
+
+        if level == "trace":
+            return self._trace(*args, **kwargs)
+
+        level = LogLevel.lookupByName(level)
+        return self._log(level, *args, **kwargs)
+
     def set_log_level(self, level, keep=True):
         """
         Set the log level. If keep is True, then it will not change along with
@@ -182,6 +193,7 @@ class Logger(object):
 
             else:
                 if getattr(self, name, None) in (_no_op, None):
+
                     if name == 'trace':
                         setattr(self, "trace", self._trace)
                     else:
