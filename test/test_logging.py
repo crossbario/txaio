@@ -108,9 +108,10 @@ def test_trace(handler, framework):
         "trace {txaio_trace}",
     )
 
+    txaio.set_global_log_level(old_log)
+
     assert len(handler.messages) == 1
     assert handler.messages[0].endswith(b"trace True")
-    txaio.set_global_log_level(old_log)
 
 
 def test_emit_noop(handler, framework):
@@ -124,8 +125,9 @@ def test_emit_noop(handler, framework):
 
     logger.emit("debug", "foobar")
 
-    assert len(handler.messages) == 0
     txaio.set_global_log_level(old_log)
+
+    assert len(handler.messages) == 0
 
 
 def test_emit_ok(handler, framework):
@@ -139,9 +141,10 @@ def test_emit_ok(handler, framework):
 
     logger.emit("trace", "foobar")
 
+    txaio.set_global_log_level(old_log)
+
     assert len(handler.messages) == 1
     assert handler.messages[0].endswith(b"foobar")
-    txaio.set_global_log_level(old_log)
 
 
 def test_bad_failures(handler, framework):

@@ -156,15 +156,15 @@ class Logger(object):
         self._logger.emit(level, *args, **kwargs)
 
     def emit(self, level, *args, **kwargs):
-        if not self._log_level_const:
+
+        if log_levels.index(self._log_level) < log_levels.index(level):
             return
 
-        level = LogLevel.lookupByName(level)
+        if level == "trace":
+            return self._trace(*args, **kwargs)
 
-        if level < self._log_level_const:
-                return
-        else:
-            return self._log(level, *args, **kwargs)
+        level = LogLevel.lookupByName(level)
+        return self._log(level, *args, **kwargs)
 
     def set_log_level(self, level, keep=True):
         """
@@ -193,6 +193,7 @@ class Logger(object):
 
             else:
                 if getattr(self, name, None) in (_no_op, None):
+
                     if name == 'trace':
                         setattr(self, "trace", self._trace)
                     else:
@@ -203,13 +204,6 @@ class Logger(object):
                         setattr(self, "failure", self._failure)
 
         self._log_level = level
-
-        if level == "trace":
-            self._log_level_const = LogLevel.debug
-        elif level:
-            self._log_level_const = LogLevel.lookupByName(level)
-        else:
-            self._log_level_const = None
 
     def _failure(self, *args, **kw):
         return self._logger.failure(*args, **kw)
