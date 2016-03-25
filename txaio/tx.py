@@ -205,8 +205,8 @@ class Logger(object):
 
         self._log_level = level
 
-    def _failure(self, *args, **kw):
-        return self._logger.failure(*args, **kw)
+    def _failure(self, format=None, *args, **kw):
+        return self._logger.failure(format, *args, **kw)
 
     def _trace(self, *args, **kw):
         # there is no "trace" level in Twisted -- but this whole
