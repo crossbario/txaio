@@ -60,9 +60,14 @@ _stderr, _stdout = sys.stderr, sys.stdout
 _loggers = weakref.WeakSet()  # weak-ref's of each logger we've created before start_logging()
 _log_level = 'info'  # re-set by start_logging
 _started_logging = False
+_categories = {}
 
 using_twisted = False
 using_asyncio = True
+
+
+def add_log_categories(categories):
+    _categories.update(categories)
 
 
 class FailedFuture(IFailedFuture):
@@ -97,17 +102,23 @@ class FailedFuture(IFailedFuture):
 
 # API methods for txaio, exported via the top-level __init__.py
 
-def _log(logger, level, log_format=u'', **kwargs):
+def _log(logger, level, format=u'', **kwargs):
+
+    # Look for a log_category, switch it in if we have it
+    if "log_category" in kwargs and kwargs["log_category"] in _categories:
+        format = _categories.get(kwargs["log_category"])
+
     kwargs['log_time'] = time.time()
     kwargs['log_level'] = level
-    kwargs['log_format'] = log_format
+    kwargs['log_format'] = format
     # NOTE: turning kwargs into a single "argument which
     # is a dict" on purpose, since a LogRecord only keeps
     # args, not kwargs.
     if level == 'trace':
         level = 'debug'
         kwargs['txaio_trace'] = True
-    msg = log_format.format(**kwargs)
+
+    msg = format.format(**kwargs)
     getattr(logger._logger, level)(msg)
 
 

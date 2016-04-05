@@ -68,5 +68,7 @@ start_logging = _throw_usage_error
 set_global_log_level = _throw_usage_error
 get_global_log_level = _throw_usage_error
 
+add_log_categories = _throw_usage_error
+
 IFailedFuture = _throw_usage_error
 ILogger = _throw_usage_error

@@ -87,6 +87,7 @@ __all__ = (
     'start_logging',   # initializes logging (may grab stdin at this point)
     'set_global_log_level',  # Set the global log level
     'get_global_log_level',  # Get the global log level
+    'add_log_categories',
 
     'IFailedFuture',             # describes API for arg to errback()s
     'ILogger',                   # API for logging
