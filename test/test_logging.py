@@ -70,6 +70,49 @@ def handler(log_started):
     return _handler
 
 
+def test_categories(handler, framework):
+    """
+    Calling ``txaio.add_log_categories`` with a dict mapping category keys to
+    category log formats will allow log messages which have the
+    ``log_category`` key take the associated format.
+    """
+    logger = txaio.make_logger()
+
+    txaio.add_log_categories({"TX100": u"{adjective} {nouns[2]}"})
+
+    # do something a little fancy, with attribute access etc.
+    logger.critical(
+        "you won't see me",
+        log_category="TX100",
+        adjective='hilarious',
+        nouns=['skunk', 'elephant', 'wombat'],
+    )
+
+    assert len(handler.messages) == 1
+    assert handler.messages[0].endswith(b"hilarious wombat")
+
+
+def test_categories_subsequent(handler, framework):
+    """
+    Later calls to add_log_categories update the list of log categories and
+    take precedence.
+    """
+    logger = txaio.make_logger()
+
+    txaio.add_log_categories({"TX100": u"{adjective} {nouns[2]}"})
+    txaio.add_log_categories({"TX100": u"{adjective} {nouns[1]}"})
+
+    # do something a little fancy, with attribute access etc.
+    logger.critical(
+        log_category="TX100",
+        adjective='hilarious',
+        nouns=['skunk', 'elephant', 'wombat'],
+    )
+
+    assert len(handler.messages) == 1
+    assert handler.messages[0].endswith(b"hilarious elephant")
+
+
 def test_critical(handler, framework):
     logger = txaio.make_logger()
 

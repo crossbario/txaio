@@ -63,6 +63,8 @@ _loggers = weakref.WeakSet()  # weak-references of each logger we've created
 _log_level = 'info'  # global log level; possibly changed in start_logging()
 _started_logging = False
 
+_categories = {}
+
 IFailedFuture.register(Failure)
 
 _NEW_LOGGER = False
@@ -108,10 +110,10 @@ except ImportError:
         def __init__(self, **kwargs):
             self.namespace = kwargs.get('namespace', None)
 
-        def emit(self, level, log_format='', **kwargs):
+        def emit(self, level, format='', **kwargs):
             kwargs['log_time'] = time.time()
             kwargs['log_level'] = level
-            kwargs['log_format'] = log_format
+            kwargs['log_format'] = format
             kwargs['log_namespace'] = self.namespace
             # NOTE: the other loggers are ignoring any log messages
             # before start_logging() as well
@@ -121,6 +123,10 @@ except ImportError:
 
 def _no_op(*args, **kwargs):
     pass
+
+
+def add_log_categories(categories):
+    _categories.update(categories)
 
 
 # NOTE: beware that twisted.logger._logger.Logger copies itself via an
@@ -153,6 +159,12 @@ class Logger(object):
         return self
 
     def _log(self, level, *args, **kwargs):
+
+        # Look for a log_category, switch it in if we have it
+        if "log_category" in kwargs and kwargs["log_category"] in _categories:
+            args = tuple()
+            kwargs["format"] = _categories.get(kwargs["log_category"])
+
         self._logger.emit(level, *args, **kwargs)
 
     def emit(self, level, *args, **kwargs):
