@@ -28,7 +28,7 @@ from __future__ import absolute_import
 
 import sys
 import platform
-from setuptools import setup, find_packages
+from setuptools import setup
 
 CPY = platform.python_implementation() == 'CPython'
 PY3 = sys.version_info >= (3,)
@@ -78,6 +78,7 @@ extras_require_dev = [
     'sphinx_rtd_theme>=0.1.9',          # BSD
     'tox>=2.1.1',                       # MIT
     'mock==1.3.0',                      # BSD
+    'twine>=1.6.5',                     # Apache 2.0
 ]
 
 # everything
