@@ -42,6 +42,46 @@ log_levels = [
 
 
 @six.add_metaclass(abc.ABCMeta)
+class IBatchedTimer(object):
+    """
+    Objects created by :met:`txaio.make_batched_timer` implement this
+    interface.
+
+    These APIs allow you to put call_later()'s into "buckets",
+    reducing the number of actual underlying delayed calls that the
+    event-loop (asyncio or Twisted) needs to deal with. Obviously, you
+    lose some amount of precision in when the timers fire in exchange
+    for less memory use, and fewer objects on the queues for the
+    underlying event-loop/reactor.
+
+    As a concrete example, in Autobahn we're using this to batch
+    together timers for the "auto ping" feature. In this case, it is
+    not vital when precisely the timers fire, but as the
+    connection-count increases the number of outstanding timers
+    becomes quite large.
+
+    It is intended to be used like so:
+
+    class Something(object):
+        timers = txaio.make_batched_timer()
+
+        def a_method(self):
+            self.timers.call_later()  # drop-in API from txaio.call_later
+    """
+
+    def call_later(self, delay, func, *args, **kw):
+        """
+        This speaks the same API as :meth:`txaio.call_later` and also
+        returns an object that has a ``.cancel`` method.
+
+        You cannot rely on any other methods/attributes of the
+        returned object. The timeout will actually fire at an
+        aribtrary time "close" to the delay specified, depening upon
+        the arguments this IBatchedTimer was created with.
+        """
+
+
+@six.add_metaclass(abc.ABCMeta)
 class ILogger(object):
     """
     This defines the methods you can call on the object returned from

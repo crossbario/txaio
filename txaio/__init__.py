@@ -83,6 +83,8 @@ __all__ = (
     'failure_traceback',  # returns a traceback instance from an IFailedFuture
     'failure_format_traceback',  # a string, the formatted traceback
 
+    'make_batched_timer',  # create BatchedTimer/IBatchedTimer instances
+
     'make_logger',     # creates an object implementing ILogger
     'start_logging',   # initializes logging (may grab stdin at this point)
     'set_global_log_level',  # Set the global log level

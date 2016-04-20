@@ -186,11 +186,32 @@ txaio module
     support kwargs with ``loop.call_later`` we wrap it in a
     ``functools.partial``, as asyncio documentation suggests.
 
+    Note: see :func:`txaio.make_batched_timer` if you may have a lot
+    of timers, and their absolute accuracy isn't very important.
+
     :param delay: how many seconds in the future to make the call
 
     :returns: The underlying library object, which will at least have
               a ``.cancel()`` method on it. It's really
               `IDelayedCall`_ in Twisted and a `Handle`_ in asyncio.
+
+
+.. py:function:: make_batched_timer(seconds_per_bucket, chunk_size)
+
+    This returns an object implementing :class:`txaio.IBatchedTimer`
+    such that any ``.call_later`` calls done through it (instead of
+    via :meth:`txaio.call_later`) will be "quantized" into buckets and
+    processed in ``chunk_size`` batches "near" the time they are
+    supposed to fire.
+
+    When there are "tens of thousands" of outstanding timers, CPU
+    usage can become a problem -- if the accuracy of the timers isn't
+    very important, using "batched" timers can greatly reduce the
+    number of "real" delayed calls in the event loop.
+
+    For example, Autobahn uses this feature for auto-ping timeouts,
+    where the exact time of the event isn't extremely important -- but
+    there are 2 outstanding calls per connection.
 
 
 .. py:function:: gather(futures, consume_exceptions=True)
