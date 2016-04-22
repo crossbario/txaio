@@ -4,7 +4,7 @@ txio releases
 2.4.0
 -----
 
-- *(not yet released)*
+- April 22, 2016
 - Added :func:`txaio.make_batched_timer` API. The main use-case for
   this is when you have lots of of timers, but their exact resolution
   isn't important; batching them into buckets causes far fewer
