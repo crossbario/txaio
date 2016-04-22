@@ -12,4 +12,5 @@ Contents
    index
    overview
    programming-guide
+   releases
    api

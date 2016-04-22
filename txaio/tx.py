@@ -43,6 +43,7 @@ from zope.interface import provider
 from txaio.interfaces import IFailedFuture, ILogger, log_levels
 from txaio._iotype import guess_stream_needs_encoding
 from txaio import _Config
+from txaio._common import _BatchedTimer
 
 import six
 
@@ -413,6 +414,32 @@ def is_future(obj):
 
 def call_later(delay, fun, *args, **kwargs):
     return IReactorTime(_get_loop()).callLater(delay, fun, *args, **kwargs)
+
+
+def make_batched_timer(bucket_seconds, chunk_size=100):
+    """
+    Creates and returns an object implementing
+    :class:`txaio.IBatchedTimer`.
+
+    :param bucket_seconds: the number of seconds in each bucket. That
+        is, a value of 5 means that any timeout within a 5 second window
+        will be in the same bucket, and get notified at the same time.
+
+    :param chunk_size: when "doing" the callbacks in a particular
+        bucket, this controls how many we do at once before yielding to
+        the reactor.
+    """
+    clock = IReactorTime(_get_loop())
+    get_seconds = clock.seconds
+
+    def create_delayed_call(delay, fun, *args, **kwargs):
+        return clock.callLater(delay, fun, *args, **kwargs)
+
+    return _BatchedTimer(
+        bucket_seconds, chunk_size,
+        seconds_provider=get_seconds,
+        delayed_call_creator=create_delayed_call,
+    )
 
 
 def is_called(future):

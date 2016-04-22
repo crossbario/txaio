@@ -38,6 +38,7 @@ from datetime import datetime
 
 from txaio.interfaces import IFailedFuture, ILogger, log_levels
 from txaio._iotype import guess_stream_needs_encoding
+from txaio._common import _BatchedTimer
 from txaio import _Config
 
 import six
@@ -312,6 +313,27 @@ def call_later(delay, fun, *args, **kwargs):
     # loop.call_later doesn't support kwargs
     real_call = functools.partial(fun, *args, **kwargs)
     return config.loop.call_later(delay, real_call)
+
+
+def make_batched_timer(bucket_seconds, chunk_size=100):
+    """
+    Creates and returns an object implementing
+    :class:`txaio.IBatchedTimer`.
+
+    :param bucket_seconds: the number of seconds in each bucket. That
+        is, a value of 5 means that any timeout within a 5 second window
+        will be in the same bucket, and get notified at the same time.
+
+    :param chunk_size: when "doing" the callbacks in a particular
+        bucket, this controls how many we do at once before yielding to
+        the reactor.
+    """
+    get_seconds = config.loop.time
+    return _BatchedTimer(
+        bucket_seconds, chunk_size,
+        seconds_provider=get_seconds,
+        delayed_call_creator=call_later,
+    )
 
 
 def is_called(future):

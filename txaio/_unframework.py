@@ -63,6 +63,8 @@ failure_message = _throw_usage_error
 failure_traceback = _throw_usage_error
 failure_format_traceback = _throw_usage_error
 
+make_batched_timer = _throw_usage_error
+
 make_logger = _throw_usage_error
 start_logging = _throw_usage_error
 set_global_log_level = _throw_usage_error
