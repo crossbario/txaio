@@ -149,10 +149,12 @@ def test_batched_chunks(framework_tx):
         # have put one more delayed call (at "0 seconds in the
         # future") into the reactor after the first batch of 2 calls
         # was notified.
-        new_loop.advance(2.1)
+        new_loop.advance(2)
+        new_loop.advance(1)
         assert len(calls) == 3
         assert len(laters) == 2
-        assert laters[1][0][0] == 0  # second call-later 0 seconds in future
+        # second call-later half the interval in the future (i.e. 1s)
+        assert laters[1][0][0] == 1.0
 
 
 def test_batched_chunks_with_errors(framework_tx):
@@ -185,7 +187,8 @@ def test_batched_chunks_with_errors(framework_tx):
 
         # notify everything, causing an error from the second batch
         try:
-            new_loop.advance(2.1)
+            new_loop.advance(2)
+            new_loop.advance(1)
             assert False, "Should get exception"
         except RuntimeError as e:
             assert "processing call_later" in str(e)

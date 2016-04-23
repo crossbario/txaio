@@ -321,8 +321,9 @@ def make_batched_timer(bucket_seconds, chunk_size=100):
     :class:`txaio.IBatchedTimer`.
 
     :param bucket_seconds: the number of seconds in each bucket. That
-        is, a value of 5 means that any timeout within a 5 second window
-        will be in the same bucket, and get notified at the same time.
+        is, a value of 5 means that any timeout within a 5 second
+        window will be in the same bucket, and get notified at the
+        same time. This is only accurate to "milliseconds".
 
     :param chunk_size: when "doing" the callbacks in a particular
         bucket, this controls how many we do at once before yielding to
@@ -330,7 +331,7 @@ def make_batched_timer(bucket_seconds, chunk_size=100):
     """
     get_seconds = config.loop.time
     return _BatchedTimer(
-        bucket_seconds, chunk_size,
+        bucket_seconds * 1000.0, chunk_size,
         seconds_provider=get_seconds,
         delayed_call_creator=call_later,
     )

@@ -202,7 +202,8 @@ txaio module
     such that any ``.call_later`` calls done through it (instead of
     via :meth:`txaio.call_later`) will be "quantized" into buckets and
     processed in ``chunk_size`` batches "near" the time they are
-    supposed to fire.
+    supposed to fire. ``seconds_per_bucket`` is only accurate to
+    "milliseconds".
 
     When there are "tens of thousands" of outstanding timers, CPU
     usage can become a problem -- if the accuracy of the timers isn't
