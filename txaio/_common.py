@@ -1,4 +1,5 @@
 
+import math
 from txaio.interfaces import IBatchedTimer
 
 
@@ -92,7 +93,9 @@ class _BatchedTimer(IBatchedTimer):
                     for e in errors:
                         msg += u"{}\n".format(e)
                     raise RuntimeError(msg)
-        delay_ms = self._bucket_milliseconds / (float(len(calls)) / self._chunk_size)
+        # ceil()ing because we want the number of chunks, and a
+        # partial chunk is still a chunk
+        delay_ms = self._bucket_milliseconds / math.ceil(float(len(calls)) / self._chunk_size)
         notify_one_chunk(calls, self._chunk_size, delay_ms)
 
     def _remove_call(self, real_time, call):
