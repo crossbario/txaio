@@ -57,6 +57,7 @@ methods on futures -- use *only* **txaio** methods to operate on them.
     else:
         txaio.resolve(f, answer)
 
+
 .. _restrictions:
 
 Restrictions and Caveats
@@ -69,8 +70,19 @@ It is **one piece** that *can* help you to write cross-event-loop
 asynchronous code. For example, you'll note that there's no way to run
 "the event loop" -- that's up to you.
 
-However, it is basically a "lowest common denominator" tool. There is
-a minimum of wrapping, etcetera.
+There is **no support for @coroutine or @inlineCallbacks**
+decorators. This is not possible, as asyncio under Python3 introduced
+a new syntax (``yield from``) to call into other co-routines. So, you
+are stuck with "callback style" code for your cross-platform
+library. (Note that *users* of your library can of course use new
+Python3 features like ``yield from``, ``async`` and ``await`` in their
+own code -- but they do so by explicitly choosing "Python3 and
+asyncio" as their platform).
+
+``txaio`` is basically a "lowest common denominator" tool. There is a
+minimum of wrapping, etcetera but the library author doesn't get to
+use fancy features (e.g. ``@inlineCallbacks``, mutation of returns,
+``@coroutine``) of the underlying async platforms.
 
 
 Futures and Deferreds
