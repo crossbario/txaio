@@ -1,6 +1,13 @@
 txio releases
 =============
 
+2.5.0
+-----
+
+- (unreleased)
+- Document that ``@coroutine`` and ``@inlineCallbacks`` are not supported
+
+
 2.4.0
 -----
 
