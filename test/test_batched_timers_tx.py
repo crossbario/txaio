@@ -145,14 +145,16 @@ def test_batched_chunks(framework_tx):
         # ...and this call-later should be 2 seconds from now
         assert laters[0][0][0] == 2
 
-        # when we advance, we should notify everything but we should
-        # have put one more delayed call (at "0 seconds in the
-        # future") into the reactor after the first batch of 2 calls
-        # was notified.
-        new_loop.advance(2.1)
+        # the chunk-size is 2, so after advancing to 2 seconds from
+        # now, we should have notified 2 of the callers and added
+        # another call-later. We're spreading these out over the
+        # bucket-size, so it should be at 0.5 seconds from now.
+        new_loop.advance(2)
+        new_loop.advance(1)
         assert len(calls) == 3
         assert len(laters) == 2
-        assert laters[1][0][0] == 0  # second call-later 0 seconds in future
+        # second call-later half the interval in the future (i.e. 0.5s)
+        assert laters[1][0][0] == 0.5
 
 
 def test_batched_chunks_with_errors(framework_tx):
@@ -185,7 +187,8 @@ def test_batched_chunks_with_errors(framework_tx):
 
         # notify everything, causing an error from the second batch
         try:
-            new_loop.advance(2.1)
+            new_loop.advance(2)
+            new_loop.advance(1)
             assert False, "Should get exception"
         except RuntimeError as e:
             assert "processing call_later" in str(e)

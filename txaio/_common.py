@@ -1,4 +1,5 @@
 
+import math
 from txaio.interfaces import IBatchedTimer
 
 
@@ -32,11 +33,13 @@ class _BatchedTimer(IBatchedTimer):
     :meth:`txaio.make_batched_timer` and that is the only way they
     should be instantiated. You may depend on methods from the
     interface class only (:class:`txaio.IBatchedTimer`)
+
+    **NOTE** that the times are in milliseconds in this class!
     """
 
-    def __init__(self, bucket_seconds, chunk_size,
+    def __init__(self, bucket_milliseconds, chunk_size,
                  seconds_provider, delayed_call_creator):
-        self._bucket_seconds = bucket_seconds
+        self._bucket_milliseconds = float(bucket_milliseconds)
         self._chunk_size = chunk_size
         self._get_seconds = seconds_provider
         self._create_delayed_call = delayed_call_creator
@@ -46,20 +49,16 @@ class _BatchedTimer(IBatchedTimer):
         """
         IBatchedTimer API
         """
-        # "quantize" the delay to the nearest bucket (note: always
-        # doing floor essentially, so e.g. 29.9 with 5s buckets still
-        # gets you "25s from now") -- arguably would be better to
-        # "properly round"? Minimizes average error, but some delays
-        # get longer ... hmm.
-        real_time = int(self._get_seconds() + delay)
-        real_time -= (real_time % self._bucket_seconds)
+        # "quantize" the delay to the nearest bucket
+        real_time = int(self._get_seconds() + delay) * 1000
+        real_time -= int(real_time % self._bucket_milliseconds)
         call = _BatchedCall(self, real_time, lambda: func(*args, **kwargs))
         try:
             self._buckets[real_time][1].append(call)
         except KeyError:
             # new bucket; need to add "actual" underlying IDelayedCall
             delayed_call = self._create_delayed_call(
-                real_time,
+                (real_time / 1000.0) - self._get_seconds(),
                 self._notify_bucket, real_time,
             )
             self._buckets[real_time] = (delayed_call, [call])
@@ -75,7 +74,7 @@ class _BatchedTimer(IBatchedTimer):
         del self._buckets[real_time]
         errors = []
 
-        def notify_one_chunk(calls, chunk_size):
+        def notify_one_chunk(calls, chunk_size, chunk_delay_ms):
             for call in calls[:chunk_size]:
                 try:
                     call()
@@ -84,8 +83,8 @@ class _BatchedTimer(IBatchedTimer):
             calls = calls[chunk_size:]
             if calls:
                 self._create_delayed_call(
-                    0,
-                    lambda: notify_one_chunk(calls, chunk_size),
+                    chunk_delay_ms / 1000.0,
+                    notify_one_chunk, calls, chunk_size, chunk_delay_ms,
                 )
             else:
                 # done all calls; make sure there were no errors
@@ -94,7 +93,10 @@ class _BatchedTimer(IBatchedTimer):
                     for e in errors:
                         msg += u"{}\n".format(e)
                     raise RuntimeError(msg)
-        notify_one_chunk(calls, self._chunk_size)
+        # ceil()ing because we want the number of chunks, and a
+        # partial chunk is still a chunk
+        delay_ms = self._bucket_milliseconds / math.ceil(float(len(calls)) / self._chunk_size)
+        notify_one_chunk(calls, self._chunk_size, delay_ms)
 
     def _remove_call(self, real_time, call):
         """
