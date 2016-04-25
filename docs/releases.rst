@@ -1,6 +1,16 @@
 txio releases
 =============
 
+2.5.0
+-----
+
+- (unreleased)
+- Document that ``@coroutine`` and ``@inlineCallbacks`` are not supported
+- Objects returned from the :func:`txaio.make_batched_timer` API now
+  have millisecond resolution and spread out their notifications over
+  the entire range of the bucket.
+
+
 2.4.0
 -----
 
