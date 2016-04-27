@@ -11,7 +11,10 @@ use-case. See
 https://github.com/tavendo/AutobahnPython/blob/master/autobahn/wamp/protocol.py#L410
 
 We are releasing it in the hopes these utilities are useful on their
-own to other projects using event-based Python.
+own to other projects using event-based Python. Only authors of
+"library style" code are likely to be interested in this -- new
+application code should use your favourite Python asynchronous I/O
+platform.
 
 
 Overview by Example
@@ -66,9 +69,9 @@ Restrictions and Caveats
 **txaio** is not a new event-based programming solution. It is not a
 complete box-set of asynchronous programming tools.
 
-It is **one piece** that *can* help you to write cross-event-loop
-asynchronous code. For example, you'll note that there's no way to run
-"the event loop" -- that's up to you.
+It is **one piece** that *can* help **library authors** to write
+cross-event-loop asynchronous code. For example, you'll note that
+there's no way to run "the event loop" -- that's up to you.
 
 There is **no support for @coroutine or @inlineCallbacks**
 decorators. This is not possible, as asyncio under Python3 introduced
