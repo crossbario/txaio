@@ -430,11 +430,12 @@ def make_batched_timer(bucket_seconds, chunk_size=100):
         bucket, this controls how many we do at once before yielding to
         the reactor.
     """
-    clock = IReactorTime(_get_loop())
-    get_seconds = clock.seconds
+
+    def get_seconds():
+        return _get_loop().seconds()
 
     def create_delayed_call(delay, fun, *args, **kwargs):
-        return clock.callLater(delay, fun, *args, **kwargs)
+        return _get_loop().callLater(delay, fun, *args, **kwargs)
 
     return _BatchedTimer(
         bucket_seconds * 1000.0, chunk_size,

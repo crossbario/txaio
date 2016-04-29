@@ -1,10 +1,18 @@
 txio releases
 =============
 
+2.5.1
+-----
+
+- April 28, 2016
+- Bug with ``make_batched_timer`` remembering (via a closure) the
+  reactor/event-loop too persistantly
+
+
 2.5.0
 -----
 
-- (unreleased)
+- April 28, 2016
 - Document that ``@coroutine`` and ``@inlineCallbacks`` are not supported
 - Objects returned from the :func:`txaio.make_batched_timer` API now
   have millisecond resolution and spread out their notifications over

@@ -329,7 +329,10 @@ def make_batched_timer(bucket_seconds, chunk_size=100):
         bucket, this controls how many we do at once before yielding to
         the reactor.
     """
-    get_seconds = config.loop.time
+
+    def get_seconds():
+        return config.loop.time()
+
     return _BatchedTimer(
         bucket_seconds * 1000.0, chunk_size,
         seconds_provider=get_seconds,
