@@ -51,7 +51,7 @@ matrix:
   include:
     - python: 3.5
       env:
-      - TOX_ENV=py35-tw155
+      - TOX_ENV=py35-tw154
 
     - python: 3.5
       env:
