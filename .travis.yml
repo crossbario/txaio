@@ -31,10 +31,10 @@ env:
   - TOX_ENV=py34-twtrunk
   - TOX_ENV=py34-asyncio
 
-  - TOX_ENV=py35-tw154
-  - TOX_ENV=py35-tw162
-  - TOX_ENV=py35-twtrunk
-  - TOX_ENV=py35-asyncio
+  #- TOX_ENV=py35-tw154
+  #- TOX_ENV=py35-tw162
+  #- TOX_ENV=py35-twtrunk
+  #- TOX_ENV=py35-asyncio
 
 script:
   - tox -c tox.ini -e $TOX_ENV
@@ -46,6 +46,24 @@ after_success:
 
 matrix:
   fast_finish: true
+
+  # https://github.com/travis-ci/travis-ci/issues/4794#issuecomment-143758799
+  include:
+    - python: 3.5
+      env:
+      - TOX_ENV=py35-tw155
+
+    - python: 3.5
+      env:
+      - TOX_ENV=py35-tw162
+
+    - python: 3.5
+      env:
+      - TOX_ENV=py35-twtrunk
+
+    - python: 3.5
+      env:
+      - TOX_ENV=py35-asyncio
 
 notifications:
    irc:
