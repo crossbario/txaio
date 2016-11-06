@@ -1,6 +1,15 @@
 txio releases
 =============
 
+2.5.2
+-----
+
+- November 6, 2016
+- fix pytest3/2
+- fix Sphinx 1.4+ doc building
+- Copyrights transferred from Tavendo to Crossbar.io Technologies
+
+
 2.5.1
 -----
 
