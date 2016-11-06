@@ -2,7 +2,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) Tavendo GmbH
+# Copyright (c) Crossbar.io Technologies GmbH
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -91,8 +91,7 @@ setup(
     version=__version__,
     description='Compatibility API between asyncio/Twisted/Trollius',
     long_description=docstr,
-    author='Tavendo GmbH',
-    author_email='autobahnws@googlegroups.com',
+    author='Crossbar.io Technologies GmbH',
     url='https://github.com/crossbario/txaio',
     platforms=('Any'),
     install_requires=[
