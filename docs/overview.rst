@@ -7,8 +7,7 @@ Brief History
 This library has been factored out of the `Autobahn|Python`_ WAMP client
 library. The ``ApplicationSession`` object from that project therefore
 serves as a good example of how to use this library in a complex
-use-case. See
-https://github.com/tavendo/AutobahnPython/blob/master/autobahn/wamp/protocol.py#L410
+use-case.
 
 We are releasing it in the hopes these utilities are useful on their
 own to other projects using event-based Python. Only authors of
