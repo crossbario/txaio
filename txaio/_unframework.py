@@ -44,6 +44,7 @@ def _throw_usage_error(*args, **kw):
         "with .use_twisted() or .use_asyncio()"
     )
 
+
 # all the txaio API methods just raise the error
 create_future = _throw_usage_error
 create_future_success = _throw_usage_error
