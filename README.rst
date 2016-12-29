@@ -59,6 +59,8 @@ Code like the following can then run on *either* system:
     txaio.resolve(f0, "value")
     txaio.reject(f1, RuntimeError("it failed"))
 
+Please refer to the `documentation <https://txaio.readthedocs.io/en/latest/>`_ for description and usage of the library features.
+
 
 .. |Version| image:: https://img.shields.io/pypi/v/txaio.svg
    :target: https://pypi.python.org/pypi/txaio
@@ -73,4 +75,4 @@ Code like the following can then run on *either* system:
    :target: https://codecov.io/github/crossbario/txaio
 
 .. |Docs| image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
-   :target: http://txaio.readthedocs.org/en/latest/
+   :target: https://txaio.readthedocs.io/en/latest/
