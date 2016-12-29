@@ -31,10 +31,10 @@ env:
   - TOX_ENV=py34-twtrunk
   - TOX_ENV=py34-asyncio
 
-  #- TOX_ENV=py35-tw154
-  #- TOX_ENV=py35-tw165
-  #- TOX_ENV=py35-twtrunk
-  #- TOX_ENV=py35-asyncio
+#  - TOX_ENV=py35-tw154
+#  - TOX_ENV=py35-tw165
+#  - TOX_ENV=py35-twtrunk
+#  - TOX_ENV=py35-asyncio
 
 script:
   - tox -c tox.ini -e $TOX_ENV
