@@ -1,6 +1,12 @@
 txio releases
 =============
 
+2.6.0
+-----
+
+- avoid giving negative times to `callLater` with batched timers (issue #81)
+
+
 2.5.2
 -----
 

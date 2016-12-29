@@ -192,3 +192,24 @@ def test_batched_chunks_with_errors(framework_tx):
             assert False, "Should get exception"
         except RuntimeError as e:
             assert "processing call_later" in str(e)
+
+
+def test_batched_close_to_now(framework_tx):
+    '''
+    if our current time is fractional, and we make a call_later with a
+    tiny delay that's still within the same second, we'll produce a
+    negative call_later when adding a bucket; see issue #81
+    '''
+    from twisted.internet.task import Clock
+
+    class FakeClock(Clock):
+        def callLater(self, delay, *args, **kw):
+            # 'real' reactors do this, but Clock doesn't assert on
+            # this.
+            assert delay >= 0
+            return Clock.callLater(self, delay, *args, **kw)
+
+    with replace_loop(FakeClock()) as clock:
+        clock.advance(0.5)
+        batched = txaio.make_batched_timer(1, chunk_size=2)
+        batched.call_later(0.1, lambda: None)

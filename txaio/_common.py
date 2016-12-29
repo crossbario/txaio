@@ -39,6 +39,10 @@ class _BatchedTimer(IBatchedTimer):
 
     def __init__(self, bucket_milliseconds, chunk_size,
                  seconds_provider, delayed_call_creator):
+        if bucket_milliseconds <= 0.0:
+            raise ValueError(
+                "bucket_milliseconds must be > 0.0"
+            )
         self._bucket_milliseconds = float(bucket_milliseconds)
         self._chunk_size = chunk_size
         self._get_seconds = seconds_provider
@@ -50,15 +54,20 @@ class _BatchedTimer(IBatchedTimer):
         IBatchedTimer API
         """
         # "quantize" the delay to the nearest bucket
-        real_time = int(self._get_seconds() + delay) * 1000
+        now = self._get_seconds()
+        real_time = int(now + delay) * 1000
         real_time -= int(real_time % self._bucket_milliseconds)
         call = _BatchedCall(self, real_time, lambda: func(*args, **kwargs))
         try:
             self._buckets[real_time][1].append(call)
         except KeyError:
             # new bucket; need to add "actual" underlying IDelayedCall
+            diff = (real_time / 1000.0) - now
+            # we need to clamp this because if we quantized to the
+            # nearest second, but that second is actually (slightly)
+            # less than the current time 'diff' will be negative.
             delayed_call = self._create_delayed_call(
-                (real_time / 1000.0) - self._get_seconds(),
+                max(0.0, diff),
                 self._notify_bucket, real_time,
             )
             self._buckets[real_time] = (delayed_call, [call])
@@ -96,7 +105,9 @@ class _BatchedTimer(IBatchedTimer):
         # ceil()ing because we want the number of chunks, and a
         # partial chunk is still a chunk
         delay_ms = self._bucket_milliseconds / math.ceil(float(len(calls)) / self._chunk_size)
-        notify_one_chunk(calls, self._chunk_size, delay_ms)
+        # I can't imagine any scenario in which chunk_delay_ms is
+        # actually less than zero, but just being safe here
+        notify_one_chunk(calls, self._chunk_size, max(0.0, delay_ms))
 
     def _remove_call(self, real_time, call):
         """
