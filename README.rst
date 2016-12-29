@@ -1,7 +1,7 @@
 txaio
 =====
 
-| |Version| |Downloads| |Build Status| |Coverage| |Docs|
+| |Version| |Build Status| |Coverage| |Docs|
 
 --------------
 
@@ -24,11 +24,11 @@ Platform support
 
 **txaio** runs on CPython 2.7/3.3+ and PyPy 2, on top of Twisted or asyncio. Specifically, **txaio** is tested on the following platforms:
 
-* CPython 2.7 on Twisted 12.1, 13.2, 15.4, trunk and Trollius 2.0
-* CPython 3.3 on Twisted 15.4, trunk and Trollius 2.0
-* CPython 3.4 on Twisted 15.4, trunk and asyncio (stdlib)
-* CPython 3.5 on Twisted 15.4, trunk and asyncio (stdlib)
-* PyPy 2.5 on Twisted 12.1, 13.2, 15.4, trunk and Trollius 2.0
+* CPython 2.7 on Twisted 12.1, 13.2, 15.4, 16.5, trunk and on Trollius 2.0
+* CPython 3.3 on Twisted 15.4, 16.5, trunk and on Trollius 2.0
+* CPython 3.4 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
+* CPython 3.5 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
+* PyPy 2 on Twisted 12.1, 13.2, 15.4, 16.5, trunk and on Trollius 2.0
 
 
 How it works
@@ -62,12 +62,6 @@ Code like the following can then run on *either* system:
 
 .. |Version| image:: https://img.shields.io/pypi/v/txaio.svg
    :target: https://pypi.python.org/pypi/txaio
-
-.. |Downloads| image:: https://img.shields.io/pypi/dm/txaio.svg
-   :target: https://pypi.python.org/pypi/txaio
-
-.. |GitHub Stars| image:: https://img.shields.io/github/stars/crossbario/txaio.svg?style=social&label=Star
-   :target: https://github.com/crossbario/txaio
 
 .. |Master Branch| image:: https://img.shields.io/badge/branch-master-orange.svg
    :target: https://travis-ci.org/crossbario/txaio.svg?branch=master
