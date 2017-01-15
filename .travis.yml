@@ -1,13 +1,5 @@
-sudo: false
-
 language: python
-
-python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "3.6"
+sudo: false
 
 install:
   - pip install tox codecov
@@ -59,6 +51,40 @@ after_success:
 
 matrix:
   fast_finish: true
+
+  # https://github.com/travis-ci/travis-ci/issues/4794#issuecomment-143758799
+  include:
+    - python: 3.5
+      env:
+      - TOX_ENV=py35-tw154
+
+    - python: 3.5
+      env:
+      - TOX_ENV=py35-tw165
+
+    - python: 3.5
+      env:
+      - TOX_ENV=py35-twtrunk
+
+    - python: 3.5
+      env:
+      - TOX_ENV=py35-asyncio
+
+    - python: 3.6
+      env:
+      - TOX_ENV=py36-tw154
+
+    - python: 3.6
+      env:
+      - TOX_ENV=py36-tw165
+
+    - python: 3.6
+      env:
+      - TOX_ENV=py36-twtrunk
+
+    - python: 3.6
+      env:
+      - TOX_ENV=py36-asyncio
 
 notifications:
    irc:
