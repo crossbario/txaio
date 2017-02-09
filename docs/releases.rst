@@ -1,9 +1,17 @@
 txio releases
 =============
 
+2.6.1
+-----
+
+- February 9, 2017
+- added inline sleep helper (Twisted only for now)
+
+
 2.6.0
 -----
 
+- December 29, 2016
 - avoid giving negative times to `callLater` with batched timers (issue #81)
 
 
