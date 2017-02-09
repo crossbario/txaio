@@ -75,3 +75,5 @@ add_log_categories = _throw_usage_error
 
 IFailedFuture = _throw_usage_error
 ILogger = _throw_usage_error
+
+sleep = _throw_usage_error

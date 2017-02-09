@@ -65,34 +65,36 @@ __all__ = (
 
     'config',                   # the config instance, access via attributes
 
-    'create_future',   # create a Future (can be already resolved/errored)
+    'create_future',            # create a Future (can be already resolved/errored)
     'create_future_success',
     'create_future_error',
-    'create_failure',  # return an object implementing IFailedFuture
-    'as_future',       # call a method, and always return a Future
-    'is_future',       # True for Deferreds in tx and Futures, @coroutines in asyncio
-    'reject',          # errback a Future
-    'resolve',         # callback a Future
-    'add_callbacks',   # add callback and/or errback
-    'gather',          # return a Future waiting for several other Futures
-    'is_called',       # True if the Future has a result
+    'create_failure',           # return an object implementing IFailedFuture
+    'as_future',                # call a method, and always return a Future
+    'is_future',                # True for Deferreds in tx and Futures, @coroutines in asyncio
+    'reject',                   # errback a Future
+    'resolve',                  # callback a Future
+    'add_callbacks',            # add callback and/or errback
+    'gather',                   # return a Future waiting for several other Futures
+    'is_called',                # True if the Future has a result
 
-    'call_later',      # call the callback after the given delay seconds
+    'call_later',               # call the callback after the given delay seconds
 
-    'failure_message',    # a printable error-message from a IFailedFuture
-    'failure_traceback',  # returns a traceback instance from an IFailedFuture
-    'failure_format_traceback',  # a string, the formatted traceback
+    'failure_message',          # a printable error-message from a IFailedFuture
+    'failure_traceback',        # returns a traceback instance from an IFailedFuture
+    'failure_format_traceback', # a string, the formatted traceback
 
-    'make_batched_timer',  # create BatchedTimer/IBatchedTimer instances
+    'make_batched_timer',       # create BatchedTimer/IBatchedTimer instances
 
-    'make_logger',     # creates an object implementing ILogger
-    'start_logging',   # initializes logging (may grab stdin at this point)
-    'set_global_log_level',  # Set the global log level
-    'get_global_log_level',  # Get the global log level
+    'make_logger',              # creates an object implementing ILogger
+    'start_logging',            # initializes logging (may grab stdin at this point)
+    'set_global_log_level',     # Set the global log level
+    'get_global_log_level',     # Get the global log level
     'add_log_categories',
 
-    'IFailedFuture',             # describes API for arg to errback()s
-    'ILogger',                   # API for logging
+    'IFailedFuture',            # describes API for arg to errback()s
+    'ILogger',                  # API for logging
+
+    'sleep',                    # little helper for inline sleeping
 )
 
 
