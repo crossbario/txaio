@@ -424,3 +424,15 @@ def set_global_log_level(level):
 
 def get_global_log_level():
     return _log_level
+
+
+def sleep(delay, loop=None):
+    """
+    Inline sleep for use in co-routines.
+
+    :param delay: Time to sleep in seconds.
+    :type delay: float
+    :param reactor: The asyncio loop to use.
+    :type reactor: None (to use the default loop) or a loop.
+    """
+    raise Exception('not implemented yet')

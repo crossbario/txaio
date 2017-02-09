@@ -65,14 +65,11 @@ Please refer to the `documentation <https://txaio.readthedocs.io/en/latest/>`_ f
 .. |Version| image:: https://img.shields.io/pypi/v/txaio.svg
    :target: https://pypi.python.org/pypi/txaio
 
-.. |Master Branch| image:: https://img.shields.io/badge/branch-master-orange.svg
-   :target: https://travis-ci.org/crossbario/txaio.svg?branch=master
-
 .. |Build Status| image:: https://travis-ci.org/crossbario/txaio.svg?branch=master
    :target: https://travis-ci.org/crossbario/txaio
 
-.. |Coverage| image:: https://img.shields.io/codecov/c/github/crossbario/txaio/master.svg
+.. |Coverage| image:: https://codecov.io/github/crossbario/txaio/coverage.svg?branch=master
    :target: https://codecov.io/github/crossbario/txaio
 
-.. |Docs| image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+.. |Docs| image:: https://readthedocs.org/projects/txaio/badge/?version=latest
    :target: https://txaio.readthedocs.io/en/latest/

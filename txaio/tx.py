@@ -536,3 +536,19 @@ def set_global_log_level(level):
 
 def get_global_log_level():
     return _log_level
+
+
+def sleep(delay, reactor=None):
+    """
+    Inline sleep for use in co-routines.
+
+    :param delay: Time to sleep in seconds.
+    :type delay: float
+    :param reactor: The Twisted reactor to use.
+    :type reactor: None or provider of ``IReactorTime``.
+    """
+    if not reactor:
+        from twisted.internet import reactor
+    d = Deferred()
+    reactor.callLater(delay, d.callback, None)
+    return d
