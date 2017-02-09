@@ -81,7 +81,7 @@ __all__ = (
 
     'failure_message',          # a printable error-message from a IFailedFuture
     'failure_traceback',        # returns a traceback instance from an IFailedFuture
-    'failure_format_traceback', # a string, the formatted traceback
+    'failure_format_traceback',     # a string, the formatted traceback
 
     'make_batched_timer',       # create BatchedTimer/IBatchedTimer instances
 

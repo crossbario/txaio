@@ -540,11 +540,7 @@ def get_global_log_level():
 
 def sleep(delay, reactor=None):
     """
-    Inline sleep for use in co-routines (Twisted ``inlineCallback`` decorated functions).
-
-    .. seealso::
-       * `twisted.internet.defer.inlineCallbacks <http://twistedmatrix.com/documents/current/api/twisted.internet.defer.html#inlineCallbacks>`__
-       * `twisted.internet.interfaces.IReactorTime <http://twistedmatrix.com/documents/current/api/twisted.internet.interfaces.IReactorTime.html>`__
+    Inline sleep for use in co-routines.
 
     :param delay: Time to sleep in seconds.
     :type delay: float
