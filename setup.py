@@ -91,7 +91,9 @@ setup(
     version=__version__,
     description='Compatibility API between asyncio/Twisted/Trollius',
     long_description=docstr,
+    license='MIT License',
     author='Crossbar.io Technologies GmbH',
+    author_email='autobahnws@googlegroups.com',
     url='https://github.com/crossbario/txaio',
     platforms=('Any'),
     install_requires=[
@@ -104,7 +106,18 @@ setup(
         'all': extras_require_all
     },
     packages=['txaio'],
-    zip_safe=False,
+
+    # this flag will make files from MANIFEST.in go into _source_ distributions only
+    include_package_data=True,
+
+    # in addition, the following will make the specified files go
+    # into source _and_ bdist distributions!
+    data_files=[('.', ['LICENSE'])],
+
+    # this package does not access its own source code or data files
+    # as normal operating system files
+    zip_safe=True,
+
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         "License :: OSI Approved :: MIT License",
@@ -120,6 +133,7 @@ setup(
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Libraries",
