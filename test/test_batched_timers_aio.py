@@ -77,6 +77,31 @@ def test_batched_successful_call(framework_aio):
         assert calls[2] == (("third call", ), dict())
 
 
+def test_batched_successful_call_explicit_loop(framework_aio):
+    '''
+    batched calls really happen in batches
+    '''
+    # Trollius doesn't come with this, so won't work on py2
+    pytest.importorskip('asyncio.test_utils')
+    from asyncio.test_utils import TestLoop
+
+    def time_gen():
+        yield
+        yield
+    new_loop = TestLoop(time_gen)
+    calls = []
+
+    def foo(*args, **kw):
+        calls.append((args, kw))
+
+    batched = txaio.make_batched_timer(5, loop=new_loop)
+
+    batched.call_later(1, foo, "first call")
+    new_loop.advance_time(2.0)
+    new_loop._run_once()
+    assert len(calls) == 1
+
+
 def test_batched_cancel(framework_aio):
     '''
     we can cancel uncalled call_laters
@@ -86,7 +111,6 @@ def test_batched_cancel(framework_aio):
     from asyncio.test_utils import TestLoop
 
     def time_gen():
-        yield
         yield
         yield
     new_loop = TestLoop(time_gen)
@@ -121,7 +145,6 @@ def test_batched_cancel_too_late(framework_aio):
     from asyncio.test_utils import TestLoop
 
     def time_gen():
-        yield
         yield
         yield
     new_loop = TestLoop(time_gen)

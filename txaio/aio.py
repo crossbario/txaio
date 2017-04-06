@@ -317,7 +317,7 @@ def call_later(delay, fun, *args, **kwargs):
     return config.loop.call_later(delay, real_call)
 
 
-def make_batched_timer(bucket_seconds, chunk_size=100):
+def make_batched_timer(bucket_seconds, chunk_size=100, loop=None):
     """
     Creates and returns an object implementing
     :class:`txaio.IBatchedTimer`.
@@ -332,13 +332,26 @@ def make_batched_timer(bucket_seconds, chunk_size=100):
         the reactor.
     """
 
+    # XXX this duplicates code from 'call_later', but I don't see an
+    # alternative
+    if loop is not None:
+
+        def _create_call_later(delay, fun, *args, **kwargs):
+            real_call = functools.partial(fun, *args, **kwargs)
+            return loop.call_later(delay, real_call)
+        the_loop = loop
+
+    else:
+        _create_call_later = call_later
+        the_loop = config.loop
+
     def get_seconds():
-        return config.loop.time()
+        return the_loop.time()
 
     return _BatchedTimer(
         bucket_seconds * 1000.0, chunk_size,
         seconds_provider=get_seconds,
-        delayed_call_creator=call_later,
+        delayed_call_creator=_create_call_later,
     )
 
 
