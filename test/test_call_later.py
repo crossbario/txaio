@@ -29,6 +29,7 @@ from mock import patch
 import pytest
 import txaio
 from txaio.testutil import replace_loop
+from util import run_once
 
 
 def test_default_reactor(framework_tx):
@@ -62,6 +63,32 @@ def test_explicit_reactor_future(framework):
         assert len(fake_loop.method_calls) == 2
         c = fake_loop.method_calls[1]
         assert c[0] == 'call_soon'
+
+
+def test_create_future_explicit_loop(framework):
+    """
+    process events on alternate loop= for create_future later
+    """
+    pytest.importorskip('asyncio')
+    if txaio.using_twisted:
+        pytest.skip()
+
+    import asyncio
+    alt_loop = asyncio.new_event_loop()
+    f = txaio.create_future(loop=alt_loop)
+
+    results = []
+    f.add_done_callback(lambda r: results.append(r.result()))
+
+    assert results == []
+    txaio.resolve(f, 'some result')
+
+    assert results == []
+    run_once()
+    assert results == []
+    with replace_loop(alt_loop):
+        run_once()
+    assert results == ['some result']
 
 
 def test_explicit_reactor_coroutine(framework):
