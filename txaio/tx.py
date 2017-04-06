@@ -130,6 +130,18 @@ def add_log_categories(categories):
     _categories.update(categories)
 
 
+def with_config(loop=None):
+    global config
+    if loop is not None:
+        if config.loop is not None and config.loop is not loop:
+            raise RuntimeError(
+                "Twisted has only a single, global reactor. You passed in "
+                "a reactor different from the one already configured "
+                "in txaio.config.loop"
+            )
+    return _TxApi(config)
+
+
 # NOTE: beware that twisted.logger._logger.Logger copies itself via an
 # overriden __get__ method when used as recommended as a class
 # descriptor.  So, we override __get__ to just return ``self`` which
@@ -344,183 +356,184 @@ def start_logging(out=_stdout, level='info'):
         log.startLogging(out)
 
 
-def failure_message(fail):
-    """
-    :param fail: must be an IFailedFuture
-    returns a unicode error-message
-    """
-    try:
-        return u'{0}: {1}'.format(
-            fail.value.__class__.__name__,
-            fail.getErrorMessage(),
-        )
-    except Exception:
-        return 'Failed to produce failure message for "{0}"'.format(fail)
-
-
-def failure_traceback(fail):
-    """
-    :param fail: must be an IFailedFuture
-    returns a traceback instance
-    """
-    return fail.tb
-
-
-def failure_format_traceback(fail):
-    """
-    :param fail: must be an IFailedFuture
-    returns a string
-    """
-    try:
-        f = six.StringIO()
-        fail.printTraceback(file=f)
-        return f.getvalue()
-    except Exception:
-        return u"Failed to format failure traceback for '{0}'".format(fail)
-
-
 _unspecified = object()
 
 
-def create_future(result=_unspecified, error=_unspecified):
-    if result is not _unspecified and error is not _unspecified:
-        raise ValueError("Cannot have both result and error.")
+class _TxApi(object):
 
-    f = Deferred()
-    if result is not _unspecified:
-        resolve(f, result)
-    elif error is not _unspecified:
-        reject(f, error)
-    return f
+    def __init__(self, config):
+        self._config = config
 
+    def failure_message(self, fail):
+        """
+        :param fail: must be an IFailedFuture
+        returns a unicode error-message
+        """
+        try:
+            return u'{0}: {1}'.format(
+                fail.value.__class__.__name__,
+                fail.getErrorMessage(),
+            )
+        except Exception:
+            return 'Failed to produce failure message for "{0}"'.format(fail)
 
-# maybe delete, just use create_future()
-def create_future_success(result):
-    return succeed(result)
+    def failure_traceback(self, fail):
+        """
+        :param fail: must be an IFailedFuture
+        returns a traceback instance
+        """
+        return fail.tb
 
+    def failure_format_traceback(self, fail):
+        """
+        :param fail: must be an IFailedFuture
+        returns a string
+        """
+        try:
+            f = six.StringIO()
+            fail.printTraceback(file=f)
+            return f.getvalue()
+        except Exception:
+            return u"Failed to format failure traceback for '{0}'".format(fail)
 
-# maybe delete, just use create_future()
-def create_future_error(error=None):
-    return fail(create_failure(error))
+    def create_future(self, result=_unspecified, error=_unspecified):
+        if result is not _unspecified and error is not _unspecified:
+            raise ValueError("Cannot have both result and error.")
 
+        f = Deferred()
+        if result is not _unspecified:
+            resolve(f, result)
+        elif error is not _unspecified:
+            reject(f, error)
+        return f
 
-def as_future(fun, *args, **kwargs):
-    return maybeDeferred(fun, *args, **kwargs)
+    def create_future_success(self, result):
+        return succeed(result)
 
+    def create_future_error(self, error=None):
+        return fail(create_failure(error))
 
-def is_future(obj):
-    return isinstance(obj, Deferred)
+    def as_future(self, fun, *args, **kwargs):
+        return maybeDeferred(fun, *args, **kwargs)
 
+    def is_future(self, obj):
+        return isinstance(obj, Deferred)
 
-def call_later(delay, fun, *args, **kwargs):
-    return IReactorTime(_get_loop()).callLater(delay, fun, *args, **kwargs)
+    def call_later(self, delay, fun, *args, **kwargs):
+        return IReactorTime(self._get_loop()).callLater(delay, fun, *args, **kwargs)
 
+    def make_batched_timer(self, bucket_seconds, chunk_size=100):
+        """
+        Creates and returns an object implementing
+        :class:`txaio.IBatchedTimer`.
 
-def make_batched_timer(bucket_seconds, chunk_size=100):
-    """
-    Creates and returns an object implementing
-    :class:`txaio.IBatchedTimer`.
+        :param bucket_seconds: the number of seconds in each bucket. That
+            is, a value of 5 means that any timeout within a 5 second
+            window will be in the same bucket, and get notified at the
+            same time. This is only accurate to "milliseconds".
 
-    :param bucket_seconds: the number of seconds in each bucket. That
-        is, a value of 5 means that any timeout within a 5 second
-        window will be in the same bucket, and get notified at the
-        same time. This is only accurate to "milliseconds".
+        :param chunk_size: when "doing" the callbacks in a particular
+            bucket, this controls how many we do at once before yielding to
+            the reactor.
+        """
 
-    :param chunk_size: when "doing" the callbacks in a particular
-        bucket, this controls how many we do at once before yielding to
-        the reactor.
-    """
+        def get_seconds():
+            return self._get_loop().seconds()
 
-    def get_seconds():
-        return _get_loop().seconds()
+        def create_delayed_call(delay, fun, *args, **kwargs):
+            return self._get_loop().callLater(delay, fun, *args, **kwargs)
 
-    def create_delayed_call(delay, fun, *args, **kwargs):
-        return _get_loop().callLater(delay, fun, *args, **kwargs)
+        return _BatchedTimer(
+            bucket_seconds * 1000.0, chunk_size,
+            seconds_provider=get_seconds,
+            delayed_call_creator=create_delayed_call,
+        )
 
-    return _BatchedTimer(
-        bucket_seconds * 1000.0, chunk_size,
-        seconds_provider=get_seconds,
-        delayed_call_creator=create_delayed_call,
-    )
+    def is_called(self, future):
+        return future.called
 
+    def resolve(self, future, result=None):
+        future.callback(result)
 
-def is_called(future):
-    return future.called
+    def reject(self, future, error=None):
+        if error is None:
+            error = create_failure()
+        elif isinstance(error, Exception):
+            error = Failure(error)
+        else:
+            if not isinstance(error, Failure):
+                raise RuntimeError("reject requires a Failure or Exception")
+        future.errback(error)
 
+    def create_failure(self, exception=None):
+        """
+        Create a Failure instance.
 
-def resolve(future, result=None):
-    future.callback(result)
+        if ``exception`` is None (the default), we MUST be inside an
+        "except" block. This encapsulates the exception into an object
+        that implements IFailedFuture
+        """
+        if exception:
+            return Failure(exception)
+        return Failure()
 
+    def add_callbacks(self, future, callback, errback):
+        """
+        callback or errback may be None, but at least one must be
+        non-None.
+        """
+        assert future is not None
+        if callback is None:
+            assert errback is not None
+            future.addErrback(errback)
+        else:
+            # Twisted allows errback to be None here
+            future.addCallbacks(callback, errback)
+        return future
 
-def reject(future, error=None):
-    if error is None:
-        error = create_failure()
-    elif isinstance(error, Exception):
-        error = Failure(error)
-    else:
-        if not isinstance(error, Failure):
-            raise RuntimeError("reject requires a Failure or Exception")
-    future.errback(error)
+    def gather(self, futures, consume_exceptions=True):
+        def completed(res):
+            rtn = []
+            for (ok, value) in res:
+                rtn.append(value)
+                if not ok and not consume_exceptions:
+                    value.raiseException()
+            return rtn
 
+        # XXX if consume_exceptions is False in asyncio.gather(), it will
+        # abort on the first raised exception -- should we set
+        # fireOnOneErrback=True (if consume_exceptions=False?) -- but then
+        # we'll have to wrap the errback() to extract the "real" failure
+        # from the FirstError that gets thrown if you set that ...
 
-def create_failure(exception=None):
-    """
-    Create a Failure instance.
+        dl = DeferredList(list(futures), consumeErrors=consume_exceptions)
+        # we unpack the (ok, value) tuples into just a list of values, so
+        # that the callback() gets the same value in asyncio and Twisted.
+        add_callbacks(dl, completed, None)
+        return dl
 
-    if ``exception`` is None (the default), we MUST be inside an
-    "except" block. This encapsulates the exception into an object
-    that implements IFailedFuture
-    """
-    if exception:
-        return Failure(exception)
-    return Failure()
+    def sleep(self, delay):
+        """
+        Inline sleep for use in co-routines.
 
+        :param delay: Time to sleep in seconds.
+        :type delay: float
+        """
+        d = Deferred()
+        self._get_loop().callLater(delay, d.callback, None)
+        return d
 
-def add_callbacks(future, callback, errback):
-    """
-    callback or errback may be None, but at least one must be
-    non-None.
-    """
-    assert future is not None
-    if callback is None:
-        assert errback is not None
-        future.addErrback(errback)
-    else:
-        # Twisted allows errback to be None here
-        future.addCallbacks(callback, errback)
-    return future
-
-
-def gather(futures, consume_exceptions=True):
-    def completed(res):
-        rtn = []
-        for (ok, value) in res:
-            rtn.append(value)
-            if not ok and not consume_exceptions:
-                value.raiseException()
-        return rtn
-
-    # XXX if consume_exceptions is False in asyncio.gather(), it will
-    # abort on the first raised exception -- should we set
-    # fireOnOneErrback=True (if consume_exceptions=False?) -- but then
-    # we'll have to wrap the errback() to extract the "real" failure
-    # from the FirstError that gets thrown if you set that ...
-
-    dl = DeferredList(list(futures), consumeErrors=consume_exceptions)
-    # we unpack the (ok, value) tuples into just a list of values, so
-    # that the callback() gets the same value in asyncio and Twisted.
-    add_callbacks(dl, completed, None)
-    return dl
-
-
-# methods internal to this implementation
-
-
-def _get_loop():
-    if config.loop is None:
-        from twisted.internet import reactor
-        config.loop = reactor
-    return config.loop
+    def _get_loop(self):
+        """
+        internal helper
+        """
+        # we import and assign the default here (and not, e.g., when
+        # making Config) so as to delay importing reactor as long as
+        # possible in case someone is installing a custom one.
+        if self._config.loop is None:
+            from twisted.internet import reactor
+            self._config.loop = reactor
+        return self._config.loop
 
 
 def set_global_log_level(level):
@@ -538,17 +551,23 @@ def get_global_log_level():
     return _log_level
 
 
-def sleep(delay, reactor=None):
-    """
-    Inline sleep for use in co-routines.
+_default_api = _TxApi(config)
 
-    :param delay: Time to sleep in seconds.
-    :type delay: float
-    :param reactor: The Twisted reactor to use.
-    :type reactor: None or provider of ``IReactorTime``.
-    """
-    if not reactor:
-        from twisted.internet import reactor
-    d = Deferred()
-    reactor.callLater(delay, d.callback, None)
-    return d
+
+failure_message = _default_api.failure_message
+failure_traceback = _default_api.failure_traceback
+failure_format_traceback = _default_api.failure_format_traceback
+create_future = _default_api.create_future
+create_future_success = _default_api.create_future_success
+create_future_error = _default_api.create_future_error
+as_future = _default_api.as_future
+is_future = _default_api.is_future
+call_later = _default_api.call_later
+make_batched_timer = _default_api.make_batched_timer
+is_called = _default_api.is_called
+resolve = _default_api.resolve
+reject = _default_api.reject
+create_failure = _default_api.create_failure
+add_callbacks = _default_api.add_callbacks
+gather = _default_api.gather
+sleep = _default_api.sleep
