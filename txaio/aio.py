@@ -55,16 +55,16 @@ except ImportError:
     from trollius import iscoroutine
     from trollius import Future
 
+
 config = _Config()
-config.loop = asyncio.get_event_loop()
+
+
+# logging should probably all be folded into _AsyncioApi as well
 _stderr, _stdout = sys.stderr, sys.stdout
 _loggers = weakref.WeakSet()  # weak-ref's of each logger we've created before start_logging()
 _log_level = 'info'  # re-set by start_logging
 _started_logging = False
 _categories = {}
-
-using_twisted = False
-using_asyncio = True
 
 
 def add_log_categories(categories):
@@ -101,7 +101,8 @@ class FailedFuture(IFailedFuture):
         return str(self.value)
 
 
-# API methods for txaio, exported via the top-level __init__.py
+# logging API methods
+
 
 def _log(logger, level, format=u'', **kwargs):
 
@@ -226,207 +227,6 @@ def start_logging(out=_stdout, level='info'):
         logger._set_log_level(level)
 
 
-def failure_message(fail):
-    """
-    :param fail: must be an IFailedFuture
-    returns a unicode error-message
-    """
-    try:
-        return u'{0}: {1}'.format(
-            fail._value.__class__.__name__,
-            str(fail._value),
-        )
-    except Exception:
-        return u'Failed to produce failure message for "{0}"'.format(fail)
-
-
-def failure_traceback(fail):
-    """
-    :param fail: must be an IFailedFuture
-    returns a traceback instance
-    """
-    return fail._traceback
-
-
-def failure_format_traceback(fail):
-    """
-    :param fail: must be an IFailedFuture
-    returns a string
-    """
-    try:
-        f = six.StringIO()
-        traceback.print_exception(
-            fail._type,
-            fail.value,
-            fail._traceback,
-            file=f,
-        )
-        return f.getvalue()
-    except Exception:
-        return u"Failed to format failure traceback for '{0}'".format(fail)
-
-
-_unspecified = object()
-
-
-def create_future(result=_unspecified, error=_unspecified, loop=None):
-    if result is not _unspecified and error is not _unspecified:
-        raise ValueError("Cannot have both result and error.")
-
-    f = Future(loop=loop or config.loop)
-    if result is not _unspecified:
-        resolve(f, result)
-    elif error is not _unspecified:
-        reject(f, error)
-    return f
-
-
-def create_future_success(result, loop=None):
-    return create_future(result=result, loop=loop)
-
-
-def create_future_error(error=None, loop=None):
-    f = create_future(loop=loop)
-    reject(f, error)
-    return f
-
-
-# XXX how to pass "loop" arg? could pop it out of kwargs, but .. what
-# if you're "as_future"-ing a function that itself takes a "loop" arg?
-def as_future(fun, *args, **kwargs):
-    try:
-        res = fun(*args, **kwargs)
-    except Exception:
-        return create_future_error(create_failure())
-    else:
-        if isinstance(res, Future):
-            return res
-        elif iscoroutine(res):
-            return asyncio.Task(res, loop=config.loop)
-        else:
-            return create_future_success(res)
-
-
-def is_future(obj):
-    return iscoroutine(obj) or isinstance(obj, Future)
-
-
-def call_later(delay, fun, *args, **kwargs):
-    # loop.call_later doesn't support kwargs
-    real_call = functools.partial(fun, *args, **kwargs)
-    return config.loop.call_later(delay, real_call)
-
-
-def make_batched_timer(bucket_seconds, chunk_size=100, loop=None):
-    """
-    Creates and returns an object implementing
-    :class:`txaio.IBatchedTimer`.
-
-    :param bucket_seconds: the number of seconds in each bucket. That
-        is, a value of 5 means that any timeout within a 5 second
-        window will be in the same bucket, and get notified at the
-        same time. This is only accurate to "milliseconds".
-
-    :param chunk_size: when "doing" the callbacks in a particular
-        bucket, this controls how many we do at once before yielding to
-        the reactor.
-    """
-
-    # XXX this duplicates code from 'call_later', but I don't see an
-    # alternative
-    if loop is not None:
-
-        def _create_call_later(delay, fun, *args, **kwargs):
-            real_call = functools.partial(fun, *args, **kwargs)
-            return loop.call_later(delay, real_call)
-        the_loop = loop
-
-    else:
-        _create_call_later = call_later
-        the_loop = config.loop
-
-    def get_seconds():
-        return the_loop.time()
-
-    return _BatchedTimer(
-        bucket_seconds * 1000.0, chunk_size,
-        seconds_provider=get_seconds,
-        delayed_call_creator=_create_call_later,
-    )
-
-
-def is_called(future):
-    return future.done()
-
-
-def resolve(future, result=None):
-    future.set_result(result)
-
-
-def reject(future, error=None):
-    if error is None:
-        error = create_failure()  # will be error if we're not in an "except"
-    elif isinstance(error, Exception):
-        error = FailedFuture(type(error), error, None)
-    else:
-        if not isinstance(error, IFailedFuture):
-            raise RuntimeError("reject requires an IFailedFuture or Exception")
-    future.set_exception(error.value)
-
-
-def create_failure(exception=None):
-    """
-    This returns an object implementing IFailedFuture.
-
-    If exception is None (the default) we MUST be called within an
-    "except" block (such that sys.exc_info() returns useful
-    information).
-    """
-    if exception:
-        return FailedFuture(type(exception), exception, None)
-    return FailedFuture(*sys.exc_info())
-
-
-def add_callbacks(future, callback, errback):
-    """
-    callback or errback may be None, but at least one must be
-    non-None.
-
-    XXX beware the "f._result" hack to get "chainable-callback" type
-    behavior.
-    """
-    def done(f):
-        try:
-            res = f.result()
-            if callback:
-                x = callback(res)
-                if x is not None:
-                    f._result = x
-        except Exception:
-            if errback:
-                errback(create_failure())
-    return future.add_done_callback(done)
-
-
-def gather(futures, consume_exceptions=True):
-    """
-    This returns a Future that waits for all the Futures in the list
-    ``futures``
-
-    :param futures: a list of Futures (or coroutines?)
-
-    :param consume_exceptions: if True, any errors are eaten and
-    returned in the result list.
-    """
-
-    # from the asyncio docs: "If return_exceptions is True, exceptions
-    # in the tasks are treated the same as successful results, and
-    # gathered in the result list; otherwise, the first raised
-    # exception will be immediately propagated to the returned
-    # future."
-    return asyncio.gather(*futures, return_exceptions=consume_exceptions)
-
-
 def set_global_log_level(level):
     """
     Set the global log level on all loggers instantiated by txaio.
@@ -441,13 +241,251 @@ def get_global_log_level():
     return _log_level
 
 
-def sleep(delay, loop=None):
-    """
-    Inline sleep for use in co-routines.
+# asyncio API methods; the module-level functions are (now, for
+# backwards-compat) exported from a default instance of this class
 
-    :param delay: Time to sleep in seconds.
-    :type delay: float
-    :param reactor: The asyncio loop to use.
-    :type reactor: None (to use the default loop) or a loop.
-    """
-    raise Exception('not implemented yet')
+
+_unspecified = object()
+
+
+class _AsyncioApi(object):
+    using_twisted = False
+    using_asyncio = True
+
+    def __init__(self, config):
+        if config.loop is None:
+            config.loop = asyncio.get_event_loop()
+        self._config = config
+
+
+    def failure_message(self, fail):
+        """
+        :param fail: must be an IFailedFuture
+        returns a unicode error-message
+        """
+        try:
+            return u'{0}: {1}'.format(
+                fail._value.__class__.__name__,
+                str(fail._value),
+            )
+        except Exception:
+            return u'Failed to produce failure message for "{0}"'.format(fail)
+
+
+    def failure_traceback(self, fail):
+        """
+        :param fail: must be an IFailedFuture
+        returns a traceback instance
+        """
+        return fail._traceback
+
+
+    def failure_format_traceback(self, fail):
+        """
+        :param fail: must be an IFailedFuture
+        returns a string
+        """
+        try:
+            f = six.StringIO()
+            traceback.print_exception(
+                fail._type,
+                fail.value,
+                fail._traceback,
+                file=f,
+            )
+            return f.getvalue()
+        except Exception:
+            return u"Failed to format failure traceback for '{0}'".format(fail)
+
+
+    def create_future(self, result=_unspecified, error=_unspecified, loop=None):
+        if result is not _unspecified and error is not _unspecified:
+            raise ValueError("Cannot have both result and error.")
+
+        f = Future(loop=loop or config.loop)
+        if result is not _unspecified:
+            resolve(f, result)
+        elif error is not _unspecified:
+            reject(f, error)
+        return f
+
+
+    def create_future_success(self, result, loop=None):
+        return create_future(result=result, loop=loop)
+
+
+    def create_future_error(self, error=None, loop=None):
+        f = create_future(loop=loop)
+        reject(f, error)
+        return f
+
+
+    # XXX how to pass "loop" arg? could pop it out of kwargs, but .. what
+    # if you're "as_future"-ing a function that itself takes a "loop" arg?
+    def as_future(self, fun, *args, **kwargs):
+        try:
+            res = fun(*args, **kwargs)
+        except Exception:
+            return create_future_error(create_failure())
+        else:
+            if isinstance(res, Future):
+                return res
+            elif iscoroutine(res):
+                return asyncio.Task(res, loop=config.loop)
+            else:
+                return create_future_success(res)
+
+
+    def is_future(self, obj):
+        return iscoroutine(obj) or isinstance(obj, Future)
+
+
+    def call_later(self, delay, fun, *args, **kwargs):
+        # loop.call_later doesn't support kwargs
+        real_call = functools.partial(fun, *args, **kwargs)
+        return config.loop.call_later(delay, real_call)
+
+
+    def make_batched_timer(self, bucket_seconds, chunk_size=100, loop=None):
+        """
+        Creates and returns an object implementing
+        :class:`txaio.IBatchedTimer`.
+
+        :param bucket_seconds: the number of seconds in each bucket. That
+            is, a value of 5 means that any timeout within a 5 second
+            window will be in the same bucket, and get notified at the
+            same time. This is only accurate to "milliseconds".
+
+        :param chunk_size: when "doing" the callbacks in a particular
+            bucket, this controls how many we do at once before yielding to
+            the reactor.
+        """
+
+        # XXX this duplicates code from 'call_later', but I don't see an
+        # alternative
+        if loop is not None:
+
+            def _create_call_later(delay, fun, *args, **kwargs):
+                real_call = functools.partial(fun, *args, **kwargs)
+                return loop.call_later(delay, real_call)
+            the_loop = loop
+
+        else:
+            _create_call_later = call_later
+            the_loop = config.loop
+
+        def get_seconds():
+            return the_loop.time()
+
+        return _BatchedTimer(
+            bucket_seconds * 1000.0, chunk_size,
+            seconds_provider=get_seconds,
+            delayed_call_creator=_create_call_later,
+        )
+
+
+    def is_called(self, future):
+        return future.done()
+
+
+    def resolve(self, future, result=None):
+        future.set_result(result)
+
+
+    def reject(self, future, error=None):
+        if error is None:
+            error = create_failure()  # will be error if we're not in an "except"
+        elif isinstance(error, Exception):
+            error = FailedFuture(type(error), error, None)
+        else:
+            if not isinstance(error, IFailedFuture):
+                raise RuntimeError("reject requires an IFailedFuture or Exception")
+        future.set_exception(error.value)
+
+
+    def create_failure(self, exception=None):
+        """
+        This returns an object implementing IFailedFuture.
+
+        If exception is None (the default) we MUST be called within an
+        "except" block (such that sys.exc_info() returns useful
+        information).
+        """
+        if exception:
+            return FailedFuture(type(exception), exception, None)
+        return FailedFuture(*sys.exc_info())
+
+
+    def add_callbacks(self, future, callback, errback):
+        """
+        callback or errback may be None, but at least one must be
+        non-None.
+
+        XXX beware the "f._result" hack to get "chainable-callback" type
+        behavior.
+        """
+        def done(f):
+            try:
+                res = f.result()
+                if callback:
+                    x = callback(res)
+                    if x is not None:
+                        f._result = x
+            except Exception:
+                if errback:
+                    errback(create_failure())
+        return future.add_done_callback(done)
+
+
+    def gather(self, futures, consume_exceptions=True):
+        """
+        This returns a Future that waits for all the Futures in the list
+        ``futures``
+
+        :param futures: a list of Futures (or coroutines?)
+
+        :param consume_exceptions: if True, any errors are eaten and
+        returned in the result list.
+        """
+
+        # from the asyncio docs: "If return_exceptions is True, exceptions
+        # in the tasks are treated the same as successful results, and
+        # gathered in the result list; otherwise, the first raised
+        # exception will be immediately propagated to the returned
+        # future."
+        return asyncio.gather(*futures, return_exceptions=consume_exceptions)
+
+    def sleep(self, delay):
+        """
+        Inline sleep for use in co-routines.
+
+        :param delay: Time to sleep in seconds.
+        :type delay: float
+        """
+        d = Deferred()
+        self._config.loop.callLater(delay, d.callback, None)
+        return d
+
+_default_api = _AsyncioApi(config)
+
+
+using_twisted = _default_api.using_twisted
+using_asyncio = _default_api.using_asyncio
+sleep = _default_api.sleep
+failure_message = _default_api.failure_message
+failure_traceback = _default_api.failure_traceback
+failure_format_traceback = _default_api.failure_format_traceback
+create_future = _default_api.create_future
+create_future_success = _default_api.create_future_success
+create_future_error = _default_api.create_future_error
+as_future = _default_api.as_future
+is_future = _default_api.is_future
+call_later = _default_api.call_later
+make_batched_timer = _default_api.make_batched_timer
+is_called = _default_api.is_called
+resolve = _default_api.resolve
+reject = _default_api.reject
+create_failure = _default_api.create_failure
+add_callbacks = _default_api.add_callbacks
+gather = _default_api.gather
+sleep = _default_api.sleep
