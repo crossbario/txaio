@@ -94,7 +94,9 @@ def test_batched_successful_call_explicit_loop(framework_aio):
     def foo(*args, **kw):
         calls.append((args, kw))
 
-    batched = txaio.make_batched_timer(5, loop=new_loop)
+    txa = txaio.with_config(loop=new_loop)
+
+    batched = txa.make_batched_timer(5)
 
     batched.call_later(1, foo, "first call")
     new_loop.advance_time(2.0)

@@ -25,9 +25,6 @@
 ###############################################################################
 
 
-import txaio
-
-
 def run_once():
     '''
     A helper that takes one trip through the event-loop to process any

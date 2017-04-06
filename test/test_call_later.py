@@ -74,8 +74,11 @@ def test_create_future_explicit_loop(framework):
         pytest.skip()
 
     import asyncio
+
     alt_loop = asyncio.new_event_loop()
-    f = txaio.create_future(loop=alt_loop)
+
+    txa = txaio.with_config(loop=alt_loop)
+    f = txa.create_future()
 
     results = []
     f.add_done_callback(lambda r: results.append(r.result()))
@@ -103,7 +106,9 @@ def test_create_future_success_explicit_loop(framework):
 
     import asyncio
     alt_loop = asyncio.new_event_loop()
-    f = txaio.create_future_success('some result', loop=alt_loop)
+    txa = txaio.with_config(loop=alt_loop)
+
+    f = txa.create_future_success('some result')
 
     results = []
     f.add_done_callback(lambda r: results.append(r.result()))
@@ -129,7 +134,8 @@ def test_create_future_failure_explicit_loop(framework):
     import asyncio
     alt_loop = asyncio.new_event_loop()
     the_exception = Exception('bad')
-    f = txaio.create_future_error(the_exception, loop=alt_loop)
+    txa = txaio.with_config(loop=alt_loop)
+    f = txa.create_future_error(the_exception)
 
     results = []
 
