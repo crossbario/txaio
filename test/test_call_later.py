@@ -83,12 +83,71 @@ def test_create_future_explicit_loop(framework):
     assert results == []
     txaio.resolve(f, 'some result')
 
+    # run_once() runs the txaio.config.loop so we shouldn't get any
+    # results until we spin alt_loop
     assert results == []
     run_once()
     assert results == []
     with replace_loop(alt_loop):
         run_once()
     assert results == ['some result']
+
+
+def test_create_future_success_explicit_loop(framework):
+    """
+    process events on alternate loop= for create_future later
+    """
+    pytest.importorskip('asyncio')
+    if txaio.using_twisted:
+        pytest.skip()
+
+    import asyncio
+    alt_loop = asyncio.new_event_loop()
+    f = txaio.create_future_success('some result', loop=alt_loop)
+
+    results = []
+    f.add_done_callback(lambda r: results.append(r.result()))
+
+    # run_once() runs the txaio.config.loop so we shouldn't get any
+    # results until we spin alt_loop
+    assert results == []
+    run_once()
+    assert results == []
+    with replace_loop(alt_loop):
+        run_once()
+    assert results == ['some result']
+
+
+def test_create_future_failure_explicit_loop(framework):
+    """
+    process events on alternate loop= for create_future later
+    """
+    pytest.importorskip('asyncio')
+    if txaio.using_twisted:
+        pytest.skip()
+
+    import asyncio
+    alt_loop = asyncio.new_event_loop()
+    the_exception = Exception('bad')
+    f = txaio.create_future_error(the_exception, loop=alt_loop)
+
+    results = []
+
+    def boom(r):
+        try:
+            results.append(r.result())
+        except Exception as e:
+            results.append(e)
+    f.add_done_callback(boom)
+
+    # run_once() runs the txaio.config.loop so we shouldn't get any
+    # results until we spin alt_loop
+    assert results == []
+    run_once()
+    assert results == []
+    with replace_loop(alt_loop):
+        run_once()
+    assert results == [the_exception]
 
 
 def test_explicit_reactor_coroutine(framework):
@@ -149,7 +208,6 @@ def test_call_later_aio(framework_aio):
         # even though we only do one call, I guess TestLoop needs
         # a "trailing" yield? "or something"
         when = yield 0
-        print("Hmmm", when)
     from asyncio.test_utils import TestLoop
     new_loop = TestLoop(time_gen)
 

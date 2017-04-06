@@ -281,16 +281,18 @@ def create_future(result=_unspecified, error=_unspecified, loop=None):
     return f
 
 
-def create_future_success(result):
-    return create_future(result=result)
+def create_future_success(result, loop=None):
+    return create_future(result=result, loop=loop)
 
 
-def create_future_error(error=None):
-    f = create_future()
+def create_future_error(error=None, loop=None):
+    f = create_future(loop=loop)
     reject(f, error)
     return f
 
 
+# XXX how to pass "loop" arg? could pop it out of kwargs, but .. what
+# if you're "as_future"-ing a function that itself takes a "loop" arg?
 def as_future(fun, *args, **kwargs):
     try:
         res = fun(*args, **kwargs)
