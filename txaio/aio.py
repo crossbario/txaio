@@ -269,11 +269,11 @@ def failure_format_traceback(fail):
 _unspecified = object()
 
 
-def create_future(result=_unspecified, error=_unspecified):
+def create_future(result=_unspecified, error=_unspecified, loop=None):
     if result is not _unspecified and error is not _unspecified:
         raise ValueError("Cannot have both result and error.")
 
-    f = Future(loop=config.loop)
+    f = Future(loop=loop or config.loop)
     if result is not _unspecified:
         resolve(f, result)
     elif error is not _unspecified:
