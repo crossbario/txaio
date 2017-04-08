@@ -36,7 +36,7 @@ version = __version__
 # see aio.py for asyncio/trollius implementation
 
 
-class _Config:
+class _Config(object):
     """
     This holds all valid configuration options, accessed as
     class-level variables. For example, if you were using asyncio:
@@ -58,6 +58,7 @@ class _Config:
 
 
 __all__ = (
+    'with_config',              # allow mutliple custom configurations at once
     'using_twisted',            # True if we're using Twisted
     'using_asyncio',            # True if we're using asyncio
     'use_twisted',              # sets the library to use Twisted, or exception

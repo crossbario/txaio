@@ -38,7 +38,7 @@ class _BatchedTimer(IBatchedTimer):
     """
 
     def __init__(self, bucket_milliseconds, chunk_size,
-                 seconds_provider, delayed_call_creator):
+                 seconds_provider, delayed_call_creator, loop=None):
         if bucket_milliseconds <= 0.0:
             raise ValueError(
                 "bucket_milliseconds must be > 0.0"
@@ -48,6 +48,7 @@ class _BatchedTimer(IBatchedTimer):
         self._get_seconds = seconds_provider
         self._create_delayed_call = delayed_call_creator
         self._buckets = dict()  # real seconds -> (IDelayedCall, list)
+        self._loop = loop
 
     def call_later(self, delay, func, *args, **kwargs):
         """

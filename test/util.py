@@ -39,7 +39,7 @@ def run_once():
     try:
         import asyncio
         from asyncio.test_utils import run_once as _run_once
-        return _run_once(asyncio.get_event_loop())
+        return _run_once(txaio.config.loop or asyncio.get_event_loop())
 
     except ImportError:
         import trollius as asyncio
