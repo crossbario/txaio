@@ -124,7 +124,7 @@ def test_batched_chunks(framework_tx):
     laters = []
 
     class FakeClock(Clock):
-        def callLater(self, *args, **kw):
+        def callLater(self, *args, **kw):  # noqa
             laters.append((args, kw))
             Clock.callLater(self, *args, **kw)
     new_loop = FakeClock()
@@ -166,7 +166,7 @@ def test_batched_chunks_with_errors(framework_tx):
     laters = []
 
     class FakeClock(Clock):
-        def callLater(self, *args, **kw):
+        def callLater(self, *args, **kw):  # noqa
             laters.append((args, kw))
             Clock.callLater(self, *args, **kw)
     new_loop = FakeClock()
@@ -203,7 +203,7 @@ def test_batched_close_to_now(framework_tx):
     from twisted.internet.task import Clock
 
     class FakeClock(Clock):
-        def callLater(self, delay, *args, **kw):
+        def callLater(self, delay, *args, **kw):  # noqa
             # 'real' reactors do this, but Clock doesn't assert on
             # this.
             assert delay >= 0
