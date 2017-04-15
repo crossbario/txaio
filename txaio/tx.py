@@ -104,7 +104,7 @@ except ImportError:
         trace = 'trace'
 
         @classmethod
-        def lookupByName(cls, name):
+        def lookupByName(cls, name):  # noqa
             return getattr(cls, name)
 
     class _Logger(ILogger):
