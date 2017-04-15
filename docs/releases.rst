@@ -1,6 +1,13 @@
 txio releases
 =============
 
+2.7.0
+-----
+
+- April 15, 2017
+- allow alternate asyncio loops
+- new future creation API for alternate loops
+
 2.6.1
 -----
 
