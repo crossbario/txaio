@@ -36,6 +36,8 @@ If you're doing this inside a class, you could use ``self._txa`` or similar inst
 
    - when this is used, you set ``self._txa = txaio.with_config(loop=loop)``
 
+See the example in ``examples/multiloop.py``.
+
 
 Logging
 -------
