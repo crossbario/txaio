@@ -4,6 +4,39 @@ Programming Guide
 This section is a work in progress and suggestions are welcome.
 
 
+Explict Event Loops
+-------------------
+
+Twisted has a single, global reactor (for now). As such, txaio was built with a single, global (but configurable) event-loop. However, asyncio supports multiple event-loops.
+
+After version 2.7.0 it is possible to use txaio with multiple event-loops, and thereby offer asyncio users the chance to pass one. Of course, it's still not possible to use multiple event-loops at once with Twisted.
+
+To start using multiple event-loops with txaio, use :func:`txaio.with_config` to return a new "instance" of the txaio API with the given config (the only thing you can configure currently is the event-loop). On Twisted, it's an error if you try to use a different reactor.
+
+The object returned by :func:`txaio.with_config` is a drop-in replacement for every `txaio.*` call, so you can go from code like this::
+
+    import txaio
+    f = txaio.create_future()
+
+...and instead make your code do look like this::
+
+    import asyncio
+    import txaio
+    txa = txaio.with_config(loop=asyncio.new_event_loop())
+    f = txa.create_future()
+
+If you're doing this inside a class, you could use ``self._txa`` or similar instead. This gives you an easy path to opt-in to this multiple event-loop API:
+
+   - replace all ``txaio.*`` calls to use an object, like ``self._txa``.
+
+   - assign this to the txaio module (``self._txa = txaio``) or use
+     the new API right away (``self._txa = txaio.with_config()``)
+
+   - add a public API to your library to pass in an event loop
+
+   - when this is used, you set ``self._txa = txaio.with_config(loop=loop)``
+
+
 Logging
 -------
 
