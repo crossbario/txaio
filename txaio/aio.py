@@ -209,6 +209,10 @@ class _TxaioFileHandler(logging.Handler, object):
             dt = datetime.fromtimestamp(record.args.get('log_time', 0))
         else:
             message = record.getMessage()
+            if record.levelno == logging.ERROR and record.exc_info:
+                message += '\n'
+                for line in traceback.format_exception(*record.exc_info):
+                    message = message + line
             dt = datetime.fromtimestamp(record.created)
         msg = u'{0} {1}{2}'.format(
             dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
