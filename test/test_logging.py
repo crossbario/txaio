@@ -141,6 +141,17 @@ def test_info(handler, framework):
     assert handler.messages[0].endswith(b"hilarious elephant")
 
 
+def test_legacy_error_with_traceback(handler, framework):
+    import logging
+
+    try:
+        raise RuntimeError("the bad stuff")
+    except Exception:
+        logging.error("bad stuff", exc_info=True)
+
+    assert 'RuntimeError: the bad stuff' in str(handler.messages)
+
+
 def test_trace(handler, framework):
     logger = txaio.make_logger()
     old_log = txaio.get_global_log_level()
