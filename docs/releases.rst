@@ -1,12 +1,21 @@
 txio releases
 =============
 
+2.7.1
+-----
+
+- May 1, 2017
+- asyncio: example and docs for running multiple loops
+- asyncio: log exception tracebacks when they're available for error-message
+
+
 2.7.0
 -----
 
 - April 15, 2017
 - allow alternate asyncio loops
 - new future creation API for alternate loops
+
 
 2.6.1
 -----
