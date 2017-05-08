@@ -59,31 +59,6 @@ def test_callback(framework):
     assert results[0] == "it worked"
 
 
-def test_chained_callback(framework):
-    """
-    Chain two callbacks where the first one alters the value.
-    """
-    calls = []
-
-    def callback0(arg):
-        calls.append(arg)
-        return arg + " pray I do not alter it futher"
-
-    def callback1(arg):
-        calls.append(arg)
-
-    f = txaio.create_future()
-    txaio.add_callbacks(f, callback0, None)
-    txaio.add_callbacks(f, callback1, None)
-    txaio.resolve(f, "the deal")
-
-    run_once()
-
-    assert len(calls) == 2
-    assert calls[0] == "the deal"
-    assert calls[1] == "the deal pray I do not alter it futher"
-
-
 def test_immediate_result(framework):
     f = txaio.create_future_success("it worked")
     results = []
