@@ -31,16 +31,6 @@ env:
   - TOX_ENV=py34-twtrunk
   - TOX_ENV=py34-asyncio
 
-#  - TOX_ENV=py35-tw154
-#  - TOX_ENV=py35-tw165
-#  - TOX_ENV=py35-twtrunk
-#  - TOX_ENV=py35-asyncio
-#
-#  - TOX_ENV=py36-tw154
-#  - TOX_ENV=py36-tw165
-#  - TOX_ENV=py36-twtrunk
-#  - TOX_ENV=py36-asyncio
-
 script:
   - tox -c tox.ini -e $TOX_ENV
 
@@ -70,24 +60,21 @@ matrix:
       env:
       - TOX_ENV=py35-asyncio
 
-    # Python 3.6 currently fails:
-    # https://github.com/crossbario/txaio/issues/83
-    # https://travis-ci.org/crossbario/txaio/builds/192086131
-#    - python: 3.6
-#      env:
-#      - TOX_ENV=py36-tw154
-#
-#    - python: 3.6
-#      env:
-#      - TOX_ENV=py36-tw165
-#
-#    - python: 3.6
-#      env:
-#      - TOX_ENV=py36-twtrunk
-#
-#    - python: 3.6
-#      env:
-#      - TOX_ENV=py36-asyncio
+    - python: 3.6
+      env:
+      - TOX_ENV=py36-tw154
+
+    - python: 3.6
+      env:
+      - TOX_ENV=py36-tw165
+
+    - python: 3.6
+      env:
+      - TOX_ENV=py36-twtrunk
+
+    - python: 3.6
+      env:
+      - TOX_ENV=py36-asyncio
 
 notifications:
    irc:
