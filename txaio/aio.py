@@ -437,17 +437,12 @@ class _AsyncioApi(object):
         """
         callback or errback may be None, but at least one must be
         non-None.
-
-        XXX beware the "f._result" hack to get "chainable-callback" type
-        behavior.
         """
         def done(f):
             try:
                 res = f.result()
                 if callback:
-                    x = callback(res)
-                    if x is not None:
-                        f._result = x
+                    callback(res)
             except Exception:
                 if errback:
                     errback(create_failure())
