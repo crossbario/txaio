@@ -1,6 +1,14 @@
 txio releases
 =============
 
+2.8.0
+-----
+
+- June 8, 2017
+- fix: asyncio - remove the hacks for "simulating" chained futures (no longer works - cpy36 has native code for future)
+- new: run CI on Python 3.5 and 3.6
+
+
 2.7.1
 -----
 
