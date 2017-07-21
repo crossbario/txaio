@@ -473,7 +473,7 @@ class _AsyncioApi(object):
         :param delay: Time to sleep in seconds.
         :type delay: float
         """
-        return asyncio.sleep(delay)
+        return asyncio.ensure_future(asyncio.sleep(delay))
 
 
 _default_api = _AsyncioApi(config)
