@@ -1,10 +1,11 @@
 txio releases
 =============
 
-unreleased
-----------
+2.8.1
+-----
 
-- the asyncio version of sleep() correctly returns a Future instance
+- July 21, 2017
+- fix: the asyncio version of sleep() correctly returns a Future instance
 
 
 2.8.0
