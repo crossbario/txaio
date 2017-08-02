@@ -110,10 +110,6 @@ setup(
     # this flag will make files from MANIFEST.in go into _source_ distributions only
     include_package_data=True,
 
-    # in addition, the following will make the specified files go
-    # into source _and_ bdist distributions!
-    data_files=[('.', ['LICENSE'])],
-
     # this package does not access its own source code or data files
     # as normal operating system files
     zip_safe=True,
