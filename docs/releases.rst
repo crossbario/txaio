@@ -1,6 +1,12 @@
 txio releases
 =============
 
+2.8.2
+-----
+
+- September 4, 2017
+- fix: no longer install LICENSE file into installation directory (conflicts!)
+
 2.8.1
 -----
 
