@@ -24,11 +24,18 @@ Platform support
 
 **txaio** runs on CPython 2.7/3.3+ and PyPy 2, on top of Twisted or asyncio. Specifically, **txaio** is tested on the following platforms:
 
+**Python 2:**
+
 * CPython 2.7 on Twisted 12.1, 13.2, 15.4, 16.5, trunk and on Trollius 2.0
+* PyPy 2 on Twisted 12.1, 13.2, 15.4, 16.5, trunk and on Trollius 2.0
+
+**Python 3:**bb
+
 * CPython 3.3 on Twisted 15.4, 16.5, trunk and on Trollius 2.0
 * CPython 3.4 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
 * CPython 3.5 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
-* PyPy 2 on Twisted 12.1, 13.2, 15.4, 16.5, trunk and on Trollius 2.0
+* CPython 3.6 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
+* PyPy 3 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
 
 
 How it works
