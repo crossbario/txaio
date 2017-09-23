@@ -6,9 +6,6 @@ sudo: false
 install:
   - pip install tox codecov
 
-env:
-  - TOX_ENV=flake8
-
 script:
   - tox -c tox.ini -e $TOX_ENV
 
@@ -22,6 +19,8 @@ matrix:
 
   # https://github.com/travis-ci/travis-ci/issues/4794#issuecomment-143758799
   include:
+    - env: TOX_ENV=flake8
+
     - python: 2.7
       env:
       - TOX_ENV=py27-tw121
@@ -80,11 +79,11 @@ matrix:
       env:
       - TOX_ENV=pypy3-tw165
 
-    - python: pypy
+    - python: pypy3
       env:
       - TOX_ENV=pypy3-twtrunk
 
-    - python: pypy
+    - python: pypy3
       env:
       - TOX_ENV=pypy3-asyncio
 
