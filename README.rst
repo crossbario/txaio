@@ -29,7 +29,7 @@ Platform support
 * CPython 2.7 on Twisted 12.1, 13.2, 15.4, 16.5, trunk and on Trollius 2.0
 * PyPy 2 on Twisted 12.1, 13.2, 15.4, 16.5, trunk and on Trollius 2.0
 
-**Python 3:**bb
+**Python 3:**
 
 * CPython 3.3 on Twisted 15.4, 16.5, trunk and on Trollius 2.0
 * CPython 3.4 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
