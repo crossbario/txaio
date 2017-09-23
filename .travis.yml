@@ -44,6 +44,48 @@ matrix:
 
   # https://github.com/travis-ci/travis-ci/issues/4794#issuecomment-143758799
   include:
+    - python: pypy
+      env:
+      - TOX_ENV=pypy-tw121
+
+    - python: pypy
+      env:
+      - TOX_ENV=pypy-tw132
+
+    - python: pypy
+      env:
+      - TOX_ENV=pypy-tw154
+
+    - python: pypy
+      env:
+      - TOX_ENV=pypy-tw165
+
+    - python: pypy
+      env:
+      - TOX_ENV=pypy-twtrunk
+
+    - python: pypy
+      env:
+      - TOX_ENV=pypy-asyncio
+
+
+    - python: pypy3
+      env:
+      - TOX_ENV=pypy3-tw154
+
+    - python: pypy3
+      env:
+      - TOX_ENV=pypy3-tw165
+
+    - python: pypy
+      env:
+      - TOX_ENV=pypy3-twtrunk
+
+    - python: pypy
+      env:
+      - TOX_ENV=pypy3-asyncio
+
+
     - python: 3.5
       env:
       - TOX_ENV=py35-tw154
@@ -60,6 +102,7 @@ matrix:
       env:
       - TOX_ENV=py35-asyncio
 
+
     - python: 3.6
       env:
       - TOX_ENV=py36-tw154
@@ -75,6 +118,7 @@ matrix:
     - python: 3.6
       env:
       - TOX_ENV=py36-asyncio
+
 
 notifications:
    irc:
