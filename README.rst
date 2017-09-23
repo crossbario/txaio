@@ -22,7 +22,7 @@ either one's event loop to the other using some event loop adapter.
 Platform support
 ----------------
 
-**txaio** runs on CPython 2.7/3.3+ and PyPy 2, on top of Twisted or asyncio. Specifically, **txaio** is tested on the following platforms:
+**txaio** runs on CPython 2.7/3.3+ and PyPy 2/3, on top of Twisted or asyncio. Specifically, **txaio** is tested on the following platforms:
 
 **Python 2:**
 
