@@ -80,6 +80,7 @@ if sys.version_info >= (3, 4, 2):
         _create_future = _create_future_directly
 else:
     _create_task = _create_task_directly
+    _create_future = _create_future_directly
 
 
 config = _Config()
