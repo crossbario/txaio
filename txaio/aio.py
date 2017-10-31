@@ -72,12 +72,12 @@ def create_task_directly(res, loop):
     return asyncio.Task(res, loop=loop)
 
 
-    if sys.implementation.version >= (3, 5, 2):
 if sys.version_info >= (3, 3) and sys.implementation.name == 'cpython':
+    if sys.version_info >= (3, 5, 2):
         create_future = create_future_of_loop
     else:
         create_future = create_future_directly
-    if sys.implementation.version >= (3, 4, 2):
+    if sys.version_info >= (3, 4, 2):
         create_task = create_task_of_loop
     else:
         create_task = create_task_directly
