@@ -60,7 +60,7 @@ def create_future_of_loop(loop):
     return loop.create_future()
 
 
-def create_future_directly(loop):
+def create_future_directly(loop=None):
     return Future(loop=loop)
 
 
@@ -68,7 +68,7 @@ def create_task_of_loop(res, loop):
     return loop.create_task(res)
 
 
-def create_task_directly(res, loop):
+def create_task_directly(res, loop=None):
     return asyncio.Task(res, loop=loop)
 
 
