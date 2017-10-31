@@ -56,6 +56,36 @@ except ImportError:
     from trollius import Future
 
 
+def create_future_of_loop(loop):
+    return loop.create_future()
+
+
+def create_future_directly(loop):
+    return Future(loop=loop)
+
+
+def create_task_of_loop(res, loop):
+    return loop.create_task(res)
+
+
+def create_task_directly(res, loop):
+    return asyncio.Task(res, loop=loop)
+
+
+if sys.implementation.name == 'cpython':
+    if sys.implementation.version >= (3, 5, 2):
+        create_future = create_future_of_loop
+    else:
+        create_future = create_future_directly
+    if sys.implementation.version >= (3, 4, 2):
+        create_task = create_task_of_loop
+    else:
+        create_task = create_task_directly
+else:
+    create_future = create_future_directly
+    create_task = create_task_directly
+
+
 config = _Config()
 
 
@@ -345,7 +375,7 @@ class _AsyncioApi(object):
         if result is not _unspecified and error is not _unspecified:
             raise ValueError("Cannot have both result and error.")
 
-        f = Future(loop=self._config.loop)
+        f = create_future(loop=self._config.loop)
         if result is not _unspecified:
             resolve(f, result)
         elif error is not _unspecified:
@@ -369,7 +399,7 @@ class _AsyncioApi(object):
             if isinstance(res, Future):
                 return res
             elif iscoroutine(res):
-                return asyncio.Task(res, loop=self._config.loop)
+                return create_task(res, loop=self._config.loop)
             else:
                 return create_future_success(res)
 
