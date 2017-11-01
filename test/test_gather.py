@@ -100,7 +100,7 @@ def test_gather_no_consume(framework):
     for f in [f0, f1, f2]:
         try:
             await(f)
-        except:
+        except Exception:
             pass
 
     assert len(results) == 0

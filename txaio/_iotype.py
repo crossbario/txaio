@@ -58,7 +58,7 @@ def guess_stream_needs_encoding(fileobj, default=True):
         elif t is unicode:
             return False
 
-    except:
+    except Exception:
         pass
 
     try:
@@ -71,7 +71,7 @@ def guess_stream_needs_encoding(fileobj, default=True):
             return True
         else:
             return False
-    except:
+    except Exception:
         pass
 
     return default
