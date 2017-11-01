@@ -146,7 +146,7 @@ def test_legacy_error_with_traceback(handler, framework):
 
     try:
         raise RuntimeError("the bad stuff")
-    except Exception:
+    except RuntimeError:
         logging.error("bad stuff", exc_info=True)
 
     assert 'RuntimeError: the bad stuff' in str(handler.messages)
@@ -293,7 +293,7 @@ def test_log_converter(handler, framework):
 
     try:
         raise RuntimeError("failed on purpose")
-    except:
+    except RuntimeError:
         logger.failure(None)
 
     output = out.getvalue()
