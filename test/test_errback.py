@@ -39,7 +39,7 @@ def test_errback(framework):
     txaio.add_callbacks(f, None, err)
     try:
         raise exception
-    except:
+    except RuntimeError:
         fail = txaio.create_failure()
     txaio.reject(f, fail)
 
@@ -135,7 +135,7 @@ def test_errback_reject_no_args(framework):
     txaio.add_callbacks(f, None, err)
     try:
         raise exception
-    except:
+    except RuntimeError:
         txaio.reject(f)
 
     run_once()
@@ -155,7 +155,7 @@ def test_immediate_failure(framework):
     exception = RuntimeError("it failed")
     try:
         raise exception
-    except:
+    except RuntimeError:
         f0 = txaio.create_future_error()
         fail = txaio.create_failure()
 
