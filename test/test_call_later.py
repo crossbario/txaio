@@ -189,6 +189,7 @@ def test_explicit_reactor_coroutine(framework):
             c = fake_loop.method_calls[0]
             assert c[0] == 'create_task'
 
+
 def test_call_later_tx(framework_tx):
     '''
     Wait for two Futures.
