@@ -24,6 +24,8 @@
 #
 ###############################################################################
 
+import sys
+
 from mock import patch
 
 import pytest
@@ -60,9 +62,14 @@ def test_explicit_reactor_future(framework):
         f = txaio.create_future('result')
         f.add_done_callback(lambda _: None)
 
-        assert len(fake_loop.method_calls) == 2
-        c = fake_loop.method_calls[1]
-        assert c[0] == 'call_soon'
+        if sys.version_info < (3, 5, 2):
+            assert len(fake_loop.method_calls) == 2
+            c = fake_loop.method_calls[1]
+            assert c[0] == 'call_soon'
+        else:
+            assert len(fake_loop.method_calls) == 1
+            c = fake_loop.method_calls[0]
+            assert c[0] == 'create_future'
 
 
 def test_create_future_explicit_loop(framework):
@@ -173,9 +180,14 @@ def test_explicit_reactor_coroutine(framework):
     with patch.object(txaio.config, 'loop') as fake_loop:
         txaio.as_future(some_coroutine)
 
-        assert len(fake_loop.method_calls) == 2
-        c = fake_loop.method_calls[1]
-        assert c[0] == 'call_soon'
+        if sys.version_info < (3, 4, 2):
+            assert len(fake_loop.method_calls) == 2
+            c = fake_loop.method_calls[1]
+            assert c[0] == 'call_soon'
+        else:
+            assert len(fake_loop.method_calls) == 1
+            c = fake_loop.method_calls[0]
+            assert c[0] == 'create_task'
 
 
 def test_call_later_tx(framework_tx):
