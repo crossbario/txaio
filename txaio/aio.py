@@ -132,7 +132,7 @@ def with_config(loop=None):
 # logging should probably all be folded into _AsyncioApi as well
 _stderr, _stdout = sys.stderr, sys.stdout
 _loggers = weakref.WeakSet()  # weak-ref's of each logger we've created before start_logging()
-_log_level = 'info'  # re-set by start_logging
+_log_level = 'debug'  # re-set by start_logging
 _started_logging = False
 _categories = {}
 
