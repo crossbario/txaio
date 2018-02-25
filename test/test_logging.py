@@ -143,6 +143,9 @@ def test_info(handler, framework):
 
 
 def test_legacy_error_with_traceback(handler, framework):
+    if framework.using_twisted:
+        return pytest.skip('test only for asyncio users')
+
     import logging
 
     try:
