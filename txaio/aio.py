@@ -55,6 +55,12 @@ except ImportError:
     from trollius import iscoroutine
     from trollius import Future
 
+try:
+    from types import AsyncGeneratorType  # python 3.5+
+except ImportError:
+    class AsyncGeneratorType(object):
+        pass
+
 
 def _create_future_of_loop(loop):
     return loop.create_future()
@@ -397,6 +403,13 @@ class _AsyncioApi(object):
                 return res
             elif iscoroutine(res):
                 return _create_task(res, loop=self._config.loop)
+            elif isinstance(res, AsyncGeneratorType):
+                raise RuntimeError(
+                    "as_future() received an async generator function; does "
+                    "'{}' use 'yield' when you meant 'await'?".format(
+                        str(fun)
+                    )
+                )
             else:
                 return create_future_success(res)
 
