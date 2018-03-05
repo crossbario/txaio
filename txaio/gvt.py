@@ -43,50 +43,119 @@ from txaio import _Config
 
 import six
 
-try:
-    import asyncio
-    from asyncio import iscoroutine
-    from asyncio import Future
-
-except ImportError:
-    # Trollius >= 0.3 was renamed
-    # noinspection PyUnresolvedReferences
-    import trollius as asyncio
-    from trollius import iscoroutine
-    from trollius import Future
-
-try:
-    from types import AsyncGeneratorType  # python 3.5+
-except ImportError:
-    class AsyncGeneratorType(object):
-        pass
+import gevent
+import gevent.pool
+from gevent.event import AsyncResult, dump_traceback, load_traceback, _NONE
 
 
-def _create_future_of_loop(loop):
-    return loop.create_future()
+class SpawnedLink(object):
+    """A wrapper around link that changes the arg passed to it.
+
+    It is important that callbacks are consistently hashable, so we cannot
+    simply use a lambda.
+    """
+    __slots__ = ['callback', 'parent']
+
+    def __init__(self, callback, parent):
+        if not callable(callback):
+            raise TypeError("Expected callable: %r" % (callback, ))
+        self.callback = callback
+        self.parent = parent
+
+    def __call__(self, source):
+        self.callback(self.parent)
+
+    def __hash__(self):
+        return hash(self.callback)
+
+    def __eq__(self, other):
+        return self.callback == getattr(other, 'callback', other)
+
+    def __str__(self):
+        return str(self.callback)
+
+    def __repr__(self):
+        return repr(self.callback)
+
+    def __getattr__(self, item):
+        assert item != 'callback'
+        return getattr(self.callback, item)
 
 
-def _create_future_directly(loop=None):
-    return Future(loop=loop)
+class Group(gevent.pool.Group):
+    _exc_info = ()
 
+    def __init__(self, greenlets, return_exceptions=False):
+        self.return_exceptions = return_exceptions
+        self._value = []
+        gevent.pool.Group.__init__(self, greenlets)
 
-def _create_task_of_loop(res, loop):
-    return loop.create_task(res)
+    @property
+    def value(self):
+        return self._value if self.ready() else None
 
+    @property
+    def exc_info(self):
+        if self._exc_info:
+            return (self._exc_info[0], self._exc_info[1], load_traceback(self._exc_info[2]))
+        return None
 
-def _create_task_directly(res, loop=None):
-    return asyncio.Task(res, loop=loop)
+    def __str__(self):
+        result = '<%s ' % (self.__class__.__name__, )
+        if self.value is not None or self._exception is not _NONE:
+            result += 'value=%r ' % self.value
+        # if self._exception is not None and self._exception is not _NONE:
+        #     result += 'exception=%r ' % self._exception
+        # if self._exception is _NONE:
+        #     result += 'unset '
+        return result + ' _links[%s]>' % len(self._empty_event._links)
 
+    def ready(self):
+        return len(self) == 0
 
-if sys.version_info >= (3, 4, 2):
-    _create_task = _create_task_of_loop
-    if sys.version_info >= (3, 5, 2):
-        _create_future = _create_future_of_loop
-    else:
-        _create_future = _create_future_directly
-else:
-    _create_task = _create_task_directly
-    _create_future = _create_future_directly
+    def successful(self):
+        """Return true if and only if it is ready and holds a value"""
+        return not self.exc_info
+
+    @property
+    def exception(self):
+        """Holds the exception instance passed to :meth:`set_exception` if :meth:`set_exception` was called.
+        Otherwise ``None``."""
+        if self._exc_info:
+            return self._exc_info[1]
+
+    def full(self):
+        """
+        Return a value indicating whether this group can track more greenlets.
+
+        In this implementation, because there are no limits on the number of
+        tracked greenlets, this will always return a ``False`` value.
+        """
+        # can never track more than it was instantiated with
+        return True
+
+    def _discard(self, greenlet):
+        # print("discarding", greenlet)
+        if greenlet.successful():
+            self._value.append(greenlet.value)
+        elif self.return_exceptions:
+            self._value.append(greenlet.exc_info)
+        else:
+            # handle exception
+            exc_info = greenlet.exc_info
+            self._exc_info = (exc_info[0], exc_info[1], dump_traceback(exc_info[2]))
+            # FIXME: can't call kill because our greenlets are not greenlets, they're AsyncResult with no .dead or .kill()
+            # self.kill()
+        gevent.pool.Group._discard(self, greenlet)
+
+    # def wait(self, timeout=None):
+    #     self.join(timeout)
+
+    def rawlink(self, callback):
+        self._empty_event.rawlink(SpawnedLink(callback, self))
+
+    def unlink(self, callback):
+        self._empty_event.unlink(SpawnedLink(callback, self))
 
 
 config = _Config()
@@ -132,10 +201,10 @@ def with_config(loop=None):
     cfg = _Config()
     if loop is not None:
         cfg.loop = loop
-    return _AsyncioApi(cfg)
+    return _GeventApi(cfg)
 
 
-# logging should probably all be folded into _AsyncioApi as well
+# logging should probably all be folded into _GeventApi as well
 _stderr, _stdout = sys.stderr, sys.stdout
 _loggers = weakref.WeakSet()  # weak-ref's of each logger we've created before start_logging()
 _log_level = 'info'  # re-set by start_logging
@@ -172,6 +241,10 @@ class FailedFuture(IFailedFuture):
     @property
     def value(self):
         return self._value
+
+    @property
+    def exc_info(self):
+        return self._type, self._value, self._traceback
 
     def __str__(self):
         return str(self.value)
@@ -321,21 +394,17 @@ def get_global_log_level():
     return _log_level
 
 
-# asyncio API methods; the module-level functions are (now, for
-# backwards-compat) exported from a default instance of this class
-
-
 _unspecified = object()
 
 
-class _AsyncioApi(object):
+class _GeventApi(object):
     using_twisted = False
-    using_asyncio = True
-    using_gevent = False
+    using_asyncio = False
+    using_gevent = True
 
     def __init__(self, config):
         if config.loop is None:
-            config.loop = asyncio.get_event_loop()
+            config.loop = gevent.get_hub()
         self._config = config
 
     def failure_message(self, fail):
@@ -379,7 +448,7 @@ class _AsyncioApi(object):
         if result is not _unspecified and error is not _unspecified:
             raise ValueError("Cannot have both result and error.")
 
-        f = _create_future(loop=self._config.loop)
+        f = AsyncResult()
         if result is not _unspecified:
             resolve(f, result)
         elif error is not _unspecified:
@@ -400,27 +469,19 @@ class _AsyncioApi(object):
         except Exception:
             return create_future_error(create_failure())
         else:
-            if isinstance(res, Future):
+            if is_future(res):
                 return res
-            elif iscoroutine(res):
-                return _create_task(res, loop=self._config.loop)
-            elif isinstance(res, AsyncGeneratorType):
-                raise RuntimeError(
-                    "as_future() received an async generator function; does "
-                    "'{}' use 'yield' when you meant 'await'?".format(
-                        str(fun)
-                    )
-                )
             else:
                 return create_future_success(res)
 
     def is_future(self, obj):
-        return iscoroutine(obj) or isinstance(obj, Future)
+        # FIXME: check for protocols?
+        # "wait" protocol : rawlink(), unlink()  (see gevent.wait())
+        # "greenlet" protocol : ready(), successful(), exc_info, value
+        return isinstance(obj, (AsyncResult, Group, gevent.Greenlet))
 
     def call_later(self, delay, fun, *args, **kwargs):
-        # loop.call_later doesn't support kwargs
-        real_call = functools.partial(fun, *args, **kwargs)
-        return self._config.loop.call_later(delay, real_call)
+        return gevent.spawn_later(delay, fun, *args, **kwargs)
 
     def make_batched_timer(self, bucket_seconds, chunk_size=100):
         """
@@ -447,12 +508,14 @@ class _AsyncioApi(object):
         )
 
     def is_called(self, future):
-        return future.done()
+        return future.ready()
 
     def resolve(self, future, result=None):
-        future.set_result(result)
+        # supports only AsyncResult, not Greenlets
+        future.set(result)
 
     def reject(self, future, error=None):
+        # supports only AsyncResult, not Greenlets
         if error is None:
             error = create_failure()  # will be error if we're not in an "except"
         elif isinstance(error, Exception):
@@ -460,7 +523,7 @@ class _AsyncioApi(object):
         else:
             if not isinstance(error, IFailedFuture):
                 raise RuntimeError("reject requires an IFailedFuture or Exception")
-        future.set_exception(error.value)
+        future.set_exception(None, exc_info=error.exc_info)
 
     def create_failure(self, exception=None):
         """
@@ -480,32 +543,29 @@ class _AsyncioApi(object):
         non-None.
         """
         def done(f):
-            try:
-                res = f.result()
+            # print("completed", f, f.exc_info)
+            if f.exc_info:
+                if errback:
+                    errback(FailedFuture(*f.exc_info))
+            else:
+                res = f.value
                 if callback:
                     callback(res)
-            except Exception:
-                if errback:
-                    errback(create_failure())
-        return future.add_done_callback(done)
+
+        future.rawlink(done)
+        return future
 
     def gather(self, futures, consume_exceptions=True):
         """
         This returns a Future that waits for all the Futures in the list
         ``futures``
 
-        :param futures: a list of Futures (or coroutines?)
+        :param futures: a list of Futures (or greenlets?)
 
         :param consume_exceptions: if True, any errors are eaten and
         returned in the result list.
         """
-
-        # from the asyncio docs: "If return_exceptions is True, exceptions
-        # in the tasks are treated the same as successful results, and
-        # gathered in the result list; otherwise, the first raised
-        # exception will be immediately propagated to the returned
-        # future."
-        return asyncio.gather(*futures, return_exceptions=consume_exceptions)
+        return Group(futures, return_exceptions=consume_exceptions)
 
     def sleep(self, delay):
         """
@@ -514,16 +574,15 @@ class _AsyncioApi(object):
         :param delay: Time to sleep in seconds.
         :type delay: float
         """
-        return asyncio.ensure_future(asyncio.sleep(delay))
+        return gevent.sleep(delay)
 
 
-_default_api = _AsyncioApi(config)
+_default_api = _GeventApi(config)
 
 
 using_twisted = _default_api.using_twisted
 using_asyncio = _default_api.using_asyncio
 using_gevent = _default_api.using_gevent
-sleep = _default_api.sleep
 failure_message = _default_api.failure_message
 failure_traceback = _default_api.failure_traceback
 failure_format_traceback = _default_api.failure_format_traceback

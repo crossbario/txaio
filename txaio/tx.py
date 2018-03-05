@@ -49,6 +49,7 @@ import six
 
 using_twisted = True
 using_asyncio = False
+using_gevent = False
 
 config = _Config()
 _stderr, _stdout = sys.stderr, sys.stdout
