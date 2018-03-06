@@ -45,6 +45,10 @@ matrix:
       env:
       - TOX_ENV=py27-asyncio
 
+    - python: 2.7
+      env:
+      - TOX_ENV=py27-gevent
+
 
     - python: pypy
       env:
@@ -70,6 +74,11 @@ matrix:
       env:
       - TOX_ENV=pypy-asyncio
 
+    - python: pypy
+      env:
+      - TOX_ENV=pypy-gevent
+
+
 
     - python: pypy3
       env:
@@ -87,6 +96,11 @@ matrix:
       env:
       - TOX_ENV=pypy3-asyncio
 
+    - python: pypy3
+      env:
+      - TOX_ENV=pypy3-gevent
+
+
 
     - python: 3.3
       env:
@@ -99,6 +113,11 @@ matrix:
     - python: 3.3
       env:
       - TOX_ENV=py33-asyncio
+
+    - python: 3.3
+      env:
+      - TOX_ENV=py33-gevent
+
 
 
     - python: 3.4
@@ -117,6 +136,11 @@ matrix:
       env:
       - TOX_ENV=py34-asyncio
 
+    - python: 3.4
+      env:
+      - TOX_ENV=py34-gevent
+
+
 
     - python: 3.5
       env:
@@ -134,6 +158,11 @@ matrix:
       env:
       - TOX_ENV=py35-asyncio
 
+    - python: 3.5
+      env:
+      - TOX_ENV=py35-gevent
+
+
 
     - python: 3.6
       env:
@@ -150,6 +179,11 @@ matrix:
     - python: 3.6
       env:
       - TOX_ENV=py36-asyncio
+
+    - python: 3.6
+      env:
+      - TOX_ENV=py36-gevent
+
 
 
 notifications:
