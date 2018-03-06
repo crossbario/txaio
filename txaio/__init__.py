@@ -61,8 +61,10 @@ __all__ = (
     'with_config',              # allow mutliple custom configurations at once
     'using_twisted',            # True if we're using Twisted
     'using_asyncio',            # True if we're using asyncio
+    'using_gevent',             # True if we're using gevent
     'use_twisted',              # sets the library to use Twisted, or exception
     'use_asyncio',              # sets the library to use asyncio, or exception
+    'use_gevent',               # sets the library to use gevent, or exception
 
     'config',                   # the config instance, access via attributes
 
@@ -112,6 +114,7 @@ def use_twisted():
     import txaio
     txaio.using_twisted = True
     txaio.using_asyncio = False
+    txaio.using_gevent = False
 
 
 def use_asyncio():
@@ -124,6 +127,20 @@ def use_asyncio():
     import txaio
     txaio.using_twisted = False
     txaio.using_asyncio = True
+    txaio.using_gevent = False
+
+
+def use_gevent():
+    global _explicit_framework
+    if _explicit_framework is not None and _explicit_framework != 'gevent':
+        raise RuntimeError("Explicitly using '{}' already".format(_explicit_framework))
+    _explicit_framework = 'gevent'
+    from txaio import gvt
+    _use_framework(gvt)
+    import txaio
+    txaio.using_twisted = False
+    txaio.using_asyncio = False
+    txaio.using_gevent = True
 
 
 def _use_framework(module):
@@ -133,7 +150,7 @@ def _use_framework(module):
     """
     import txaio
     for method_name in __all__:
-        if method_name in ['use_twisted', 'use_asyncio']:
+        if method_name in ['use_twisted', 'use_asyncio', 'use_gevent']:
             continue
         setattr(txaio, method_name,
                 getattr(module, method_name))

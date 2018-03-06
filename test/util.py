@@ -36,6 +36,11 @@ def run_once():
     if txaio.using_twisted:
         return
 
+    if txaio.using_gevent:
+        import gevent
+        gevent.get_hub().join()
+        return
+
     try:
         import asyncio
         from asyncio.test_utils import run_once as _run_once
@@ -65,6 +70,20 @@ def await(future):
 
     import txaio
     if txaio.using_twisted:
+        return
+
+    if txaio.using_gevent:
+        import gevent
+        # FIXME: this waits for everything, which works, but it would
+        # be nice to selectively wait on a single future.  the problem arose
+        # with gather(), and nested links.
+        gevent.wait()
+        # if hasattr(future, 'wait'):
+        #     future.wait()
+        # else:
+        #     futures = {future}
+        #     # FIXME: recursively look for _links?
+        #     gevent.wait(futures)
         return
 
     try:

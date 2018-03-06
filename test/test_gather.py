@@ -103,6 +103,7 @@ def test_gather_no_consume(framework):
         except Exception:
             pass
 
+    # assert txaio.is_called(f2) is True
     assert len(results) == 0
     assert len(errors) == 3
     assert len(calls) == 0

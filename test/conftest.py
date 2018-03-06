@@ -13,7 +13,7 @@ import pytest
 
 
 @pytest.fixture(
-    params=['twisted', 'asyncio'],
+    params=['twisted', 'asyncio', 'gevent'],
 )
 def framework(request):
     """
@@ -28,6 +28,8 @@ def framework(request):
             return framework_tx()
         elif request.param == 'asyncio':
             return framework_aio()
+        elif request.param == 'gevent':
+            return framework_gvt()
     except ImportError:
         pytest.skip()
 
@@ -63,5 +65,18 @@ def framework_aio():
         txaio._use_framework(aio)
         txaio._explicit_framework = 'asyncio'
         return aio
+    except ImportError:
+        pytest.skip()
+
+
+@pytest.fixture
+def framework_gvt():
+    try:
+        import txaio
+        from txaio import gvt
+        gvt._loggers = set()
+        txaio._use_framework(gvt)
+        txaio._explicit_framework = 'gevent'
+        return gvt
     except ImportError:
         pytest.skip()

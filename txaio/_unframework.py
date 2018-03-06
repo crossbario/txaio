@@ -35,6 +35,7 @@ from txaio import _Config
 
 using_twisted = False
 using_asyncio = False
+using_gevent = False
 config = _Config()
 
 
