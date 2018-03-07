@@ -37,7 +37,7 @@ import txaio
 Log = namedtuple('Log', ['args'])
 
 
-class TestHandler(BytesIO):
+class LoggingHandler(BytesIO):
 
     @property
     def messages(self):
@@ -46,7 +46,7 @@ class TestHandler(BytesIO):
         return self.getvalue().split(os.linesep.encode('ascii'))[:-1]
 
 
-_handler = TestHandler()
+_handler = LoggingHandler()
 
 
 @pytest.fixture
@@ -65,6 +65,7 @@ def handler(log_started):
     """
     Resets the global TestHandler instance for each test.
     """
+    global _handler
     _handler.truncate(0)
     _handler.seek(0)
     return _handler
@@ -142,6 +143,9 @@ def test_info(handler, framework):
 
 
 def test_legacy_error_with_traceback(handler, framework):
+    if framework.using_twisted:
+        return pytest.skip('test only for asyncio users')
+
     import logging
 
     try:
