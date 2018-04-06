@@ -33,6 +33,7 @@ import weakref
 import functools
 import traceback
 import logging
+import inspect
 
 from datetime import datetime
 
@@ -258,7 +259,21 @@ class _TxaioFileHandler(logging.Handler, object):
 
 
 def make_logger():
-    logger = _TxaioLogWrapper(logging.getLogger())
+    # we want the namespace to be the calling context of "make_logger"
+    # otherwise the root logger will be returned
+    cf = inspect.currentframe().f_back
+    if "self" in cf.f_locals:
+        # We're probably in a class init or method
+        cls = cf.f_locals["self"].__class__
+        namespace = '{0}.{1}'.format(cls.__module__, cls.__name__)
+    else:
+        namespace = cf.f_globals["__name__"]
+        if cf.f_code.co_name != "<module>":
+            # If it's not the module, and not in a class instance, add the code
+            # object's name.
+            namespace = namespace + "." + cf.f_code.co_name
+
+    logger = _TxaioLogWrapper(logging.getLogger(name=namespace))
     # remember this so we can set their levels properly once
     # start_logging is actually called
     _loggers.add(logger)
