@@ -1,6 +1,14 @@
 txio releases
 =============
 
+2.10.0
+------
+
+- the asyncio version of ``make_logger`` now deduces a proper
+  namespace instead of using the root (thanks `spr0cketeer
+  <https://github.com/spr0cketeer>`_)
+
+
 2.9.0
 -----
 
