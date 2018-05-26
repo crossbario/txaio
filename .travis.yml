@@ -4,7 +4,8 @@ language: python
 sudo: false
 
 install:
-  - pip install wheel<0.30.0
+  # wheel has dropped support for py 3.3 with version 0.30.0
+  - pip install 'wheel<0.30.0'
   - pip install tox codecov
 
 script:
@@ -171,7 +172,7 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: always    # options: [always|never|change] default: always
     urls:
-      # travis encrypt "https://webhooks.gitter.im/e/7ef088bf5a6e25c4b434" --org --repo crossbario/txaio
+      # travis encrypt "https://webhooks.gitter.im/e/7ef..." --org --repo crossbario/txaio
       - secure: bLUKiR27KsxcAHfCYEP2ZOrk1haqdOAEg9eRqYKopB1k4l8F/EkCBpN+X5+O3AT+wjOyq2msY9dA9jrAyZ1B6J+Dc1WgTihLyB36AVsNQtP3PGEX0jubpxPMnITqorO7saLqdwyKBuF0+8IWqM2MvEaPYy/kHL/utVvKxJy7ljY=
 
   # Slack: post feed on https://crossbario.slack.com/messages/CAT527K8D
@@ -181,5 +182,5 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: always    # options: [always|never|change] default: always
     rooms:
-      # travis encrypt "crossbario:FYgfkmJnLOTO2nOA0xDUTsIJ" --org --repo crossbario/txaio
+      # travis encrypt "crossbario:FYg..." --org --repo crossbario/txaio
       - secure: dPV0Nr3OtWIw7Af3r0xG4vNTpvjj3I67Mca0knqrplZpSOiSmDKRh1bqcAui557SBYhBpKNkUDQGeRvluTuPHv3TesKZNJGOq0PvDbxRJvCrnwqhRq/JXOFGGs2mC4hGXJ8wS67jn8A38pZSf4MRTGr9fPQKQqpPqXnkw4eokPc=
