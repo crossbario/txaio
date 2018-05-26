@@ -4,6 +4,7 @@ language: python
 sudo: false
 
 install:
+  - pip install wheel<0.30.0
   - pip install tox codecov
 
 script:
