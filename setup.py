@@ -69,6 +69,8 @@ else:
 # development dependencies
 #
 extras_require_dev = [
+    # wheel has dropped support for py 3.3 with version 0.30.0
+    'wheel<0.30.0',                     # MIT
     'pytest>=2.6.4',                    # MIT
     'pytest-cov>=1.8.1',                # MIT
     'pep8>=1.6.2',                      # MIT
