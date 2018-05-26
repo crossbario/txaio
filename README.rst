@@ -31,7 +31,6 @@ Platform support
 
 **Python 3:**
 
-* CPython 3.3 on Twisted 15.4, 16.5, trunk and on Trollius 2.0
 * CPython 3.4 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
 * CPython 3.5 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
 * CPython 3.6 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)

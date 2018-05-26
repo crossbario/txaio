@@ -69,6 +69,7 @@ else:
 # development dependencies
 #
 extras_require_dev = [
+    'wheel',                            # MIT
     'pytest>=2.6.4',                    # MIT
     'pytest-cov>=1.8.1',                # MIT
     'pep8>=1.6.2',                      # MIT
