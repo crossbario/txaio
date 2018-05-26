@@ -57,3 +57,5 @@ target/
 
 *~
 _trial_temp/
+.idea
+.idea/misc.xml .idea/modules.xml .idea/txaio.iml .idea/workspace.xml
