@@ -1,6 +1,12 @@
 txio releases
 =============
 
+master
+------
+
+- deprecate Python 3.3 support and CI testing
+
+
 2.10.0
 ------
 
