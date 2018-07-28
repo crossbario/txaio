@@ -47,6 +47,15 @@ from txaio._common import _BatchedTimer
 
 import six
 
+PY3_CORO = False
+if six.PY3:
+    try:
+        from twisted.internet.defer import ensureDeferred
+        from asyncio import iscoroutinefunction
+        PY3_CORO = True
+    except ImportError:
+        pass
+
 using_twisted = True
 using_asyncio = False
 
@@ -414,6 +423,9 @@ class _TxApi(object):
         return fail(create_failure(error))
 
     def as_future(self, fun, *args, **kwargs):
+        # Twisted doesn't automagically deal with coroutines on Py3
+        if PY3_CORO and iscoroutinefunction(fun):
+            return ensureDeferred(fun(*args, **kwargs))
         return maybeDeferred(fun, *args, **kwargs)
 
     def is_future(self, obj):
