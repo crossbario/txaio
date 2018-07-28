@@ -4,6 +4,13 @@ txio releases
 master
 ------
 
+- ...
+
+
+18.7.1
+------
+
+- move to calver
 - deprecate Python 3.3 support and CI testing
 
 

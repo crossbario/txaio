@@ -138,6 +138,8 @@ matrix:
       env:
       - TOX_ENV=py36-asyncio
 
+    # FIXME: add Python 3.7 once Travis has it: https://github.com/travis-ci/travis-ci/issues/9815
+
 
 # CI notifications
 notifications:
