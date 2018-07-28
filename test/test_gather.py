@@ -26,7 +26,7 @@
 
 import txaio
 
-from util import await
+from util import _await
 
 
 def test_gather_two(framework):
@@ -61,7 +61,7 @@ def test_gather_two(framework):
     txaio.add_callbacks(f2, done, error)
 
     for f in [f0, f1, f2]:
-        await(f)
+        _await(f)
 
     assert len(results) == 1
     assert len(errors) == 0
@@ -99,7 +99,7 @@ def test_gather_no_consume(framework):
     # out of "run_until_complete()" as well; fix util.py?
     for f in [f0, f1, f2]:
         try:
-            await(f)
+            _await(f)
         except Exception:
             pass
 

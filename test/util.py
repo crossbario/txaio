@@ -57,7 +57,7 @@ def run_once():
         asyncio.gather(*asyncio.Task.all_tasks())
 
 
-def await(future):
+def _await(future):
     '''
     Essentially just a way to call "run_until_complete" that becomes a
     no-op if we're using Twisted.
