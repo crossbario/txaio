@@ -23,14 +23,6 @@ matrix:
 
     - python: 2.7
       env:
-      - TOX_ENV=py27-tw121
-
-    - python: 2.7
-      env:
-      - TOX_ENV=py27-tw132
-
-    - python: 2.7
-      env:
       - TOX_ENV=py27-tw154
 
     - python: 2.7
@@ -45,14 +37,6 @@ matrix:
       env:
       - TOX_ENV=py27-asyncio
 
-
-    - python: pypy
-      env:
-      - TOX_ENV=pypy-tw121
-
-    - python: pypy
-      env:
-      - TOX_ENV=pypy-tw132
 
     - python: pypy
       env:
