@@ -41,6 +41,11 @@ def test_cancel(framework):
     # with "f.cancel()" here ...
     txaio.cancel(f)
 
+    # at least for Twisted, we have to "handle" the "CancelledError"
+    # -- in practice, dropping a future on the floor with no
+    # error-handler is A Bad Thing anyway
+    txaio.add_callbacks(f, None, lambda _: None)
+
     run_once()
     run_once()
 
