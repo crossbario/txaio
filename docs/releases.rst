@@ -4,6 +4,9 @@ txio releases
 master
 ------
 
+- add API to support cancellation; this means passing a 1-argument
+  callable to ``create_future`` and ``txaio.cancel`` to actually
+  cancel a future
 - ...
 
 
