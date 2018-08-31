@@ -54,6 +54,7 @@ create_failure = _throw_usage_error
 as_future = _throw_usage_error
 is_future = _throw_usage_error
 reject = _throw_usage_error
+cancel = _throw_usage_error
 resolve = _throw_usage_error
 add_callbacks = _throw_usage_error
 gather = _throw_usage_error

@@ -71,18 +71,22 @@ txaio module
     Select the Twisted framework (will fail if Twisted is not installed).
 
 
-.. py:function:: create_future(value=None, error=None)
+.. py:function:: create_future(result=None, error=None, canceller=None)
 
     Create and return a new framework-specific future object. On
     asyncio this returns a `Future`_, on Twisted it returns a
     `Deferred`_.
 
-    :param value: if not ``None``, the future is already fulfilled,
+    :param result: if not ``None``, the future is already fulfilled,
         with the given result.
 
     :param error: if not ``None`` then the future is already failed,
         with the given error.
     :type error: class:`IFailedFuture` or Exception
+
+    :param canceller: a single-argument callable which is invoked if
+        this future is cancelled (the single argument is the future
+        object which has been cancelled)
 
     :raises ValueError: if both ``value`` and ``error`` are provided.
 
@@ -127,6 +131,16 @@ txaio module
                   must be called inside an ``except:`` clause).
 
     :type error: :class:`IFailedFuture` or :class:`Exception`
+
+
+.. py:function:: cancel(future)
+
+    Cancel the given future. If a ``canceller`` was registered, it is
+    invoked now. It is invalid to ``resolve`` or ``reject`` the future
+    after cancelling it.
+
+    :param future: an unresolved `Deferred`_/`Future`_ as returned by
+                    :meth:`create_future`
 
 
 .. py:function:: resolve(future, value)

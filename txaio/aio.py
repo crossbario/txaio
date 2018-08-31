@@ -389,7 +389,7 @@ class _AsyncioApi(object):
         except Exception:
             return u"Failed to format failure traceback for '{0}'".format(fail)
 
-    def create_future(self, result=_unspecified, error=_unspecified):
+    def create_future(self, result=_unspecified, error=_unspecified, canceller=_unspecified):
         if result is not _unspecified and error is not _unspecified:
             raise ValueError("Cannot have both result and error.")
 
@@ -398,6 +398,19 @@ class _AsyncioApi(object):
             resolve(f, result)
         elif error is not _unspecified:
             reject(f, error)
+
+        # Twisted's only API for cancelling is to pass a
+        # single-argument callable to the Deferred constructor, so
+        # txaio apes that here for asyncio. The argument is the Future
+        # that has been cancelled.
+        if canceller is not _unspecified:
+            def done(f):
+                try:
+                    f.exception()
+                except asyncio.CancelledError:
+                    canceller(f)
+            f.add_done_callback(done)
+
         return f
 
     def create_future_success(self, result):
@@ -476,6 +489,9 @@ class _AsyncioApi(object):
                 raise RuntimeError("reject requires an IFailedFuture or Exception")
         future.set_exception(error.value)
 
+    def cancel(self, future):
+        future.cancel()
+
     def create_failure(self, exception=None):
         """
         This returns an object implementing IFailedFuture.
@@ -550,6 +566,7 @@ make_batched_timer = _default_api.make_batched_timer
 is_called = _default_api.is_called
 resolve = _default_api.resolve
 reject = _default_api.reject
+cancel = _default_api.cancel
 create_failure = _default_api.create_failure
 add_callbacks = _default_api.add_callbacks
 gather = _default_api.gather

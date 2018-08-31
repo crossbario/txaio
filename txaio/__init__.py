@@ -74,6 +74,7 @@ __all__ = (
     'is_future',                # True for Deferreds in tx and Futures, @coroutines in asyncio
     'reject',                   # errback a Future
     'resolve',                  # callback a Future
+    'cancel',                   # cancel a Future
     'add_callbacks',            # add callback and/or errback
     'gather',                   # return a Future waiting for several other Futures
     'is_called',                # True if the Future has a result
