@@ -27,7 +27,7 @@ matrix:
 
     - python: 2.7
       env:
-      - TOX_ENV=py27-tw165
+      - TOX_ENV=py27-tw187
 
     - python: 2.7
       env:
@@ -44,7 +44,7 @@ matrix:
 
     - python: pypy
       env:
-      - TOX_ENV=pypy-tw165
+      - TOX_ENV=pypy-tw187
 
     - python: pypy
       env:
@@ -61,7 +61,7 @@ matrix:
 
     - python: pypy3
       env:
-      - TOX_ENV=pypy3-tw165
+      - TOX_ENV=pypy3-tw187
 
     - python: pypy3
       env:
@@ -78,7 +78,7 @@ matrix:
 
     - python: 3.4
       env:
-      - TOX_ENV=py34-tw165
+      - TOX_ENV=py34-tw187
 
     - python: 3.4
       env:
@@ -95,7 +95,7 @@ matrix:
 
     - python: 3.5
       env:
-      - TOX_ENV=py35-tw165
+      - TOX_ENV=py35-tw187
 
     - python: 3.5
       env:
@@ -112,7 +112,7 @@ matrix:
 
     - python: 3.6
       env:
-      - TOX_ENV=py36-tw165
+      - TOX_ENV=py36-tw187
 
     - python: 3.6
       env:
@@ -122,7 +122,30 @@ matrix:
       env:
       - TOX_ENV=py36-asyncio
 
-    # FIXME: add Python 3.7 once Travis has it: https://github.com/travis-ci/travis-ci/issues/9815
+
+    - python: 3.7
+      dist: xenial
+      sudo: required
+      env:
+      - TOX_ENV=py37-tw154
+
+    - python: 3.7
+      dist: xenial
+      sudo: required
+      env:
+      - TOX_ENV=py37-tw187
+
+    - python: 3.7
+      dist: xenial
+      sudo: required
+      env:
+      - TOX_ENV=py37-twtrunk
+
+    - python: 3.7
+      dist: xenial
+      sudo: required
+      env:
+      - TOX_ENV=py37-asyncio
 
 
 # CI notifications

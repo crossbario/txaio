@@ -24,6 +24,8 @@
 #
 ###############################################################################
 
+import sys
+
 
 def run_once():
     '''
@@ -38,7 +40,11 @@ def run_once():
 
     try:
         import asyncio
-        from asyncio.test_utils import run_once as _run_once
+        if sys.version_info >= (3, 7):
+            # https://github.com/crossbario/txaio/issues/139
+            from _asyncio_test_utils import run_once as _run_once
+        else:
+            from asyncio.test_utils import run_once as _run_once
         return _run_once(txaio.config.loop or asyncio.get_event_loop())
 
     except ImportError:
