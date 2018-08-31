@@ -4,10 +4,16 @@ txio releases
 master
 ------
 
+- ...
+
+
+18.8.1
+------
+
 - add API to support cancellation; this means passing a 1-argument
   callable to ``create_future`` and ``txaio.cancel`` to actually
   cancel a future
-- ...
+- support Python 3.7 (CI / testing added)
 
 
 18.7.1
