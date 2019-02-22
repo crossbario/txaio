@@ -147,6 +147,17 @@ matrix:
       env:
       - TOX_ENV=py37-asyncio
 
+    # https://docs.travis-ci.com/user/build-stages/matrix-expansion/
+    - stage: deploy
+      python: "3.7"
+      if: repo = crossbario/txaio AND branch = master AND type != pull_request
+      #on:
+      #  repo: crossbario/txaio
+      #  branch: master
+      #  # tags: true
+      skip_cleanup: true
+      provider: script
+      script: pwd && ls -la && sh .travis-deploy.sh
 
 # CI notifications
 notifications:
