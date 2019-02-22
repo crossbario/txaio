@@ -25,9 +25,9 @@ def framework(request):
 
     try:
         if request.param == 'twisted':
-            return framework_tx()
+            return _notfixture_framework_tx()
         elif request.param == 'asyncio':
-            return framework_aio()
+            return _notfixture_framework_aio()
     except ImportError:
         pytest.skip()
 
@@ -43,6 +43,10 @@ def framework_uninitialized():
 
 @pytest.fixture
 def framework_tx():
+    return _notfixture_framework_tx()
+
+
+def _notfixture_framework_tx():
     try:
         import txaio
         from txaio import tx
@@ -56,6 +60,10 @@ def framework_tx():
 
 @pytest.fixture
 def framework_aio():
+    return _notfixture_framework_aio()
+
+
+def _notfixture_framework_aio():
     try:
         import txaio
         from txaio import aio
