@@ -38,28 +38,36 @@ matrix:
       - TOX_ENV=py35-asyncio
 
     - python: 3.7
-      dist: xenial
-      sudo: required
       env:
       - TOX_ENV=py37-tw187
 
     - python: 3.7
-      dist: xenial
-      sudo: required
       env:
       - TOX_ENV=py37-tw1910
 
     - python: 3.7
-      dist: xenial
-      sudo: required
       env:
       - TOX_ENV=py37-twtrunk
 
     - python: 3.7
-      dist: xenial
-      sudo: required
       env:
       - TOX_ENV=py37-asyncio
+
+    - python: 3.8
+      env:
+      - TOX_ENV=py38-tw187
+
+    - python: 3.8
+      env:
+      - TOX_ENV=py38-tw1910
+
+    - python: 3.8
+      env:
+      - TOX_ENV=py38-twtrunk
+
+    - python: 3.8
+      env:
+      - TOX_ENV=py38-asyncio
 
     - python: pypy3
       env:
