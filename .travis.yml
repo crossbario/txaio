@@ -82,10 +82,6 @@ matrix:
 
     - python: 3.4
       env:
-      - TOX_ENV=py34-twtrunk
-
-    - python: 3.4
-      env:
       - TOX_ENV=py34-asyncio
 
 
