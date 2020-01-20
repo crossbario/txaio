@@ -44,6 +44,7 @@ from txaio.interfaces import IFailedFuture, ILogger, log_levels
 from txaio._iotype import guess_stream_needs_encoding
 from txaio import _Config
 from txaio._common import _BatchedTimer
+from txaio._util import time_ns, perf_counter_ns
 
 import six
 

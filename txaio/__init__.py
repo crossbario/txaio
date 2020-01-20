@@ -28,7 +28,6 @@ from __future__ import absolute_import
 
 from txaio._version import __version__
 from txaio.interfaces import IFailedFuture, ILogger
-from txaio.util import time_ns, perf_counter_ns
 
 version = __version__
 
