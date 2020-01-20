@@ -21,77 +21,13 @@ matrix:
   include:
     - env: TOX_ENV=flake8
 
-    - python: 2.7
-      env:
-      - TOX_ENV=py27-tw154
-
-    - python: 2.7
-      env:
-      - TOX_ENV=py27-tw187
-
-    - python: 2.7
-      env:
-      - TOX_ENV=py27-twtrunk
-
-    - python: 2.7
-      env:
-      - TOX_ENV=py27-asyncio
-
-
-    - python: pypy
-      env:
-      - TOX_ENV=pypy-tw154
-
-    - python: pypy
-      env:
-      - TOX_ENV=pypy-tw187
-
-    - python: pypy
-      env:
-      - TOX_ENV=pypy-twtrunk
-
-    - python: pypy
-      env:
-      - TOX_ENV=pypy-asyncio
-
-
-    - python: pypy3
-      env:
-      - TOX_ENV=pypy3-tw154
-
-    - python: pypy3
-      env:
-      - TOX_ENV=pypy3-tw187
-
-    - python: pypy3
-      env:
-      - TOX_ENV=pypy3-twtrunk
-
-    - python: pypy3
-      env:
-      - TOX_ENV=pypy3-asyncio
-
-
-    - python: 3.4
-      env:
-      - TOX_ENV=py34-tw154
-
-    - python: 3.4
-      env:
-      - TOX_ENV=py34-tw187
-
-    - python: 3.4
-      env:
-      - TOX_ENV=py34-asyncio
-
-
-    - python: 3.5
-      env:
-      - TOX_ENV=py35-tw154
-
     - python: 3.5
       env:
       - TOX_ENV=py35-tw187
+
+    - python: 3.5
+      env:
+      - TOX_ENV=py35-tw1910
 
     - python: 3.5
       env:
@@ -101,35 +37,17 @@ matrix:
       env:
       - TOX_ENV=py35-asyncio
 
-
-    - python: 3.6
-      env:
-      - TOX_ENV=py36-tw154
-
-    - python: 3.6
-      env:
-      - TOX_ENV=py36-tw187
-
-    - python: 3.6
-      env:
-      - TOX_ENV=py36-twtrunk
-
-    - python: 3.6
-      env:
-      - TOX_ENV=py36-asyncio
-
-
-    - python: 3.7
-      dist: xenial
-      sudo: required
-      env:
-      - TOX_ENV=py37-tw154
-
     - python: 3.7
       dist: xenial
       sudo: required
       env:
       - TOX_ENV=py37-tw187
+
+    - python: 3.7
+      dist: xenial
+      sudo: required
+      env:
+      - TOX_ENV=py37-tw1910
 
     - python: 3.7
       dist: xenial
@@ -143,6 +61,21 @@ matrix:
       env:
       - TOX_ENV=py37-asyncio
 
+    - python: pypy3
+      env:
+      - TOX_ENV=pypy3-tw187
+
+    - python: pypy3
+      env:
+      - TOX_ENV=pypy3-tw1910
+
+    - python: pypy3
+      env:
+      - TOX_ENV=pypy3-twtrunk
+
+    - python: pypy3
+      env:
+      - TOX_ENV=pypy3-asyncio
     # https://docs.travis-ci.com/user/build-stages/matrix-expansion/
     - stage: deploy
       python: "3.7"
