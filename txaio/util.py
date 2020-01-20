@@ -29,12 +29,24 @@ import time
 
 
 def time_ns():
+    """
+    Current time (UTC) in nanoseconds.
+
+    :return: Current time.
+    :rtype: int
+    """
     if sys.version_info >= (3, 7):
         return time.time_ns()
     return int(time.time() * 1000000000.)
 
 
 def perf_counter_ns():
+    """
+    Current performance counter in nanoseconds.
+
+    :return: Current performance counter.
+    :rtype: int
+    """
     if sys.version_info >= (3, 7):
         return time.perf_counter_ns()
     return int(time.perf_counter() * 1000000000.)

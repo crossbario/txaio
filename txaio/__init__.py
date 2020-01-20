@@ -28,6 +28,7 @@ from __future__ import absolute_import
 
 from txaio._version import __version__
 from txaio.interfaces import IFailedFuture, ILogger
+from txaio.util import time_ns, perf_counter_ns
 
 version = __version__
 
@@ -97,6 +98,8 @@ __all__ = (
     'ILogger',                  # API for logging
 
     'sleep',                    # little helper for inline sleeping
+    'time_ns',                  # helper: current time (UTC) in ns
+    'perf_counter_ns',          # helper: current performance counter in ns
 )
 
 
