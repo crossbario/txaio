@@ -172,7 +172,7 @@ def test_explicit_reactor_coroutine(framework):
         pytest.skip()
 
     async def some_coroutine():
-        yield 'nothing'
+        return 'nothing'
 
     with patch.object(txaio.config, 'loop') as fake_loop:
         txaio.as_future(some_coroutine)

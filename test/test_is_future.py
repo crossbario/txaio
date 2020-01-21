@@ -44,7 +44,7 @@ def test_is_future_coroutine(framework_aio):
     pytest.importorskip('asyncio')  # 'aio' might be using trollius
 
     async def some_coroutine():
-        yield 'answer'
+        return 'answer'
     obj = some_coroutine()
     assert txaio.is_future(obj)
 
