@@ -30,40 +30,19 @@ import time
 
 if sys.version_info >= (3, 7):
 
-    def time_ns():
-        """
-        Current time (UTC) in nanoseconds.
-
-        :return: Current time.
-        :rtype: int
-        """
-        return time.time_ns()
-
-    def perf_counter_ns():
-        """
-        Current performance counter in nanoseconds.
-
-        :return: Current performance counter.
-        :rtype: int
-        """
-        return time.perf_counter_ns()
+    time_ns = time.time_ns
+    perf_counter_ns = time.perf_counter_ns
 
 else:
 
     def time_ns():
         """
-        Current time (UTC) in nanoseconds.
-
-        :return: Current time.
-        :rtype: int
+        Shim for standard library time.time_ns for Python < 3.7.
         """
         return int(time.time() * 1000000000.)
 
     def perf_counter_ns():
         """
-        Current performance counter in nanoseconds.
-
-        :return: Current performance counter.
-        :rtype: int
+        Shim for standard library time.perf_counter for Python < 3.7.
         """
         return int(time.perf_counter() * 1000000000.)
