@@ -398,7 +398,7 @@ class _TxApi(object):
         returns a string
         """
         try:
-            f = six.StringIO()
+            f = io.StringIO()
             fail.printTraceback(file=f)
             return f.getvalue()
         except Exception:

@@ -377,7 +377,7 @@ class _AsyncioApi(object):
         returns a string
         """
         try:
-            f = six.StringIO()
+            f = io.StringIO()
             traceback.print_exception(
                 fail._type,
                 fail.value,

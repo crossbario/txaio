@@ -289,7 +289,7 @@ def test_log_converter(handler, framework):
     from twisted.logger import Logger
     from txaio.tx import _LogObserver
 
-    out = six.StringIO()
+    out = io.StringIO()
     observer = _LogObserver(out)
     logger = Logger(observer=observer)
 
