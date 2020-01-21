@@ -304,7 +304,7 @@ class _LogObserver(object):
         # "Unhandled error in Deferred" -- perhaps this is a Twisted
         # bug?
         if event['log_format'] is None:
-            msg = u'{0} {1}{2}'.format(
+            msg = '{0} {1}{2}'.format(
                 formatTime(event["log_time"]),
                 failure_format_traceback(event['log_failure']),
                 os.linesep,
@@ -316,7 +316,7 @@ class _LogObserver(object):
             # although Logger will already have filtered out unwanted
             # levels, bare Logger instances from Twisted code won't have.
             if 'log_level' in event and self._acceptable_level(event['log_level']):
-                msg = u'{0} {1}{2}'.format(
+                msg = '{0} {1}{2}'.format(
                     formatTime(event["log_time"]),
                     formatEvent(event),
                     os.linesep,
@@ -377,7 +377,7 @@ class _TxApi(object):
         returns a unicode error-message
         """
         try:
-            return u'{0}: {1}'.format(
+            return '{0}: {1}'.format(
                 fail.value.__class__.__name__,
                 fail.getErrorMessage(),
             )

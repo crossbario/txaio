@@ -236,7 +236,7 @@ class _TxaioFileHandler(logging.Handler, object):
         if isinstance(record.args, dict):
             fmt = record.args.get(
                 'log_format',
-                record.args.get('log_message', u'')
+                record.args.get('log_message', '')
             )
             message = fmt.format(**record.args)
             dt = datetime.fromtimestamp(record.args.get('log_time', 0))
@@ -247,7 +247,7 @@ class _TxaioFileHandler(logging.Handler, object):
                 for line in traceback.format_exception(*record.exc_info):
                     message = message + line
             dt = datetime.fromtimestamp(record.created)
-        msg = u'{0} {1}{2}'.format(
+        msg = '{0} {1}{2}'.format(
             dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
             message,
             os.linesep
@@ -357,12 +357,12 @@ class _AsyncioApi(object):
         returns a unicode error-message
         """
         try:
-            return u'{0}: {1}'.format(
+            return '{0}: {1}'.format(
                 fail._value.__class__.__name__,
                 str(fail._value),
             )
         except Exception:
-            return u'Failed to produce failure message for "{0}"'.format(fail)
+            return 'Failed to produce failure message for "{0}"'.format(fail)
 
     def failure_traceback(self, fail):
         """
