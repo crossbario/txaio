@@ -102,10 +102,7 @@ def test_as_future_coroutine(framework):
     results = []
     calls = []
 
-    from asyncio import coroutine
-
-    @coroutine
-    def method(*args, **kw):
+    async def method(*args, **kw):
         calls.append((args, kw))
         return 42
     f = txaio.as_future(method, 1, 2, 3, key='word')

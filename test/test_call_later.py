@@ -171,10 +171,7 @@ def test_explicit_reactor_coroutine(framework):
     if txaio.using_twisted:
         pytest.skip()
 
-    from asyncio import coroutine
-
-    @coroutine
-    def some_coroutine():
+    async def some_coroutine():
         yield 'nothing'
 
     with patch.object(txaio.config, 'loop') as fake_loop:

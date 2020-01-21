@@ -42,10 +42,8 @@ def test_is_future_coroutine(framework_aio):
     Returning an immediate value from as_future
     '''
     pytest.importorskip('asyncio')  # 'aio' might be using trollius
-    from asyncio import coroutine
 
-    @coroutine
-    def some_coroutine():
+    async def some_coroutine():
         yield 'answer'
     obj = some_coroutine()
     assert txaio.is_future(obj)
