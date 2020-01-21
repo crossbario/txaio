@@ -47,13 +47,12 @@ from txaio import _util
 
 
 PY3_CORO = False
-if six.PY3:
-    try:
-        from twisted.internet.defer import ensureDeferred
-        from asyncio import iscoroutinefunction
-        PY3_CORO = True
-    except ImportError:
-        pass
+try:
+    from twisted.internet.defer import ensureDeferred
+    from asyncio import iscoroutinefunction
+    PY3_CORO = True
+except ImportError:
+    pass
 
 using_twisted = True
 using_asyncio = False
@@ -97,7 +96,7 @@ except ImportError:
 
     def formatTime(t):  # noqa
         dt = datetime.fromtimestamp(t)
-        return six.u(dt.strftime("%Y-%m-%dT%H:%M:%S%z"))
+        return dt.strftime("%Y-%m-%dT%H:%M:%S%z")
 
     def formatEvent(event):  # noqa
         msg = event['log_format']

@@ -83,9 +83,6 @@ setup(
     url='https://github.com/crossbario/txaio',
     platforms=('Any'),
     python_requires='>=3.5',
-    install_requires=[
-        'six'
-    ],
     extras_require={
         'twisted': extras_require_twisted,
         'asyncio': extras_require_asyncio,
