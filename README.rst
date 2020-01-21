@@ -22,19 +22,12 @@ either one's event loop to the other using some event loop adapter.
 Platform support
 ----------------
 
-**txaio** runs on CPython 2.7/3.3+ and PyPy 2/3, on top of Twisted or asyncio. Specifically, **txaio** is tested on the following platforms:
+**txaio** runs on CPython 3.5+ and PyPy 3, on top of *Twisted* or *asyncio*. Specifically, **txaio** is tested on the following platforms:
 
-**Python 2:**
+* CPython 3.5, 3.7 and 3.8 on Twisted 18.7, 19.10, trunk and on asyncio (stdlib)
+* PyPy 3 on Twisted 18.7, 19.10, trunk and on asyncio (stdlib)
 
-* CPython 2.7 on Twisted 12.1, 13.2, 15.4, 16.5, trunk and on Trollius 2.0
-* PyPy 2 on Twisted 12.1, 13.2, 15.4, 16.5, trunk and on Trollius 2.0
-
-**Python 3:**
-
-* CPython 3.4 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
-* CPython 3.5 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
-* CPython 3.6 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
-* PyPy 3 on Twisted 15.4, 16.5, trunk and on asyncio (stdlib)
+> Note: txaio up to version 18.8.1 also supported Python 2.7 and Python 3.4. Beginning with release v20.1.1, txaio only supports Python 3.5+.
 
 
 How it works

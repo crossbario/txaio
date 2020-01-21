@@ -79,3 +79,5 @@ IFailedFuture = _throw_usage_error
 ILogger = _throw_usage_error
 
 sleep = _throw_usage_error
+time_ns = _throw_usage_error
+perf_counter_ns = _throw_usage_error

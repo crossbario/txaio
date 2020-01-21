@@ -48,23 +48,9 @@ extras_require_twisted = [
     'twisted>=12.1.0',                  # MIT
 ]
 
-# asyncio dependencies
+# asyncio dependencies: Python 3.5+ has asyncio builtin
 #
-if PY3:
-    if PY33:
-        # "Tulip"
-        extras_require_asyncio = [
-            "asyncio>=3.4.3"            # Apache 2.0
-        ]
-    else:
-        # Python 3.4+ has asyncio builtin
-        extras_require_asyncio = []
-else:
-    # backport of asyncio for Python 2
-    extras_require_asyncio = [
-        "trollius>=2.0",                # Apache 2.0
-        "futures>=3.0.3"                # BSD license
-    ]
+extras_require_asyncio = []
 
 # development dependencies
 #
@@ -97,6 +83,7 @@ setup(
     author_email='autobahnws@googlegroups.com',
     url='https://github.com/crossbario/txaio',
     platforms=('Any'),
+    python_requires='>=3.5',
     install_requires=[
         'six'
     ],
@@ -129,14 +116,11 @@ setup(
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Libraries",

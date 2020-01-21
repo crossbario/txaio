@@ -24,17 +24,14 @@
 #
 ###############################################################################
 
-import sys
-import time
+import txaio
 
 
-def time_ns():
-    if sys.version_info >= (3, 7):
-        return time.time_ns()
-    return int(time.time() * 1000000000.)
+def test_time_ns(framework):
+    now = txaio.time_ns()
+    assert now > 0
 
 
-def perf_counter_ns():
-    if sys.version_info >= (3, 7):
-        return time.perf_counter_ns()
-    return int(time.perf_counter() * 1000000000.)
+def test_perf_counter_ns(framework):
+    now = txaio.perf_counter_ns()
+    assert now > 0

@@ -44,6 +44,7 @@ from txaio.interfaces import IFailedFuture, ILogger, log_levels
 from txaio._iotype import guess_stream_needs_encoding
 from txaio import _Config
 from txaio._common import _BatchedTimer
+from txaio import _util
 
 import six
 
@@ -587,3 +588,5 @@ create_failure = _default_api.create_failure
 add_callbacks = _default_api.add_callbacks
 gather = _default_api.gather
 sleep = _default_api.sleep
+time_ns = _util.time_ns
+perf_counter_ns = _util.perf_counter_ns

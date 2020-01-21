@@ -97,6 +97,8 @@ __all__ = (
     'ILogger',                  # API for logging
 
     'sleep',                    # little helper for inline sleeping
+    'time_ns',                  # helper: current time (UTC) in ns
+    'perf_counter_ns',          # helper: current performance counter in ns
 )
 
 
