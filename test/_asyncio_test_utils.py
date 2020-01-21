@@ -55,15 +55,15 @@ PEERCERT = {
     'caIssuers': ('http://testca.pythontest.net/testca/pycacert.cer',),
     'crlDistributionPoints': ('http://testca.pythontest.net/testca/revocation.crl',),
     'issuer': ((('countryName', 'XY'),),
-            (('organizationName', 'Python Software Foundation CA'),),
-            (('commonName', 'our-ca-server'),)),
+               (('organizationName', 'Python Software Foundation CA'),),
+               (('commonName', 'our-ca-server'),)),
     'notAfter': 'Jul  7 14:23:16 2028 GMT',
     'notBefore': 'Aug 29 14:23:16 2018 GMT',
     'serialNumber': 'CB2D80995A69525C',
     'subject': ((('countryName', 'XY'),),
-             (('localityName', 'Castle Anthrax'),),
-             (('organizationName', 'Python Software Foundation'),),
-             (('commonName', 'localhost'),)),
+                (('localityName', 'Castle Anthrax'),),
+                (('organizationName', 'Python Software Foundation'),),
+                (('commonName', 'localhost'),)),
     'subjectAltName': (('DNS', 'localhost'),),
     'version': 3
 }
@@ -212,7 +212,6 @@ if hasattr(socket, 'AF_UNIX'):
             self.server_name = '127.0.0.1'
             self.server_port = 80
 
-
     class UnixWSGIServer(UnixHTTPServer, WSGIServer):
 
         request_timeout = 2
@@ -232,21 +231,17 @@ if hasattr(socket, 'AF_UNIX'):
             # to get the tests going
             return request, ('127.0.0.1', '')
 
-
     class SilentUnixWSGIServer(UnixWSGIServer):
 
         def handle_error(self, request, client_address):
             pass
 
-
     class UnixSSLWSGIServer(SSLWSGIServerMixin, SilentUnixWSGIServer):
         pass
-
 
     def gen_unix_socket_path():
         with tempfile.NamedTemporaryFile() as file:
             return file.name
-
 
     @contextlib.contextmanager
     def unix_socket_path():
@@ -258,7 +253,6 @@ if hasattr(socket, 'AF_UNIX'):
                 os.unlink(path)
             except OSError:
                 pass
-
 
     @contextlib.contextmanager
     def run_test_unix_server(*, use_ssl=False):
