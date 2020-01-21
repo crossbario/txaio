@@ -45,7 +45,6 @@ from txaio import _Config
 from txaio._common import _BatchedTimer
 from txaio import _util
 
-import six
 
 PY3_CORO = False
 if six.PY3:

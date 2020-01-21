@@ -42,7 +42,6 @@ from txaio._common import _BatchedTimer
 from txaio import _util
 from txaio import _Config
 
-import six
 
 try:
     import asyncio

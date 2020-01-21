@@ -29,7 +29,6 @@ from collections import namedtuple
 from io import BytesIO, StringIO
 
 import os
-import six
 import pytest
 import txaio
 
