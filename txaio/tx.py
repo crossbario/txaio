@@ -44,7 +44,8 @@ from txaio._iotype import guess_stream_needs_encoding
 from txaio import _Config
 from txaio._common import _BatchedTimer
 from txaio import _util
-
+from twisted.logger import Logger as _Logger, formatEvent, ILogObserver
+from twisted.logger import globalLogBeginner, formatTime, LogLevel
 
 from twisted.internet.defer import ensureDeferred
 from asyncio import iscoroutinefunction
@@ -69,9 +70,6 @@ _started_logging = False
 _categories = {}
 
 IFailedFuture.register(Failure)
-
-from twisted.logger import Logger as _Logger, formatEvent, ILogObserver
-from twisted.logger import globalLogBeginner, formatTime, LogLevel
 ILogger.register(_Logger)
 
 
