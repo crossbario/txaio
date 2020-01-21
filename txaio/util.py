@@ -28,13 +28,15 @@ import sys
 import time
 
 
-def time_ns():
-    if sys.version_info >= (3, 7):
-        return time.time_ns()
-    return int(time.time() * 1000000000.)
+if sys.version_info >= (3, 7):
+    time_ns = time.time_ns
+else:
+    def time_ns():
+        return int(time.time() * 1000000000.)
 
 
-def perf_counter_ns():
-    if sys.version_info >= (3, 7):
-        return time.perf_counter_ns()
-    return int(time.perf_counter() * 1000000000.)
+if sys.version_info >= (3, 7):
+    perf_counter_ns = time.perf_counter_ns
+else:
+    def perf_counter_ns():
+        return int(time.perf_counter() * 1000000000.)
