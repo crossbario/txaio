@@ -24,13 +24,11 @@
 #
 ###############################################################################
 
-from __future__ import print_function
 
 from collections import namedtuple
 from io import BytesIO, StringIO
 
 import os
-import six
 import pytest
 import txaio
 
@@ -79,7 +77,7 @@ def test_categories(handler, framework):
     """
     logger = txaio.make_logger()
 
-    txaio.add_log_categories({"TX100": u"{adjective} {nouns[2]}"})
+    txaio.add_log_categories({"TX100": "{adjective} {nouns[2]}"})
 
     # do something a little fancy, with attribute access etc.
     logger.critical(
@@ -100,8 +98,8 @@ def test_categories_subsequent(handler, framework):
     """
     logger = txaio.make_logger()
 
-    txaio.add_log_categories({"TX100": u"{adjective} {nouns[2]}"})
-    txaio.add_log_categories({"TX100": u"{adjective} {nouns[1]}"})
+    txaio.add_log_categories({"TX100": "{adjective} {nouns[2]}"})
+    txaio.add_log_categories({"TX100": "{adjective} {nouns[1]}"})
 
     # do something a little fancy, with attribute access etc.
     logger.critical(
@@ -291,7 +289,7 @@ def test_log_converter(handler, framework):
     from twisted.logger import Logger
     from txaio.tx import _LogObserver
 
-    out = six.StringIO()
+    out = StringIO()
     observer = _LogObserver(out)
     logger = Logger(observer=observer)
 
@@ -344,7 +342,7 @@ def test_txlog_write_text(handler, framework_tx):
     })
 
     output = out_file.getvalue()
-    assert u"hi: hello" in output
+    assert "hi: hello" in output
 
 
 def test_aiolog_write_binary(handler, framework_aio):
@@ -384,4 +382,4 @@ def test_aiolog_write_text(handler, framework_aio):
     }))
 
     output = out_file.getvalue()
-    assert u"hi: hello" in output
+    assert "hi: hello" in output

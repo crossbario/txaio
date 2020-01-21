@@ -24,7 +24,6 @@
 #
 ###############################################################################
 
-from __future__ import print_function
 
 # This example only works with asyncio
 

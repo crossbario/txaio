@@ -24,15 +24,6 @@
 #
 ###############################################################################
 
-from __future__ import absolute_import, division
-
-from six import PY3, PY2
-
-if PY3:
-    unicode = str
-else:
-    unicode = unicode
-
 
 def guess_stream_needs_encoding(fileobj, default=True):
     """
@@ -55,7 +46,7 @@ def guess_stream_needs_encoding(fileobj, default=True):
 
         if t is bytes:
             return True
-        elif t is unicode:
+        elif t is str:
             return False
 
     except Exception:
@@ -63,9 +54,6 @@ def guess_stream_needs_encoding(fileobj, default=True):
 
     try:
         mode = fileobj.mode
-
-        if PY2 and mode == "w":
-            mode = "wb"
 
         if "b" in mode:
             return True

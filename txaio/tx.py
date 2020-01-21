@@ -24,8 +24,7 @@
 #
 ###############################################################################
 
-from __future__ import absolute_import, division, print_function
-
+import io
 import os
 import sys
 import weakref
@@ -46,16 +45,14 @@ from txaio import _Config
 from txaio._common import _BatchedTimer
 from txaio import _util
 
-import six
 
 PY3_CORO = False
-if six.PY3:
-    try:
-        from twisted.internet.defer import ensureDeferred
-        from asyncio import iscoroutinefunction
-        PY3_CORO = True
-    except ImportError:
-        pass
+try:
+    from twisted.internet.defer import ensureDeferred
+    from asyncio import iscoroutinefunction
+    PY3_CORO = True
+except ImportError:
+    pass
 
 using_twisted = True
 using_asyncio = False
@@ -99,7 +96,7 @@ except ImportError:
 
     def formatTime(t):  # noqa
         dt = datetime.fromtimestamp(t)
-        return six.u(dt.strftime("%Y-%m-%dT%H:%M:%S%z"))
+        return dt.strftime("%Y-%m-%dT%H:%M:%S%z")
 
     def formatEvent(event):  # noqa
         msg = event['log_format']
@@ -307,7 +304,7 @@ class _LogObserver(object):
         # "Unhandled error in Deferred" -- perhaps this is a Twisted
         # bug?
         if event['log_format'] is None:
-            msg = u'{0} {1}{2}'.format(
+            msg = '{0} {1}{2}'.format(
                 formatTime(event["log_time"]),
                 failure_format_traceback(event['log_failure']),
                 os.linesep,
@@ -319,7 +316,7 @@ class _LogObserver(object):
             # although Logger will already have filtered out unwanted
             # levels, bare Logger instances from Twisted code won't have.
             if 'log_level' in event and self._acceptable_level(event['log_level']):
-                msg = u'{0} {1}{2}'.format(
+                msg = '{0} {1}{2}'.format(
                     formatTime(event["log_time"]),
                     formatEvent(event),
                     os.linesep,
@@ -380,7 +377,7 @@ class _TxApi(object):
         returns a unicode error-message
         """
         try:
-            return u'{0}: {1}'.format(
+            return '{0}: {1}'.format(
                 fail.value.__class__.__name__,
                 fail.getErrorMessage(),
             )
@@ -400,11 +397,11 @@ class _TxApi(object):
         returns a string
         """
         try:
-            f = six.StringIO()
+            f = io.StringIO()
             fail.printTraceback(file=f)
             return f.getvalue()
         except Exception:
-            return u"Failed to format failure traceback for '{0}'".format(fail)
+            return "Failed to format failure traceback for '{0}'".format(fail)
 
     def create_future(self, result=_unspecified, error=_unspecified, canceller=None):
         if result is not _unspecified and error is not _unspecified:

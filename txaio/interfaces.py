@@ -24,10 +24,8 @@
 #
 ###############################################################################
 
-from __future__ import absolute_import
 
 import abc
-import six
 
 #: all the log-levels that txaio recognizes
 log_levels = [
@@ -41,8 +39,7 @@ log_levels = [
 ]
 
 
-@six.add_metaclass(abc.ABCMeta)
-class IBatchedTimer(object):
+class IBatchedTimer(abc.ABC):
     """
     Objects created by :met:`txaio.make_batched_timer` implement this
     interface.
@@ -81,8 +78,7 @@ class IBatchedTimer(object):
         """
 
 
-@six.add_metaclass(abc.ABCMeta)
-class ILogger(object):
+class ILogger(abc.ABC):
     """
     This defines the methods you can call on the object returned from
     :meth:`txaio.make_logger` -- although the actual object may have
@@ -156,8 +152,7 @@ class ILogger(object):
         "log a trace-level message"
 
 
-@six.add_metaclass(abc.ABCMeta)
-class IFailedFuture(object):
+class IFailedFuture(abc.ABC):
     """
     This defines the interface for a common object encapsulating a
     failure from either an asyncio task/coroutine or a Twisted

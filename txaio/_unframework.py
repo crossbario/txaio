@@ -30,7 +30,6 @@ this is the default so that you have to pick asyncio or twisted
 explicitly by calling .use_twisted() or .use_asyncio()
 """
 
-from __future__ import absolute_import, division, print_function
 from txaio import _Config
 
 using_twisted = False
