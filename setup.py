@@ -30,8 +30,6 @@ import platform
 from setuptools import setup
 
 CPY = platform.python_implementation() == 'CPython'
-PY3 = sys.version_info >= (3,)
-PY33 = (3, 3) <= sys.version_info < (3, 4)
 
 with open('txaio/_version.py') as f:
     exec(f.read())  # defines __version__
