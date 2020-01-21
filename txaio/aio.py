@@ -386,7 +386,7 @@ class _AsyncioApi(object):
             )
             return f.getvalue()
         except Exception:
-            return u"Failed to format failure traceback for '{0}'".format(fail)
+            return "Failed to format failure traceback for '{0}'".format(fail)
 
     def create_future(self, result=_unspecified, error=_unspecified, canceller=_unspecified):
         if result is not _unspecified and error is not _unspecified:
