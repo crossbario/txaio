@@ -24,7 +24,6 @@
 #
 ###############################################################################
 
-
 import abc
 
 #: all the log-levels that txaio recognizes
