@@ -24,7 +24,6 @@
 #
 ###############################################################################
 
-
 import txaio
 from contextlib import contextmanager
 

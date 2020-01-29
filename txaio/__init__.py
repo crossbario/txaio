@@ -32,7 +32,7 @@ version = __version__
 
 # This is the API
 # see tx.py for Twisted implementation
-# see aio.py for asyncio/trollius implementation
+# see aio.py for asyncio implementation
 
 
 class _Config(object):

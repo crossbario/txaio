@@ -44,15 +44,11 @@ from txaio._iotype import guess_stream_needs_encoding
 from txaio import _Config
 from txaio._common import _BatchedTimer
 from txaio import _util
+from twisted.logger import Logger as _Logger, formatEvent, ILogObserver
+from twisted.logger import globalLogBeginner, formatTime, LogLevel
 
-
-PY3_CORO = False
-try:
-    from twisted.internet.defer import ensureDeferred
-    from asyncio import iscoroutinefunction
-    PY3_CORO = True
-except ImportError:
-    pass
+from twisted.internet.defer import ensureDeferred
+from asyncio import iscoroutinefunction
 
 using_twisted = True
 using_asyncio = False
@@ -74,59 +70,7 @@ _started_logging = False
 _categories = {}
 
 IFailedFuture.register(Failure)
-
-_NEW_LOGGER = False
-try:
-    # Twisted 15+
-    from twisted.logger import Logger as _Logger, formatEvent, ILogObserver
-    from twisted.logger import globalLogBeginner, formatTime, LogLevel
-    ILogger.register(_Logger)
-    _NEW_LOGGER = True
-
-except ImportError:
-    # we still support Twisted 12 and 13, which doesn't have new-logger
-    from zope.interface import Interface
-    from datetime import datetime
-    import time
-
-    # provide our own simple versions of what Twisted new-logger does
-
-    class ILogObserver(Interface):
-        pass
-
-    def formatTime(t):  # noqa
-        dt = datetime.fromtimestamp(t)
-        return dt.strftime("%Y-%m-%dT%H:%M:%S%z")
-
-    def formatEvent(event):  # noqa
-        msg = event['log_format']
-        return msg.format(**event)
-
-    class LogLevel:
-        critical = 'critical'
-        error = 'error'
-        warn = 'warn'
-        info = 'info'
-        debug = 'debug'
-        trace = 'trace'
-
-        @classmethod
-        def lookupByName(cls, name):  # noqa
-            return getattr(cls, name)
-
-    class _Logger(ILogger):
-        def __init__(self, **kwargs):
-            self.namespace = kwargs.get('namespace', None)
-
-        def emit(self, level, format='', **kwargs):
-            kwargs['log_time'] = time.time()
-            kwargs['log_level'] = level
-            kwargs['log_format'] = format
-            kwargs['log_namespace'] = self.namespace
-            # NOTE: the other loggers are ignoring any log messages
-            # before start_logging() as well
-            if _observer:
-                _observer(kwargs)
+ILogger.register(_Logger)
 
 
 def _no_op(*args, **kwargs):
@@ -352,15 +296,10 @@ def start_logging(out=_stdout, level='info'):
     if out:
         _observer = _LogObserver(out)
 
-    if _NEW_LOGGER:
-        _observers = []
-        if _observer:
-            _observers.append(_observer)
-        globalLogBeginner.beginLoggingTo(_observers)
-    else:
-        assert out, "out needs to be given a value if using Twisteds before 15.2"
-        from twisted.python import log
-        log.startLogging(out)
+    _observers = []
+    if _observer:
+        _observers.append(_observer)
+    globalLogBeginner.beginLoggingTo(_observers)
 
 
 _unspecified = object()
@@ -422,7 +361,7 @@ class _TxApi(object):
 
     def as_future(self, fun, *args, **kwargs):
         # Twisted doesn't automagically deal with coroutines on Py3
-        if PY3_CORO and iscoroutinefunction(fun):
+        if iscoroutinefunction(fun):
             return ensureDeferred(fun(*args, **kwargs))
         return maybeDeferred(fun, *args, **kwargs)
 
