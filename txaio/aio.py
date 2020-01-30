@@ -24,6 +24,10 @@
 #
 ###############################################################################
 
+import asyncio
+from asyncio import iscoroutine
+from asyncio import Future
+from types import AsyncGeneratorType
 import io
 import os
 import sys
@@ -41,52 +45,6 @@ from txaio._iotype import guess_stream_needs_encoding
 from txaio._common import _BatchedTimer
 from txaio import _util
 from txaio import _Config
-
-
-try:
-    import asyncio
-    from asyncio import iscoroutine
-    from asyncio import Future
-
-except ImportError:
-    # Trollius >= 0.3 was renamed
-    # noinspection PyUnresolvedReferences
-    import trollius as asyncio
-    from trollius import iscoroutine
-    from trollius import Future
-
-try:
-    from types import AsyncGeneratorType  # python 3.5+
-except ImportError:
-    class AsyncGeneratorType(object):
-        pass
-
-
-def _create_future_of_loop(loop):
-    return loop.create_future()
-
-
-def _create_future_directly(loop=None):
-    return Future(loop=loop)
-
-
-def _create_task_of_loop(res, loop):
-    return loop.create_task(res)
-
-
-def _create_task_directly(res, loop=None):
-    return asyncio.Task(res, loop=loop)
-
-
-if sys.version_info >= (3, 4, 2):
-    _create_task = _create_task_of_loop
-    if sys.version_info >= (3, 5, 2):
-        _create_future = _create_future_of_loop
-    else:
-        _create_future = _create_future_directly
-else:
-    _create_task = _create_task_directly
-    _create_future = _create_future_directly
 
 
 config = _Config()
@@ -392,7 +350,7 @@ class _AsyncioApi(object):
         if result is not _unspecified and error is not _unspecified:
             raise ValueError("Cannot have both result and error.")
 
-        f = _create_future(loop=self._config.loop)
+        f = self._config.loop.create_future()
         if result is not _unspecified:
             resolve(f, result)
         elif error is not _unspecified:
@@ -429,7 +387,7 @@ class _AsyncioApi(object):
             if isinstance(res, Future):
                 return res
             elif iscoroutine(res):
-                return _create_task(res, loop=self._config.loop)
+                return self._config.loop.create_task(res)
             elif isinstance(res, AsyncGeneratorType):
                 raise RuntimeError(
                     "as_future() received an async generator function; does "
