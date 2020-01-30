@@ -137,8 +137,7 @@ def _use_framework(module):
     for method_name in __all__:
         if method_name in ['use_twisted', 'use_asyncio']:
             continue
-        setattr(txaio, method_name,
-                getattr(module, method_name))
+        setattr(txaio, method_name, getattr(module, method_name))
 
 
 # use the "un-framework", which is neither asyncio nor twisted and
