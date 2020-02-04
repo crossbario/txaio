@@ -27,7 +27,11 @@
 import asyncio
 from asyncio import iscoroutine
 from asyncio import Future
-from types import AsyncGeneratorType
+try:
+    from types import AsyncGeneratorType
+except ImportError:
+    class AsyncGeneratorType:
+        pass
 import io
 import os
 import sys
