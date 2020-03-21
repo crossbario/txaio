@@ -1,6 +1,12 @@
 txio releases
 =============
 
+20.3.1
+------
+
+- MISC: Remove python2 support
+- NEW: support import-time framework selection
+
 20.1.1
 ------
 
