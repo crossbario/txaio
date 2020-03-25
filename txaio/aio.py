@@ -309,9 +309,18 @@ class _AsyncioApi(object):
     using_asyncio = True
 
     def __init__(self, config):
-        if config.loop is None:
-            config.loop = asyncio.get_event_loop()
         self._config = config
+
+    @property
+    def _loop(self):
+        # if configured explicetly, then use this loop
+        if self._config.loop:
+            return self._config.loop
+
+        # otherwise give out the event loop of the thread this is called in
+        # rather fetching the loop once in __init__, which may not neccessarily
+        # be called from the thread we now run the event loop in.
+        return asyncio.get_event_loop()
 
     def failure_message(self, fail):
         """
@@ -354,7 +363,7 @@ class _AsyncioApi(object):
         if result is not _unspecified and error is not _unspecified:
             raise ValueError("Cannot have both result and error.")
 
-        f = self._config.loop.create_future()
+        f = self._loop.create_future()
         if result is not _unspecified:
             resolve(f, result)
         elif error is not _unspecified:
@@ -391,7 +400,7 @@ class _AsyncioApi(object):
             if isinstance(res, Future):
                 return res
             elif iscoroutine(res):
-                return self._config.loop.create_task(res)
+                return self._loop.create_task(res)
             elif isinstance(res, AsyncGeneratorType):
                 raise RuntimeError(
                     "as_future() received an async generator function; does "
@@ -408,7 +417,7 @@ class _AsyncioApi(object):
     def call_later(self, delay, fun, *args, **kwargs):
         # loop.call_later doesn't support kwargs
         real_call = functools.partial(fun, *args, **kwargs)
-        return self._config.loop.call_later(delay, real_call)
+        return self._loop.call_later(delay, real_call)
 
     def make_batched_timer(self, bucket_seconds, chunk_size=100):
         """
@@ -426,7 +435,7 @@ class _AsyncioApi(object):
         """
 
         def get_seconds():
-            return self._config.loop.time()
+            return self._loop.time()
 
         return _BatchedTimer(
             bucket_seconds * 1000.0, chunk_size,
