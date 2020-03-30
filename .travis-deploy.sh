@@ -1,13 +1,15 @@
 #!/bin/bash
 
+# TXAIO_VERSION             : must be set in travis.yml!
 export AWS_DEFAULT_REGION=eu-central-1
 export AWS_S3_BUCKET_NAME=crossbarbuilder
-# AWS_ACCESS_KEY_ID         : must be set in Travis CI build context
-# AWS_SECRET_ACCESS_KEY     : must be set in Travis CI build context
+# AWS_ACCESS_KEY_ID         : must be set in Travis CI build context!
+# AWS_SECRET_ACCESS_KEY     : must be set in Travis CI build context!
+# WAMP_PRIVATE_KEY          : must be set in Travis CI build context!
 
 set -ev
 
-# TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, TRAVIS_TAG
+# TRAVIS_BRANCH, TRAVIS_PULL_REQUEST, TRAVIS_TAG  :  automatically set by Travis CI
 
 # PR => don't deploy and exit
 if [ "$TRAVIS_PULL_REQUEST" = "true" ]; then
@@ -39,7 +41,9 @@ echo 'installing aws tools ..'
 pip install awscli
 which aws
 aws --version
-aws s3 ls ${AWS_S3_BUCKET_NAME}/wheels/txaio-
+
+# "aws s3 ls" will return -1 when no files are found! but we don't want our script to exit
+aws s3 ls ${AWS_S3_BUCKET_NAME}/wheels/txaio- || true
 
 # build python source dist and wheels
 echo 'building package ..'
@@ -63,6 +67,12 @@ aws s3 ls ${AWS_S3_BUCKET_NAME}/wheels/txaio-
 
 # tell crossbar-builder about this new wheel push
 # get 'wamp' command, always with latest autobahn master
-# pip install -I https://github.com/crossbario/autobahn-python/archive/master.zip#egg=autobahn[twisted,serialization,encryption]
+pip install -q -I https://github.com/crossbario/autobahn-python/archive/master.zip#egg=autobahn[twisted,serialization,encryption]
+
 # use 'wamp' to notify crossbar-builder
-# wamp --max-failures 3 --authid wheel_pusher --url ws://office2dmz.crossbario.com:8008/ --realm webhook call builder.wheel_pushed --keyword name txaio --keyword publish true
+wamp --max-failures 3 \
+     --authid wheel_pusher \
+     --url ws://office2dmz.crossbario.com:8008/ \
+     --realm webhook call builder.wheel_pushed \
+     --keyword name txaio \
+     --keyword publish true
