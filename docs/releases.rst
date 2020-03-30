@@ -1,11 +1,17 @@
 txio releases
 =============
 
+master
+------
+
+- new: upload wheel to S3 (bucket "crossbarbuilder") in CI deploy stage
+- fix: fix event loop threading issue (PR #163)
+
 20.3.1
 ------
 
-- MISC: Remove python2 support
-- NEW: support import-time framework selection
+- new: support import-time framework selection
+- fix: remove python2 support (finally)
 
 20.1.1
 ------

@@ -39,7 +39,7 @@ echo 'installing aws tools ..'
 pip install awscli
 which aws
 aws --version
-aws s3 ls ${AWS_S3_BUCKET_NAME}/wheels/
+aws s3 ls ${AWS_S3_BUCKET_NAME}/wheels/txaio-
 
 # build python source dist and wheels
 echo 'building package ..'
@@ -48,10 +48,21 @@ ls -la ./dist
 
 # upload to S3: https://s3.eu-central-1.amazonaws.com/crossbarbuilder/wheels/
 echo 'uploading package ..'
-aws s3 cp --recursive ./dist s3://${AWS_S3_BUCKET_NAME}/wheels
+# aws s3 cp --recursive ./dist s3://${AWS_S3_BUCKET_NAME}/wheels
+aws s3 rm s3://${AWS_S3_BUCKET_NAME}/wheels/txaio-${TXAIO_VERSION}-py2.py3-none-any.whl
+aws s3 rm s3://${AWS_S3_BUCKET_NAME}/wheels/txaio-latest-py2.py3-none-any.whl
+
+aws s3 cp --acl public-read ./dist/txaio-${TXAIO_VERSION}-py2.py3-none-any.whl s3://${AWS_S3_BUCKET_NAME}/wheels/txaio-${TXAIO_VERSION}-py2.py3-none-any.whl
+aws s3 cp --acl public-read ./dist/txaio-${TXAIO_VERSION}-py2.py3-none-any.whl s3://${AWS_S3_BUCKET_NAME}/wheels/txaio-latest-py2.py3-none-any.whl
+
+#aws s3api copy-object --acl public-read \
+#    --copy-source wheels/txaio-${TXAIO_VERSION}-py2.py3-none-any.whl --bucket ${AWS_S3_BUCKET_NAME} \
+#    --key wheels/txaio-latest-py2.py3-none-any.whl
+
+aws s3 ls ${AWS_S3_BUCKET_NAME}/wheels/txaio-
 
 # tell crossbar-builder about this new wheel push
 # get 'wamp' command, always with latest autobahn master
-pip install -I https://github.com/crossbario/autobahn-python/archive/master.zip#egg=autobahn[twisted,serialization,encryption]
+# pip install -I https://github.com/crossbario/autobahn-python/archive/master.zip#egg=autobahn[twisted,serialization,encryption]
 # use 'wamp' to notify crossbar-builder
-wamp --max-failures 3 --authid wheel_pusher --url ws://office2dmz.crossbario.com:8008/ --realm webhook call builder.wheel_pushed --keyword name txaio --keyword publish true
+# wamp --max-failures 3 --authid wheel_pusher --url ws://office2dmz.crossbario.com:8008/ --realm webhook call builder.wheel_pushed --keyword name txaio --keyword publish true

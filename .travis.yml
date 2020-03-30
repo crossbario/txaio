@@ -3,6 +3,12 @@
 language: python
 sudo: false
 
+before_install:
+  - export PATH=$PATH:$HOME/.local/bin
+  - export TXAIO_VERSION=$(grep -E '^(__version__)' ./txaio/_version.py | cut -d ' ' -f3 | sed -e 's|[u"'\'']||g')
+  - export TXAIO_VCS_REF=`git --git-dir="./.git" rev-list -n 1 v${TXAIO_VERSION} --abbrev-commit`
+  - export BUILD_DATE=`date -u +"%Y-%m-%d"`
+
 install:
   - pip install tox codecov
 
