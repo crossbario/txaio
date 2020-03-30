@@ -64,8 +64,8 @@ Please refer to the `documentation <https://txaio.readthedocs.io/en/latest/>`_ f
 .. |Version| image:: https://img.shields.io/pypi/v/txaio.svg
    :target: https://pypi.python.org/pypi/txaio
 
-.. |Build Status| image:: https://travis-ci.org/crossbario/txaio.svg?branch=master
-   :target: https://travis-ci.org/crossbario/txaio
+.. |Build Status| image:: https://travis-ci.com/crossbario/txaio.svg?branch=master
+   :target: https://travis-ci.com/crossbario/txaio
 
 .. |Coverage| image:: https://codecov.io/github/crossbario/txaio/coverage.svg?branch=master
    :target: https://codecov.io/github/crossbario/txaio
