@@ -42,7 +42,7 @@ with open('README.rst') as f:
 #
 extras_require_twisted = [
     'zope.interface>=3.6',              # Zope Public License
-    'twisted>=12.1.0',                  # MIT
+    'twisted>=20.3.0',                  # MIT
 ]
 
 # asyncio dependencies: Python 3.5+ has asyncio builtin
