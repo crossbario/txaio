@@ -82,7 +82,7 @@ txaio module
 
     :param error: if not ``None`` then the future is already failed,
         with the given error.
-    :type error: class:`IFailedFuture` or Exception
+    :type error: IFailedFuture or Exception
 
     :param canceller: a single-argument callable which is invoked if
         this future is cancelled (the single argument is the future
@@ -126,11 +126,11 @@ txaio module
 
     :param error: The error to fail the `Deferred`_/`Future`_ with. If this
                   is ``None``, ``sys.exc_info()`` is used to create an
-                  :class:`txaio.IFailedFuture` (or `Failure`_)
+                  `IFailedFuture` (or `Failure`_)
                   wrapping the current exception (so in this case it
                   must be called inside an ``except:`` clause).
 
-    :type error: :class:`IFailedFuture` or :class:`Exception`
+    :type error: IFailedFuture or :class:`Exception`
 
 
 .. py:function:: cancel(future)
@@ -172,7 +172,7 @@ txaio module
 
 .. py:function:: failure_message(fail)
 
-    Takes an :class:`txaio.IFailedFuture` instance and returns a
+    Takes an `IFailedFuture` instance and returns a
     formatted message suitable to show to a user. This will be a
     ``str`` with no newlines for the form: ``{exception_name}:
     {error_message}`` where ``error_message`` is the result of running
@@ -182,13 +182,13 @@ txaio module
 
 .. py:function:: failure_traceback(fail)
 
-    Take an :class:`txaio.IFailedFuture` instance and returns the
+    Take an `IFailedFuture` instance and returns the
     Python ``traceback`` instance associated with the failure.
 
 
 .. py:function:: failure_format_traceback(fail):
 
-    Take an :class:`txaio.IFailedFuture` instance and returns a
+    Take an `IFailedFuture` instance and returns a
     formatted string showing the traceback. Typically, this will have
     many newlines in it and look like a "normal" Python traceback.
 
@@ -212,7 +212,7 @@ txaio module
 
 .. py:function:: make_batched_timer(seconds_per_bucket, chunk_size)
 
-    This returns an object implementing :class:`txaio.IBatchedTimer`
+    This returns an object implementing `IBatchedTimer`
     such that any ``.call_later`` calls done through it (instead of
     via :meth:`txaio.call_later`) will be "quantized" into buckets and
     processed in ``chunk_size`` batches "near" the time they are
@@ -236,7 +236,7 @@ txaio module
 
     The `Future`_/`Deferred`_ returned will callback with a list the
     same length as ``futures`` containing either the return value from
-    each future, or an :class:`IFailedFuture`/`Failure`_ instance if
+    each future, or an `IFailedFuture`/`Failure`_ instance if
     it failed.
 
     Note that on Twisted, we use `DeferredList`_ which usually
@@ -248,11 +248,11 @@ txaio module
 
 .. py:function:: make_logger()
 
-    Creates and returns an instance of :class:`ILogger`. This can pick
+    Creates and returns an instance of `ILogger`. This can pick
     up context from where it's instantiated (e.g. the containing class
     or module) so the best way to use this is to create a logger for
     each class that produces logs; see the example in
-    :class:`ILogger` 's documentation
+    `ILogger` 's documentation
 
 
 .. autoclass:: txaio.interfaces.ILogger
