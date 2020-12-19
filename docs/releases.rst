@@ -1,7 +1,14 @@
 txio releases
 =============
 
-master
+20.12.1
+-------
+
+- new: CI/CD migrated to GitHub Actions
+- new: support Python 3.9 (CI / testing added)
+- new: minimum Python version is now 3.6
+
+20.4.1
 ------
 
 - new: upload wheel to S3 (bucket "crossbarbuilder") in CI deploy stage
