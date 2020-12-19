@@ -61,14 +61,18 @@ Code like the following can then run on *either* system:
 Please refer to the `documentation <https://txaio.readthedocs.io/en/latest/>`_ for description and usage of the library features.
 
 
-.. |Version| image:: https://img.shields.io/pypi/v/txaio.svg
+.. image:: https://img.shields.io/pypi/v/txaio.svg
    :target: https://pypi.python.org/pypi/txaio
+   :alt: Version
 
-.. |Build Status| image:: https://travis-ci.com/crossbario/txaio.svg?branch=master
-   :target: https://travis-ci.com/crossbario/txaio
+.. image:: https://github.com/crossbario/txaio/workflows/main/badge.svg
+   :target: https://github.com/crossbario/txaio/actions?query=workflow%3Amain
+   :alt: Build Status
 
-.. |Coverage| image:: https://codecov.io/github/crossbario/txaio/coverage.svg?branch=master
+.. image:: https://codecov.io/github/crossbario/txaio/coverage.svg?branch=master
    :target: https://codecov.io/github/crossbario/txaio
+   :alt: Coverage
 
-.. |Docs| image:: https://readthedocs.org/projects/txaio/badge/?version=latest
+.. image:: https://readthedocs.org/projects/txaio/badge/?version=latest
    :target: https://txaio.readthedocs.io/en/latest/
+   :alt: Docs
