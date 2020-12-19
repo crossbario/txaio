@@ -63,6 +63,7 @@ extras_require_dev = [
     'tox>=2.1.1',                       # MIT
     'mock==1.3.0',                      # BSD
     'twine>=1.6.5',                     # Apache 2.0
+    'tox-gh-actions>=2.2.0 ',           # MIT
 ]
 
 # everything
