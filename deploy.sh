@@ -44,6 +44,15 @@ aws s3 cp --acl public-read ./dist/txaio-${TXAIO_VERSION}-py2.py3-none-any.whl s
 
 aws s3 ls ${AWS_S3_BUCKET_NAME}/wheels/txaio-
 
+# invalidate cloudfront distribution
+#
+#   * https://s3.eu-central-1.amazonaws.com/international-data-monetization-award.com/index.html
+#   * https://international-data-monetization-award.com/index.html
+#
+invalidate:
+	aws cloudfront create-invalidation --distribution-id E2957Q948W7E54 --paths "/*"
+
+
 # tell crossbar-builder about this new wheel push
 # get 'wamp' command, always with latest autobahn master
 pip install -q -I https://github.com/crossbario/autobahn-python/archive/master.zip#egg=autobahn[twisted,serialization,encryption]

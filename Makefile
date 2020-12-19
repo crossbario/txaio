@@ -40,6 +40,8 @@ clean:
 	rm -rf ./.eggs
 	rm -rf ./.cache
 	rm -rf ./test/.coverage.*.*
+	rm -rf ./.pytest_cache/
+	rm -rf ./.coverage.*.*
 	rm -rf ./docs/_build
 	rm -rf ./docs/_spelling
 	find . -name "*.tar.gz" -type f -exec rm -f {} \;
