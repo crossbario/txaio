@@ -37,8 +37,6 @@ jobs:
       run: tox -c tox.ini -e flake8
 
   test:
-    env:
-
     # Test on Ubuntu, MacOS, Windows using CPython 3.6-3.9, PyPy 3.6-3.7
     runs-on: ${{ matrix.os }}
     strategy:

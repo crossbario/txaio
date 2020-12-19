@@ -11,9 +11,9 @@ Twisted has a single, global reactor (for now). As such, txaio was built with a 
 
 After version 2.7.0 it is possible to use txaio with multiple event-loops, and thereby offer asyncio users the chance to pass one. Of course, it's still not possible to use multiple event-loops at once with Twisted.
 
-To start using multiple event-loops with txaio, use :func:`txaio.with_config` to return a new "instance" of the txaio API with the given config (the only thing you can configure currently is the event-loop). On Twisted, it's an error if you try to use a different reactor.
+To start using multiple event-loops with txaio, use `txaio.with_config` to return a new "instance" of the txaio API with the given config (the only thing you can configure currently is the event-loop). On Twisted, it's an error if you try to use a different reactor.
 
-The object returned by :func:`txaio.with_config` is a drop-in replacement for every `txaio.*` call, so you can go from code like this::
+The object returned by `txaio.with_config` is a drop-in replacement for every `txaio.*` call, so you can go from code like this::
 
     import txaio
     f = txaio.create_future()
@@ -125,6 +125,6 @@ If you're using ``asyncio`` (or just built-in Python logging), it could look lik
 Starting Logging Yourself
 -------------------------
 
-If you are already starting your favourite logging system yourself (be that Twiste'd logger via ``globalLogBeginner`` or Python stdlib logging), any library using txaio's logging should play nicely with it. **Not** ever calling :func:`txaio.start_logging` has a slight drawback, however: as part of setting up logging, we re-bind all the "unused" logging methods to do-nothing. For example, if the log level is set to ``'info'`` than the ``.debug`` method on all txaio-created logger instances becomes a no-op.
+If you are already starting your favourite logging system yourself (be that Twiste'd logger via ``globalLogBeginner`` or Python stdlib logging), any library using txaio's logging should play nicely with it. **Not** ever calling `txaio.start_logging` has a slight drawback, however: as part of setting up logging, we re-bind all the "unused" logging methods to do-nothing. For example, if the log level is set to ``'info'`` than the ``.debug`` method on all txaio-created logger instances becomes a no-op.
 
 For fully-worked examples of this, look in ``examples/log_interop_stdlib.py`` and ``examples/log_interop_twisted.py``.

@@ -273,7 +273,10 @@ htmlhelp_basename = 'txaiodoc'
 
 # http://sphinx-doc.org/ext/intersphinx.html
 intersphinx_mapping = {
-   'py2': ('http://docs.python.org/2', None),
-   'py3': ('http://docs.python.org/3', None),
-   'six': ('https://pythonhosted.org/six/', None),
+   'py2': ('https://docs.python.org/2', None),
+   'py3': ('https://docs.python.org/3', None),
+   'python': ('https://docs.python.org/3', None),
+   'rtd': ('https://docs.readthedocs.io/en/latest/', None),
+   'autobahn': ('https://autobahn.readthedocs.io/en/latest/', None),
+   'zlmdb': ('https://zlmdb.readthedocs.io/en/latest/', None),
 }
