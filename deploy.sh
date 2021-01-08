@@ -13,7 +13,6 @@ env | grep AWS_ | wc -l
 
 echo 'WAMP_PRIVATE_KEY env var (should be 1):'
 env | grep WAMP_PRIVATE_KEY | wc -l
-env | grep AWS | wc -l
 
 # set up awscli package
 echo 'installing aws tools ..'
