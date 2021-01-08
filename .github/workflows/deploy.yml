@@ -14,7 +14,7 @@ on:
 jobs:
 
   deploy:
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/master'
 
     # https://github.blog/changelog/2020-12-15-github-actions-environments-environment-protection-rules-and-environment-secrets-beta/
     # https://docs.github.com/en/free-pro-team@latest/actions/reference/environments
