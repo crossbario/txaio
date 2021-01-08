@@ -1,7 +1,7 @@
 txaio
 =====
 
-| |Version| |Build Status| |Coverage| |Docs|
+| |Version| |Build| |Deploy| |Coverage| |Docs|
 
 --------------
 
