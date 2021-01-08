@@ -65,9 +65,13 @@ Please refer to the `documentation <https://txaio.readthedocs.io/en/latest/>`_ f
    :target: https://pypi.python.org/pypi/txaio
    :alt: Version
 
-.. |Build Status| image:: https://github.com/crossbario/txaio/workflows/main/badge.svg
+.. |Build| image:: https://github.com/crossbario/txaio/workflows/main/badge.svg
    :target: https://github.com/crossbario/txaio/actions?query=workflow%3Amain
-   :alt: Build Status
+   :alt: Build Workflow
+
+.. |Deploy| image:: https://github.com/crossbario/txaio/workflows/deploy/badge.svg
+   :target: https://github.com/crossbario/txaio/actions?query=workflow%3Adeploy
+   :alt: Deploy Workflow
 
 .. |Coverage| image:: https://codecov.io/github/crossbario/txaio/coverage.svg?branch=master
    :target: https://codecov.io/github/crossbario/txaio
