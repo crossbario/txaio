@@ -1,6 +1,11 @@
 txio releases
 =============
 
+21.2.1
+------
+
+- fix: update minimum dependencies (here, and in other crossbar packages) in an attempt to tame the new pip dep resolver madness.
+
 20.12.1
 -------
 
