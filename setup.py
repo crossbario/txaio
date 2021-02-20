@@ -41,7 +41,7 @@ with open('README.rst') as f:
 # Twisted dependencies
 #
 extras_require_twisted = [
-    'zope.interface>=3.6',              # Zope Public License
+    'zope.interface>=5.2.0',            # Zope Public License
     'twisted>=20.3.0',                  # MIT
 ]
 
