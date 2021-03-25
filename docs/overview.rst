@@ -82,7 +82,7 @@ own code -- but they do so by explicitly choosing "Python3" as their platform).
 
 ``txaio`` is basically a "lowest common denominator" tool. There is a
 minimum of wrapping, etcetera but the library author doesn't get to
-use fancy features (e.g. ``@inlineCallbacks`` or mutation of returns.
+use fancy features (e.g. ``@inlineCallbacks`` or mutation of returns).
 
 
 Futures and Deferreds
