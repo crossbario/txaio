@@ -74,17 +74,15 @@ there's no way to run "the event loop" -- that's up to you.
 
 There is **no support for @coroutine or @inlineCallbacks**
 decorators. This is not possible, as asyncio under Python3 introduced
-a new syntax (``yield from``) to call into other co-routines. So, you
+a new syntax (``yield from``) to delegate to other coroutines. So, you
 are stuck with "callback style" code for your cross-platform
 library. (Note that *users* of your library can of course use new
 Python3 features like ``yield from``, ``async`` and ``await`` in their
-own code -- but they do so by explicitly choosing "Python3 and
-asyncio" as their platform).
+own code -- but they do so by explicitly choosing "Python3" as their platform).
 
 ``txaio`` is basically a "lowest common denominator" tool. There is a
 minimum of wrapping, etcetera but the library author doesn't get to
-use fancy features (e.g. ``@inlineCallbacks``, mutation of returns,
-``@coroutine``) of the underlying async platforms.
+use fancy features (e.g. ``@inlineCallbacks`` or mutation of returns).
 
 
 Futures and Deferreds
@@ -169,10 +167,10 @@ Cross-API Magic
 ---------------
 
 If you wish to write Twisted-like code that uses ``asyncio`` as its
-event-loop, you should look at `txtulip
-<https://github.com/itamarst/txtulip>`_. I do not know of a project
-that lets you write asyncio-like code that runs on Twisted's
-event-loop.
+event-loop, you should look at `AsyncioSelectorReactor
+<https://twistedmatrix.com/documents/21.2.0/api/twisted.internet.asyncioreactor.AsyncioSelectorReactor.html>`_.
+
+Twisted supports ``async def`` coroutines natively from v16.4
 
 
 .. _Autobahn|Python: http://autobahn.ws/python/
