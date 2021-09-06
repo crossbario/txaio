@@ -414,7 +414,7 @@ class _TxApi(object):
                 raise RuntimeError("reject requires a Failure or Exception")
         future.errback(error)
 
-    def cancel(self, future):
+    def cancel(self, future, msg=None):
         future.cancel()
 
     def create_failure(self, exception=None):
