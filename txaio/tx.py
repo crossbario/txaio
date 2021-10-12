@@ -362,7 +362,10 @@ class _TxApi(object):
     def as_future(self, fun, *args, **kwargs):
         # Twisted doesn't automagically deal with coroutines on Py3
         if iscoroutinefunction(fun):
-            return ensureDeferred(fun(*args, **kwargs))
+            try:
+                return ensureDeferred(fun(*args, **kwargs))
+            except TypeError as e:
+                return create_future_error(e)
         return maybeDeferred(fun, *args, **kwargs)
 
     def is_future(self, obj):
