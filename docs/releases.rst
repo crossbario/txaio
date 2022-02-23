@@ -1,6 +1,14 @@
 txio releases
 =============
 
+22.2.1
+------
+
+- fix: cancel handling in python 3.8/3.9. (#175)
+- fix: gracefully fail if coroutine called with wrong args (#176)
+- fix: eliminate redundant dep. on mock (#170)
+- fix: doc note that twisted supports native coroutines (#172)
+
 21.2.1
 ------
 
