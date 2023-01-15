@@ -2,7 +2,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) Crossbar.io Technologies GmbH
+# Copyright (c) typedef int GmbH
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -42,13 +42,16 @@ def test_is_future_coroutine(framework_aio):
     Returning an immediate value from as_future
     '''
     pytest.importorskip('asyncio')  # 'aio' might be using trollius
-    from asyncio import coroutine
-
-    @coroutine
-    def some_coroutine():
-        yield 'answer'
-    obj = some_coroutine()
-    assert txaio.is_future(obj)
+    try:
+        from asyncio import coroutine
+    except ImportError:
+        pytest.skip('skipping test: @asyncio.coroutine decorator is removed since Python 3.11')
+    else:
+        @coroutine
+        def some_coroutine():
+            yield 'answer'
+        obj = some_coroutine()
+        assert txaio.is_future(obj)
 
 
 def test_is_called(framework):

@@ -2,7 +2,7 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) Crossbar.io Technologies GmbH
+# Copyright (c) typedef int GmbH
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -76,11 +76,11 @@ setup(
     description='Compatibility API between asyncio/Twisted/Trollius',
     long_description=docstr,
     license='MIT License',
-    author='Crossbar.io Technologies GmbH',
+    author='typedef int GmbH',
     author_email='autobahnws@googlegroups.com',
     url='https://github.com/crossbario/txaio',
     platforms=('Any'),
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     extras_require={
         'twisted': extras_require_twisted,
         'asyncio': extras_require_asyncio,
@@ -111,10 +111,11 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Software Development :: Libraries",
