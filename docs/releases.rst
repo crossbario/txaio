@@ -1,6 +1,12 @@
 txio releases
 =============
 
+23.1.1
+------
+
+- fix: support for Python up to v3.11
+- update GitHub CI
+
 22.2.1
 ------
 
