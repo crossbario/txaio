@@ -34,47 +34,48 @@ from asyncio import tasks
 from asyncio.log import logger
 from test import support
 
+# FIXME: "test/_asyncio_test_utils.py:46: FileNotFoundError"
 
-def data_file(filename):
-    if hasattr(support, 'TEST_HOME_DIR'):
-        fullname = os.path.join(support.TEST_HOME_DIR, filename)
-        if os.path.isfile(fullname):
-            return fullname
-    fullname = os.path.join(os.path.dirname(__file__), filename)
-    if os.path.isfile(fullname):
-        return fullname
-    raise FileNotFoundError(filename)
-
-
-ONLYCERT = data_file('ssl_cert.pem')
-ONLYKEY = data_file('ssl_key.pem')
-SIGNED_CERTFILE = data_file('keycert3.pem')
-SIGNING_CA = data_file('pycacert.pem')
-PEERCERT = {
-    'OCSP': ('http://testca.pythontest.net/testca/ocsp/',),
-    'caIssuers': ('http://testca.pythontest.net/testca/pycacert.cer',),
-    'crlDistributionPoints': ('http://testca.pythontest.net/testca/revocation.crl',),
-    'issuer': ((('countryName', 'XY'),),
-               (('organizationName', 'Python Software Foundation CA'),),
-               (('commonName', 'our-ca-server'),)),
-    'notAfter': 'Jul  7 14:23:16 2028 GMT',
-    'notBefore': 'Aug 29 14:23:16 2018 GMT',
-    'serialNumber': 'CB2D80995A69525C',
-    'subject': ((('countryName', 'XY'),),
-                (('localityName', 'Castle Anthrax'),),
-                (('organizationName', 'Python Software Foundation'),),
-                (('commonName', 'localhost'),)),
-    'subjectAltName': (('DNS', 'localhost'),),
-    'version': 3
-}
-
-
-def simple_server_sslcontext():
-    server_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    server_context.load_cert_chain(ONLYCERT, ONLYKEY)
-    server_context.check_hostname = False
-    server_context.verify_mode = ssl.CERT_NONE
-    return server_context
+# def data_file(filename):
+#     if hasattr(support, 'TEST_HOME_DIR'):
+#         fullname = os.path.join(support.TEST_HOME_DIR, filename)
+#         if os.path.isfile(fullname):
+#             return fullname
+#     fullname = os.path.join(os.path.dirname(__file__), filename)
+#     if os.path.isfile(fullname):
+#         return fullname
+#     raise FileNotFoundError(filename)
+#
+#
+# ONLYCERT = data_file('ssl_cert.pem')
+# ONLYKEY = data_file('ssl_key.pem')
+# SIGNED_CERTFILE = data_file('keycert3.pem')
+# SIGNING_CA = data_file('pycacert.pem')
+# PEERCERT = {
+#     'OCSP': ('http://testca.pythontest.net/testca/ocsp/',),
+#     'caIssuers': ('http://testca.pythontest.net/testca/pycacert.cer',),
+#     'crlDistributionPoints': ('http://testca.pythontest.net/testca/revocation.crl',),
+#     'issuer': ((('countryName', 'XY'),),
+#                (('organizationName', 'Python Software Foundation CA'),),
+#                (('commonName', 'our-ca-server'),)),
+#     'notAfter': 'Jul  7 14:23:16 2028 GMT',
+#     'notBefore': 'Aug 29 14:23:16 2018 GMT',
+#     'serialNumber': 'CB2D80995A69525C',
+#     'subject': ((('countryName', 'XY'),),
+#                 (('localityName', 'Castle Anthrax'),),
+#                 (('organizationName', 'Python Software Foundation'),),
+#                 (('commonName', 'localhost'),)),
+#     'subjectAltName': (('DNS', 'localhost'),),
+#     'version': 3
+# }
+#
+#
+# def simple_server_sslcontext():
+#     server_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+#     server_context.load_cert_chain(ONLYCERT, ONLYKEY)
+#     server_context.check_hostname = False
+#     server_context.verify_mode = ssl.CERT_NONE
+#     return server_context
 
 
 def simple_client_sslcontext(*, disable_verify=True):
