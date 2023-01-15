@@ -24,16 +24,17 @@
 #
 ###############################################################################
 
-import sys
-import tempfile
-import subprocess
-from shutil import rmtree
+# import sys
+# import tempfile
+# import subprocess
+# from shutil import rmtree
 
-import pytest
+# import pytest
 
-import txaio
+# import txaio
 
-# FIXME: "/home/oberstet/anaconda3/bin/python: can't open file '/home/oberstet/scm/crossbario/setup.py': [Errno 2] No such file or directory"
+# FIXME: "/home/oberstet/anaconda3/bin/python: can't open file
+# '/home/oberstet/scm/crossbario/setup.py': [Errno 2] No such file or directory"
 
 # def test_sdist():
 #     if not hasattr(subprocess, 'check_output'):

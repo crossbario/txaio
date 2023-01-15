@@ -170,24 +170,26 @@ def test_explicit_reactor_coroutine(framework):
     pytest.importorskip('asyncio')
     if txaio.using_twisted:
         pytest.skip()
+    try:
+        from asyncio import coroutine
+    except ImportError:
+        pytest.skip('skipping test: @asyncio.coroutine decorator is removed since Python 3.11')
+    else:
+        @coroutine
+        def some_coroutine():
+            yield 'nothing'
 
-    from asyncio import coroutine
+        with patch.object(txaio.config, 'loop') as fake_loop:
+            txaio.as_future(some_coroutine)
 
-    @coroutine
-    def some_coroutine():
-        yield 'nothing'
-
-    with patch.object(txaio.config, 'loop') as fake_loop:
-        txaio.as_future(some_coroutine)
-
-        if sys.version_info < (3, 4, 2):
-            assert len(fake_loop.method_calls) == 2
-            c = fake_loop.method_calls[1]
-            assert c[0] == 'call_soon'
-        else:
-            assert len(fake_loop.method_calls) == 1
-            c = fake_loop.method_calls[0]
-            assert c[0] == 'create_task'
+            if sys.version_info < (3, 4, 2):
+                assert len(fake_loop.method_calls) == 2
+                c = fake_loop.method_calls[1]
+                assert c[0] == 'call_soon'
+            else:
+                assert len(fake_loop.method_calls) == 1
+                c = fake_loop.method_calls[0]
+                assert c[0] == 'create_task'
 
 
 def test_call_later_tx(framework_tx):
