@@ -58,3 +58,6 @@ upload: clean
 publish: clean
 	python setup.py sdist bdist_wheel
 	twine upload dist/*
+
+fix_copyright:
+	find . -type f -exec sed -i 's/Copyright (c) typedef int GmbH/Copyright (c) typedef int GmbH/g' {} \;

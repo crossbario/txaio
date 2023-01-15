@@ -5,7 +5,8 @@ txio releases
 ------
 
 - fix: support for Python up to v3.11
-- update GitHub CI
+- fix: update GitHub CI
+- fix: copyright transferred to typedef int GmbH - no license change!
 
 22.2.1
 ------
