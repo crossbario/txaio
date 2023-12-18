@@ -62,4 +62,10 @@ def guess_stream_needs_encoding(fileobj, default=True):
     except Exception:
         pass
 
+    try:
+        import io
+        return not isinstance(fileobj, io.TextIOBase)
+    except Exception:
+        pass
+
     return default
