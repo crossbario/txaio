@@ -7,6 +7,5 @@ incremental>=17.5.0
 packaging>=20.9
 PyHamcrest>=2.0.2
 setuptools>=49.2.1
-six>=1.15.0
 Twisted>=20.3.0
 zope.interface>=5.2.0
