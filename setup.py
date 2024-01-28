@@ -80,7 +80,7 @@ setup(
     author_email='autobahnws@googlegroups.com',
     url='https://github.com/crossbario/txaio',
     platforms=('Any'),
-    python_requires='>=3.7',
+    python_requires='>=3.9',
     extras_require={
         'twisted': extras_require_twisted,
         'asyncio': extras_require_asyncio,
@@ -111,8 +111,6 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
