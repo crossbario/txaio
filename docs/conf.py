@@ -165,7 +165,11 @@ todo_include_todos = False
 # a list of builtin themes.
 if sphinx_rtd_theme:
     html_theme = "sphinx_rtd_theme"
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+    # WARNING: Calling get_html_theme_path is deprecated.
+    # If you are calling it to define html_theme_path, you are safe to remove
+    # that code.
+    # html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 else:
     html_theme = "default"
 
@@ -272,7 +276,9 @@ htmlhelp_basename = "txaiodoc"
 intersphinx_mapping = {
     "py2": ("https://docs.python.org/2", None),
     "py3": ("https://docs.python.org/3", None),
-    "python": ("https://docs.python.org/3", None),
+    # ERROR: Invalid target URI value `'https://docs.python.org/3'` in intersphinx_mapping['python'][0].
+    # Target URIs must be unique (other instance in intersphinx_mapping['py3']).
+    # "python": ("https://docs.python.org/3", None),
     "rtd": ("https://docs.readthedocs.io/en/latest/", None),
     "autobahn": ("https://autobahn.readthedocs.io/en/latest/", None),
     "zlmdb": ("https://zlmdb.readthedocs.io/en/latest/", None),
