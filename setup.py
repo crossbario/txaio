@@ -79,6 +79,7 @@ setup(
     version=__version__,
     description="Compatibility API between asyncio/Twisted/Trollius",
     long_description=docstr,
+    long_description_content_type='text/x-rst',
     license="MIT License",
     author="typedef int GmbH",
     author_email="autobahnws@googlegroups.com",

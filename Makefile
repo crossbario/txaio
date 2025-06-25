@@ -52,7 +52,7 @@ clean:
 	find . -name "*.tar.gz" -type f -exec rm -f {} \;
 	find . -name "*.egg" -type f -exec rm -f {} \;
 	find . -name "*.pyc" -type f -exec rm -f {} \;
-	find . -name "*__pycache__" -type d -exec rm -rf {} \;
+#	find . -name "*__pycache__" -type d -exec rm -rf {} \;
 
 # upload to our internal deployment system
 upload: clean
@@ -62,7 +62,11 @@ upload: clean
 # publish to PyPI
 publish: clean
 	python setup.py sdist bdist_wheel
-	twine upload dist/*
+	twine check dist/*
+	@echo "to upload, run:"
+	@echo ""
+	@echo "   twine upload --verbose -u __token__ -p pypi-AgEI...KXNA dist/*"
+	@echo ""
 
 fix_copyright:
 	find . -type f -exec sed -i 's/Copyright (c) typedef int GmbH/Copyright (c) typedef int GmbH/g' {} \;
