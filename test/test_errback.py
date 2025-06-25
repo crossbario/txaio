@@ -37,6 +37,7 @@ def test_errback(framework):
 
     def err(f):
         errors.append(f)
+
     txaio.add_callbacks(f, None, err)
     try:
         raise exception
@@ -53,22 +54,23 @@ def test_errback(framework):
 
     tb = txaio.failure_format_traceback(errors[0])
 
-    assert 'RuntimeError' in tb
-    assert 'it failed' in tb
-    assert txaio.failure_message(errors[0]) == 'RuntimeError: it failed'
-    assert 'it failed' in str(errors[0])
+    assert "RuntimeError" in tb
+    assert "it failed" in tb
+    assert txaio.failure_message(errors[0]) == "RuntimeError: it failed"
+    assert "it failed" in str(errors[0])
 
 
 def test_errback_without_except(framework):
-    '''
+    """
     Create a failure without an except block
-    '''
+    """
     f = txaio.create_future()
     exception = RuntimeError("it failed")
     errors = []
 
     def err(f):
         errors.append(f)
+
     txaio.add_callbacks(f, None, err)
     fail = txaio.create_failure(exception)
     txaio.reject(f, fail)
@@ -79,22 +81,23 @@ def test_errback_without_except(framework):
     assert isinstance(errors[0], txaio.IFailedFuture)
     tb = txaio.failure_format_traceback(errors[0])
 
-    assert 'RuntimeError' in tb
-    assert 'it failed' in tb
-    assert txaio.failure_message(errors[0]) == 'RuntimeError: it failed'
-    assert 'it failed' in str(errors[0])
+    assert "RuntimeError" in tb
+    assert "it failed" in tb
+    assert txaio.failure_message(errors[0]) == "RuntimeError: it failed"
+    assert "it failed" in str(errors[0])
 
 
 def test_errback_plain_exception(framework):
-    '''
+    """
     reject a future with just an Exception
-    '''
+    """
     f = txaio.create_future()
     exception = RuntimeError("it failed")
     errors = []
 
     def err(f):
         errors.append(f)
+
     txaio.add_callbacks(f, None, err)
     txaio.reject(f, exception)
 
@@ -104,21 +107,22 @@ def test_errback_plain_exception(framework):
     assert isinstance(errors[0], txaio.IFailedFuture)
     tb = txaio.failure_format_traceback(errors[0])
 
-    assert 'RuntimeError' in tb
-    assert 'it failed' in tb
-    assert txaio.failure_message(errors[0]) == 'RuntimeError: it failed'
-    assert 'it failed' in str(errors[0])
+    assert "RuntimeError" in tb
+    assert "it failed" in tb
+    assert txaio.failure_message(errors[0]) == "RuntimeError: it failed"
+    assert "it failed" in str(errors[0])
 
 
 def test_errback_cancel_exception(framework):
-    '''
+    """
     reject a future with a CancelledError
-    '''
+    """
     f = txaio.create_future()
     errors = []
 
     def err(f):
         errors.append(f)
+
     txaio.add_callbacks(f, None, err)
     txaio.cancel(f, msg="future cancelled")
 
@@ -128,18 +132,18 @@ def test_errback_cancel_exception(framework):
     assert isinstance(errors[0], txaio.IFailedFuture)
     tb = txaio.failure_format_traceback(errors[0])
 
-    assert 'CancelledError' in tb
+    assert "CancelledError" in tb
     if txaio.using_asyncio and sys.version_info >= (3, 9):
-        assert txaio.failure_message(errors[0]) == 'CancelledError: future cancelled'
-        assert 'future cancelled' in str(errors[0])
+        assert txaio.failure_message(errors[0]) == "CancelledError: future cancelled"
+        assert "future cancelled" in str(errors[0])
     else:
-        assert txaio.failure_message(errors[0]) == 'CancelledError: '
+        assert txaio.failure_message(errors[0]) == "CancelledError: "
 
 
 def test_errback_illegal_args(framework):
-    '''
+    """
     non-Exception/Failures should be rejected
-    '''
+    """
     f = txaio.create_future()
     try:
         txaio.reject(f, object())
@@ -159,6 +163,7 @@ def test_errback_reject_no_args(framework):
 
     def err(f):
         errors.append(f)
+
     txaio.add_callbacks(f, None, err)
     try:
         raise exception
@@ -172,10 +177,10 @@ def test_errback_reject_no_args(framework):
     assert exception == errors[0].value
     tb = txaio.failure_format_traceback(errors[0])
 
-    assert 'RuntimeError' in tb
-    assert 'it failed' in tb
-    assert txaio.failure_message(errors[0]) == 'RuntimeError: it failed'
-    assert 'it failed' in str(errors[0])
+    assert "RuntimeError" in tb
+    assert "it failed" in tb
+    assert txaio.failure_message(errors[0]) == "RuntimeError: it failed"
+    assert "it failed" in str(errors[0])
 
 
 def test_immediate_failure(framework):

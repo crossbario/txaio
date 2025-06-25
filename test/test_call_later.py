@@ -38,13 +38,14 @@ def test_default_reactor(framework_tx):
     """
     run the code that defaults txaio.config.loop
     """
-    pytest.importorskip('twisted')
+    pytest.importorskip("twisted")
 
     assert txaio.config.loop is None
     try:
         txaio.call_later(1, lambda: None)
 
         from twisted.internet import reactor
+
         assert txaio.config.loop is reactor
     finally:
         txaio.config.loop = None
@@ -54,29 +55,29 @@ def test_explicit_reactor_future(framework):
     """
     If we set an event-loop, Futures + Tasks should use it.
     """
-    pytest.importorskip('asyncio')
+    pytest.importorskip("asyncio")
     if txaio.using_twisted:
         pytest.skip()
 
-    with patch.object(txaio.config, 'loop') as fake_loop:
-        f = txaio.create_future('result')
+    with patch.object(txaio.config, "loop") as fake_loop:
+        f = txaio.create_future("result")
         f.add_done_callback(lambda _: None)
 
         if sys.version_info < (3, 5, 2):
             assert len(fake_loop.method_calls) == 2
             c = fake_loop.method_calls[1]
-            assert c[0] == 'call_soon'
+            assert c[0] == "call_soon"
         else:
             assert len(fake_loop.method_calls) == 1
             c = fake_loop.method_calls[0]
-            assert c[0] == 'create_future'
+            assert c[0] == "create_future"
 
 
 def test_create_future_explicit_loop(framework):
     """
     process events on alternate loop= for create_future later
     """
-    pytest.importorskip('asyncio')
+    pytest.importorskip("asyncio")
     if txaio.using_twisted:
         pytest.skip()
 
@@ -91,7 +92,7 @@ def test_create_future_explicit_loop(framework):
     f.add_done_callback(lambda r: results.append(r.result()))
 
     assert results == []
-    txaio.resolve(f, 'some result')
+    txaio.resolve(f, "some result")
 
     # run_once() runs the txaio.config.loop so we shouldn't get any
     # results until we spin alt_loop
@@ -100,22 +101,23 @@ def test_create_future_explicit_loop(framework):
     assert results == []
     with replace_loop(alt_loop):
         run_once()
-    assert results == ['some result']
+    assert results == ["some result"]
 
 
 def test_create_future_success_explicit_loop(framework):
     """
     process events on alternate loop= for create_future later
     """
-    pytest.importorskip('asyncio')
+    pytest.importorskip("asyncio")
     if txaio.using_twisted:
         pytest.skip()
 
     import asyncio
+
     alt_loop = asyncio.new_event_loop()
     txa = txaio.with_config(loop=alt_loop)
 
-    f = txa.create_future_success('some result')
+    f = txa.create_future_success("some result")
 
     results = []
     f.add_done_callback(lambda r: results.append(r.result()))
@@ -127,20 +129,21 @@ def test_create_future_success_explicit_loop(framework):
     assert results == []
     with replace_loop(alt_loop):
         run_once()
-    assert results == ['some result']
+    assert results == ["some result"]
 
 
 def test_create_future_failure_explicit_loop(framework):
     """
     process events on alternate loop= for create_future later
     """
-    pytest.importorskip('asyncio')
+    pytest.importorskip("asyncio")
     if txaio.using_twisted:
         pytest.skip()
 
     import asyncio
+
     alt_loop = asyncio.new_event_loop()
-    the_exception = Exception('bad')
+    the_exception = Exception("bad")
     txa = txaio.with_config(loop=alt_loop)
     f = txa.create_future_error(the_exception)
 
@@ -151,6 +154,7 @@ def test_create_future_failure_explicit_loop(framework):
             results.append(r.result())
         except Exception as e:
             results.append(e)
+
     f.add_done_callback(boom)
 
     # run_once() runs the txaio.config.loop so we shouldn't get any
@@ -167,46 +171,51 @@ def test_explicit_reactor_coroutine(framework):
     """
     If we set an event-loop, Futures + Tasks should use it.
     """
-    pytest.importorskip('asyncio')
+    pytest.importorskip("asyncio")
     if txaio.using_twisted:
         pytest.skip()
     try:
         from asyncio import coroutine
     except ImportError:
-        pytest.skip('skipping test: @asyncio.coroutine decorator is removed since Python 3.11')
+        pytest.skip(
+            "skipping test: @asyncio.coroutine decorator is removed since Python 3.11"
+        )
     else:
+
         @coroutine
         def some_coroutine():
-            yield 'nothing'
+            yield "nothing"
 
-        with patch.object(txaio.config, 'loop') as fake_loop:
+        with patch.object(txaio.config, "loop") as fake_loop:
             txaio.as_future(some_coroutine)
 
             if sys.version_info < (3, 4, 2):
                 assert len(fake_loop.method_calls) == 2
                 c = fake_loop.method_calls[1]
-                assert c[0] == 'call_soon'
+                assert c[0] == "call_soon"
             else:
                 assert len(fake_loop.method_calls) == 1
                 c = fake_loop.method_calls[0]
-                assert c[0] == 'create_task'
+                assert c[0] == "create_task"
 
 
 def test_call_later_tx(framework_tx):
-    '''
+    """
     Wait for two Futures.
-    '''
+    """
 
     from twisted.internet.task import Clock
+
     new_loop = Clock()
     calls = []
     with replace_loop(new_loop) as fake_loop:
+
         def foo(*args, **kw):
             calls.append((args, kw))
 
         delay = txaio.call_later(1, foo, 5, 6, 7, foo="bar")
         assert len(calls) == 0
-        assert hasattr(delay, 'cancel')
+        assert hasattr(delay, "cancel")
         fake_loop.advance(2)
 
         assert len(calls) == 1
@@ -215,12 +224,12 @@ def test_call_later_tx(framework_tx):
 
 
 def test_call_later_aio(framework_aio):
-    '''
+    """
     Wait for two Futures.
-    '''
+    """
 
     # Trollius doesn't come with this, so won't work on py2
-    pytest.importorskip('asyncio.test_utils')
+    pytest.importorskip("asyncio.test_utils")
 
     def time_gen():
         when = yield
@@ -228,17 +237,20 @@ def test_call_later_aio(framework_aio):
         # even though we only do one call, I guess TestLoop needs
         # a "trailing" yield? "or something"
         when = yield 0
+
     from asyncio.test_utils import TestLoop
+
     new_loop = TestLoop(time_gen)
 
     calls = []
     with replace_loop(new_loop) as fake_loop:
+
         def foo(*args, **kw):
             calls.append((args, kw))
 
         delay = txaio.call_later(1, foo, 5, 6, 7, foo="bar")
         assert len(calls) == 0
-        assert hasattr(delay, 'cancel')
+        assert hasattr(delay, "cancel")
         fake_loop.advance_time(2)
         fake_loop._run_once()
 

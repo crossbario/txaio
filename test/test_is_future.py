@@ -29,27 +29,31 @@ import txaio
 
 
 def test_is_future_generic(framework):
-    '''
+    """
     Returning an immediate value from as_future
-    '''
-    f = txaio.create_future('result')
+    """
+    f = txaio.create_future("result")
 
     assert txaio.is_future(f)
 
 
 def test_is_future_coroutine(framework_aio):
-    '''
+    """
     Returning an immediate value from as_future
-    '''
-    pytest.importorskip('asyncio')  # 'aio' might be using trollius
+    """
+    pytest.importorskip("asyncio")  # 'aio' might be using trollius
     try:
         from asyncio import coroutine
     except ImportError:
-        pytest.skip('skipping test: @asyncio.coroutine decorator is removed since Python 3.11')
+        pytest.skip(
+            "skipping test: @asyncio.coroutine decorator is removed since Python 3.11"
+        )
     else:
+
         @coroutine
         def some_coroutine():
-            yield 'answer'
+            yield "answer"
+
         obj = some_coroutine()
         assert txaio.is_future(obj)
 

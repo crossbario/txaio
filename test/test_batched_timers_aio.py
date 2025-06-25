@@ -31,11 +31,11 @@ from txaio.testutil import replace_loop
 
 # XXX can we unify these tests, tx vs aio?
 def test_batched_successful_call(framework_aio):
-    '''
+    """
     batched calls really happen in batches
-    '''
+    """
     # Trollius doesn't come with this, so won't work on py2
-    pytest.importorskip('asyncio.test_utils')
+    pytest.importorskip("asyncio.test_utils")
     from asyncio.test_utils import TestLoop
 
     # XXX I *really* don't get the point of these generators...
@@ -43,9 +43,11 @@ def test_batched_successful_call(framework_aio):
         yield
         yield
         yield
+
     new_loop = TestLoop(time_gen)
     calls = []
     with replace_loop(new_loop):
+
         def foo(*args, **kw):
             calls.append((args, kw))
 
@@ -67,27 +69,28 @@ def test_batched_successful_call(framework_aio):
         new_loop.advance_time(0.2)
         new_loop._run_once()
         assert len(calls) == 2
-        assert calls[0] == (("first call", ), dict())
-        assert calls[1] == (("second call", ), dict())
+        assert calls[0] == (("first call",), dict())
+        assert calls[1] == (("second call",), dict())
 
         # tick into next bucket
         new_loop.advance_time(5)
         new_loop._run_once()
         assert len(calls) == 3
-        assert calls[2] == (("third call", ), dict())
+        assert calls[2] == (("third call",), dict())
 
 
 def test_batched_successful_call_explicit_loop(framework_aio):
-    '''
+    """
     batched calls really happen in batches
-    '''
+    """
     # Trollius doesn't come with this, so won't work on py2
-    pytest.importorskip('asyncio.test_utils')
+    pytest.importorskip("asyncio.test_utils")
     from asyncio.test_utils import TestLoop
 
     def time_gen():
         yield
         yield
+
     new_loop = TestLoop(time_gen)
     calls = []
 
@@ -105,16 +108,17 @@ def test_batched_successful_call_explicit_loop(framework_aio):
 
 
 def test_batched_cancel(framework_aio):
-    '''
+    """
     we can cancel uncalled call_laters
-    '''
+    """
     # Trollius doesn't come with this, so won't work on py2
-    pytest.importorskip('asyncio.test_utils')
+    pytest.importorskip("asyncio.test_utils")
     from asyncio.test_utils import TestLoop
 
     def time_gen():
         yield
         yield
+
     new_loop = TestLoop(time_gen)
     calls = []
 
@@ -139,16 +143,17 @@ def test_batched_cancel(framework_aio):
 
 
 def test_batched_cancel_too_late(framework_aio):
-    '''
+    """
     nothing bad happens if we cancel() after the callbacks
-    '''
+    """
     # Trollius doesn't come with this, so won't work on py2
-    pytest.importorskip('asyncio.test_utils')
+    pytest.importorskip("asyncio.test_utils")
     from asyncio.test_utils import TestLoop
 
     def time_gen():
         yield
         yield
+
     new_loop = TestLoop(time_gen)
     calls = []
 

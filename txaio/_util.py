@@ -39,10 +39,10 @@ else:
         """
         Shim for standard library time.time_ns for Python < 3.7.
         """
-        return int(time.time() * 1000000000.)
+        return int(time.time() * 1000000000.0)
 
     def perf_counter_ns():
         """
         Shim for standard library time.perf_counter for Python < 3.7.
         """
-        return int(time.perf_counter() * 1000000000.)
+        return int(time.perf_counter() * 1000000000.0)

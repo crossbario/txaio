@@ -28,13 +28,13 @@ import abc
 
 #: all the log-levels that txaio recognizes
 log_levels = [
-    'none',
-    'critical',
-    'error',
-    'warn',
-    'info',
-    'debug',
-    'trace',
+    "none",
+    "critical",
+    "error",
+    "warn",
+    "info",
+    "debug",
+    "trace",
 ]
 
 
@@ -112,25 +112,24 @@ class ILogger(abc.ABC):
     for details.
     """
 
-# stdlib notes:
-# levels:
-#   CRITICAL 50
-#   ERROR 40
-#   WARNING 30
-#   INFO 20
-#   DEBUG 10
-#   NOTSET 0
+    # stdlib notes:
+    # levels:
+    #   CRITICAL 50
+    #   ERROR 40
+    #   WARNING 30
+    #   INFO 20
+    #   DEBUG 10
+    #   NOTSET 0
 
-
-# NOTES
-# things in Twisted's event:
-# - log_level
-# - log_failure (sometimes?)
-# - log_format (can be None)
-# - log_source (sometimes? no, always, but sometimes None)
-# - log_namespace
-#
-# .warn not warning!
+    # NOTES
+    # things in Twisted's event:
+    # - log_level
+    # - log_failure (sometimes?)
+    # - log_format (can be None)
+    # - log_source (sometimes? no, always, but sometimes None)
+    # - log_namespace
+    #
+    # .warn not warning!
 
     def critical(self, message, **kwargs):
         "log a critical-level message"

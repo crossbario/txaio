@@ -13,7 +13,7 @@ import pytest
 
 
 @pytest.fixture(
-    params=['twisted', 'asyncio'],
+    params=["twisted", "asyncio"],
 )
 def framework(request):
     """
@@ -24,9 +24,9 @@ def framework(request):
     """
 
     try:
-        if request.param == 'twisted':
+        if request.param == "twisted":
             return _notfixture_framework_tx()
-        elif request.param == 'asyncio':
+        elif request.param == "asyncio":
             return _notfixture_framework_aio()
     except ImportError:
         pytest.skip()
@@ -36,6 +36,7 @@ def framework(request):
 def framework_uninitialized():
     import txaio
     from txaio import _unframework
+
     txaio._use_framework(_unframework)
     txaio._explicit_framework = None
     return _unframework
@@ -50,9 +51,10 @@ def _notfixture_framework_tx():
     try:
         import txaio
         from txaio import tx
+
         tx._loggers = set()
         txaio._use_framework(tx)
-        txaio._explicit_framework = 'twisted'
+        txaio._explicit_framework = "twisted"
         return tx
     except ImportError:
         pytest.skip()
@@ -67,9 +69,10 @@ def _notfixture_framework_aio():
     try:
         import txaio
         from txaio import aio
+
         aio._loggers = set()
         txaio._use_framework(aio)
-        txaio._explicit_framework = 'asyncio'
+        txaio._explicit_framework = "asyncio"
         return aio
     except ImportError:
         pytest.skip()

@@ -29,20 +29,20 @@ import sys
 import platform
 from setuptools import setup
 
-CPY = platform.python_implementation() == 'CPython'
+CPY = platform.python_implementation() == "CPython"
 
-with open('txaio/_version.py') as f:
+with open("txaio/_version.py") as f:
     exec(f.read())  # defines __version__
 
-with open('README.rst') as f:
+with open("README.rst") as f:
     docstr = f.read()
 
 
 # Twisted dependencies
 #
 extras_require_twisted = [
-    'zope.interface>=5.2.0',            # Zope Public License
-    'twisted>=20.3.0',                  # MIT
+    "zope.interface>=5.2.0",  # Zope Public License
+    "twisted>=20.3.0",  # MIT
 ]
 
 # asyncio dependencies: Python 3.5+ has asyncio builtin
@@ -52,20 +52,20 @@ extras_require_asyncio = []
 # development dependencies
 #
 extras_require_dev = [
-    'wheel',                            # MIT
-    'pytest>=2.6.4',                    # MIT
-    'pytest-cov>=1.8.1',                # MIT
-    'pep8>=1.6.2',                      # MIT
-    'pyenchant>=1.6.6',                 # LGPL
-    'sphinx>=7.2.6',                    # BSD
-    'sphinxcontrib-spelling>=2.1.2',    # BSD
-    'sphinxcontrib-images>=0.9.4',
-    'sphinxcontrib-bibtex>=2.6.1',
-    'sphinx-autoapi>=3.0.0',
-    'sphinx-rtd-theme>=2.0.0',          # BSD
-    'tox>=2.1.1',                       # MIT
-    'twine>=1.6.5',                     # Apache 2.0
-    'tox-gh-actions>=2.2.0 ',           # MIT
+    "wheel",  # MIT
+    "pytest>=2.6.4",  # MIT
+    "pytest-cov>=1.8.1",  # MIT
+    "pep8>=1.6.2",  # MIT
+    "pyenchant>=1.6.6",  # LGPL
+    "sphinx>=7.2.6",  # BSD
+    "sphinxcontrib-spelling>=2.1.2",  # BSD
+    "sphinxcontrib-images>=0.9.4",
+    "sphinxcontrib-bibtex>=2.6.1",
+    "sphinx-autoapi>=3.0.0",
+    "sphinx-rtd-theme>=2.0.0",  # BSD
+    "tox>=2.1.1",  # MIT
+    "twine>=1.6.5",  # Apache 2.0
+    "tox-gh-actions>=2.2.0 ",  # MIT
 ]
 
 # everything
@@ -74,36 +74,32 @@ extras_require_all = extras_require_twisted + extras_require_asyncio
 
 
 setup(
-    name='txaio',
+    name="txaio",
     version=__version__,
-    description='Compatibility API between asyncio/Twisted/Trollius',
+    description="Compatibility API between asyncio/Twisted/Trollius",
     long_description=docstr,
-    license='MIT License',
-    author='typedef int GmbH',
-    author_email='autobahnws@googlegroups.com',
-    url='https://github.com/crossbario/txaio',
-    platforms=('Any'),
-    python_requires='>=3.9',
+    license="MIT License",
+    author="typedef int GmbH",
+    author_email="autobahnws@googlegroups.com",
+    url="https://github.com/crossbario/txaio",
+    platforms=("Any"),
+    python_requires=">=3.9",
     extras_require={
-        'twisted': extras_require_twisted,
-        'asyncio': extras_require_asyncio,
-        'dev': extras_require_dev,
-        'all': extras_require_all
+        "twisted": extras_require_twisted,
+        "asyncio": extras_require_asyncio,
+        "dev": extras_require_dev,
+        "all": extras_require_all,
     },
-    packages=['txaio'],
-
+    packages=["txaio"],
     # this flag will make files from MANIFEST.in go into _source_ distributions only
     include_package_data=True,
-
     # in addition, the following will make the specified files go into
     # source _and_ bdist distributions! For the LICENSE file
     # specifically, see setup.cfg
     # data_files=[('.', ['list', 'of', 'files'])],
-
     # this package does not access its own source code or data files
     # as normal operating system files
     zip_safe=True,
-
     # http://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         "License :: OSI Approved :: MIT License",
@@ -122,5 +118,5 @@ setup(
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Application Frameworks",
     ],
-    keywords='asyncio twisted trollius coroutine',
+    keywords="asyncio twisted trollius coroutine",
 )

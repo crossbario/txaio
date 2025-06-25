@@ -62,12 +62,16 @@ class _BatchedTimer(IBatchedTimer):
     **NOTE** that the times are in milliseconds in this class!
     """
 
-    def __init__(self, bucket_milliseconds, chunk_size,
-                 seconds_provider, delayed_call_creator, loop=None):
+    def __init__(
+        self,
+        bucket_milliseconds,
+        chunk_size,
+        seconds_provider,
+        delayed_call_creator,
+        loop=None,
+    ):
         if bucket_milliseconds <= 0.0:
-            raise ValueError(
-                "bucket_milliseconds must be > 0.0"
-            )
+            raise ValueError("bucket_milliseconds must be > 0.0")
         self._bucket_milliseconds = float(bucket_milliseconds)
         self._chunk_size = chunk_size
         self._get_seconds = seconds_provider
@@ -94,7 +98,8 @@ class _BatchedTimer(IBatchedTimer):
             # less than the current time 'diff' will be negative.
             delayed_call = self._create_delayed_call(
                 max(0.0, diff),
-                self._notify_bucket, real_time,
+                self._notify_bucket,
+                real_time,
             )
             self._buckets[real_time] = (delayed_call, [call])
         return call
@@ -119,7 +124,10 @@ class _BatchedTimer(IBatchedTimer):
             if calls:
                 self._create_delayed_call(
                     chunk_delay_ms / 1000.0,
-                    notify_one_chunk, calls, chunk_size, chunk_delay_ms,
+                    notify_one_chunk,
+                    calls,
+                    chunk_size,
+                    chunk_delay_ms,
                 )
             else:
                 # done all calls; make sure there were no errors
@@ -128,9 +136,12 @@ class _BatchedTimer(IBatchedTimer):
                     for e in errors:
                         msg += "{}\n".format(e)
                     raise RuntimeError(msg)
+
         # ceil()ing because we want the number of chunks, and a
         # partial chunk is still a chunk
-        delay_ms = self._bucket_milliseconds / math.ceil(float(len(calls)) / self._chunk_size)
+        delay_ms = self._bucket_milliseconds / math.ceil(
+            float(len(calls)) / self._chunk_size
+        )
         # I can't imagine any scenario in which chunk_delay_ms is
         # actually less than zero, but just being safe here
         notify_one_chunk(calls, self._chunk_size, max(0.0, delay_ms))

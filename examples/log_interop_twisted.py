@@ -33,21 +33,25 @@ from twisted import logger
 from twisted.logger import ILogObserver
 from zope.interface import provider
 
+
 # some library you use is using txaio logging stuff
 class Library(object):
     log = txaio.make_logger()
 
     def something(self):
-        self.log.info("info log from library foo={foo}", foo='bar')
+        self.log.info("info log from library foo={foo}", foo="bar")
         self.log.debug("debug information")
+
 
 # lets say you start your own observer
 @provider(ILogObserver)
 class Observer(object):
     def __init__(self):
         self._out = sys.stdout
+
     def __call__(self, event):
         self._out.write("Observe: {}\n".format(event))
+
 
 lib = Library()
 print("logging not started")

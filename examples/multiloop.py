@@ -30,6 +30,7 @@
 import asyncio
 import pytest
 import txaio
+
 txaio.use_asyncio()
 
 
@@ -43,6 +44,7 @@ class Thing(object):
 
         def done():
             self._txa.resolve(f, "done")
+
         self._txa.call_later(1, done)
         return f
 
@@ -53,5 +55,5 @@ thing1 = Thing(loop=loop)
 
 asyncio.get_event_loop().run_until_complete(thing0.do_thing())
 # this will be error, mismatched loops:
-#asyncio.get_event_loop().run_until_complete(thing1.do_thing())
+# asyncio.get_event_loop().run_until_complete(thing1.do_thing())
 loop.run_until_complete(thing1.do_thing())

@@ -31,12 +31,13 @@ from txaio.testutil import replace_loop
 # XXX it would be nice to unify the _tx versus _aio versions of all
 # these tests ...
 def test_batched_successful_call(framework_tx):
-    '''
-    '''
+    """ """
     from twisted.internet.task import Clock
+
     new_loop = Clock()
     calls = []
     with replace_loop(new_loop):
+
         def foo(*args, **kw):
             calls.append((args, kw))
 
@@ -56,20 +57,20 @@ def test_batched_successful_call(framework_tx):
         # (the "5s -> 10s" bucket)
         new_loop.advance(0.2)
         assert len(calls) == 2
-        assert calls[0] == (("first call", ), dict())
-        assert calls[1] == (("second call", ), dict())
+        assert calls[0] == (("first call",), dict())
+        assert calls[1] == (("second call",), dict())
 
         # tick into next bucket
         new_loop.advance(5)
         assert len(calls) == 3
-        assert calls[2] == (("third call", ), dict())
+        assert calls[2] == (("third call",), dict())
 
 
 def test_batched_cancel(framework_tx):
-    '''
-    '''
+    """ """
 
     from twisted.internet.task import Clock
+
     new_loop = Clock()
     calls = []
 
@@ -92,11 +93,12 @@ def test_batched_cancel(framework_tx):
 
 
 def test_batched_cancel_too_late(framework_tx):
-    '''
+    """
     nothing bad happens if we cancel() after the callbacks
-    '''
+    """
 
     from twisted.internet.task import Clock
+
     new_loop = Clock()
     calls = []
 
@@ -116,17 +118,19 @@ def test_batched_cancel_too_late(framework_tx):
 
 
 def test_batched_chunks(framework_tx):
-    '''
+    """
     should yield to reactor every chunk
-    '''
+    """
 
     from twisted.internet.task import Clock
+
     laters = []
 
     class FakeClock(Clock):
         def callLater(self, *args, **kw):  # noqa
             laters.append((args, kw))
             Clock.callLater(self, *args, **kw)
+
     new_loop = FakeClock()
     calls = []
 
@@ -158,17 +162,19 @@ def test_batched_chunks(framework_tx):
 
 
 def test_batched_chunks_with_errors(framework_tx):
-    '''
+    """
     errors from batched calls are reported
-    '''
+    """
 
     from twisted.internet.task import Clock
+
     laters = []
 
     class FakeClock(Clock):
         def callLater(self, *args, **kw):  # noqa
             laters.append((args, kw))
             Clock.callLater(self, *args, **kw)
+
     new_loop = FakeClock()
     calls = []
 
@@ -195,11 +201,11 @@ def test_batched_chunks_with_errors(framework_tx):
 
 
 def test_batched_close_to_now(framework_tx):
-    '''
+    """
     if our current time is fractional, and we make a call_later with a
     tiny delay that's still within the same second, we'll produce a
     negative call_later when adding a bucket; see issue #81
-    '''
+    """
     from twisted.internet.task import Clock
 
     class FakeClock(Clock):

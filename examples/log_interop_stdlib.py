@@ -28,6 +28,7 @@ import sys
 import logging
 
 import txaio
+
 txaio.use_asyncio()
 
 
@@ -36,9 +37,10 @@ class Library(object):
     log = txaio.make_logger()
 
     def something(self):
-        self.log.info("info log from library foo={foo}", foo='bar')
+        self.log.info("info log from library foo={foo}", foo="bar")
         self.log.debug("debug information")
         self.log.error("An error in the library num={num}", num=42)
+
 
 lib = Library()
 print("logging not started")
@@ -47,7 +49,7 @@ print("logging not started")
 lg = logging.getLogger()
 lg.setLevel(logging.DEBUG)
 logging.basicConfig()
-lg.info('info-level log from my program: %d', 42)
+lg.info("info-level log from my program: %d", 42)
 print("logging started; calling library")
 lib.something()
 print("finished library call")

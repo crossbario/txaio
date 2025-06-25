@@ -62,9 +62,9 @@ _stderr, _stdout = sys.stderr, sys.stdout
 # time as start_logging is called (with the desired log-level) and
 # then we call _set_log_level on each instance. After that,
 # Logger's ctor uses _log_level directly.
-_observer = None     # for Twisted legacy logging support; see below
+_observer = None  # for Twisted legacy logging support; see below
 _loggers = weakref.WeakSet()  # weak-references of each logger we've created
-_log_level = 'info'  # global log level; possibly changed in start_logging()
+_log_level = "info"  # global log level; possibly changed in start_logging()
 _started_logging = False
 
 _categories = {}
@@ -156,27 +156,28 @@ class Logger(object):
         # level, we bind to the no_op method
         desired_index = log_levels.index(level)
 
-        for (idx, name) in enumerate(log_levels):
-            if name == 'none':
+        for idx, name in enumerate(log_levels):
+            if name == "none":
                 continue
 
             if idx > desired_index:
                 current = getattr(self, name, None)
                 if not current == _no_op or current is None:
                     setattr(self, name, _no_op)
-                if name == 'error':
-                    setattr(self, 'failure', _no_op)
+                if name == "error":
+                    setattr(self, "failure", _no_op)
 
             else:
                 if getattr(self, name, None) in (_no_op, None):
 
-                    if name == 'trace':
+                    if name == "trace":
                         setattr(self, "trace", self._trace)
                     else:
-                        setattr(self, name,
-                                partial(self._log, LogLevel.lookupByName(name)))
+                        setattr(
+                            self, name, partial(self._log, LogLevel.lookupByName(name))
+                        )
 
-                    if name == 'error':
+                    if name == "error":
                         setattr(self, "failure", self._failure)
 
         self._log_level = level
@@ -198,15 +199,14 @@ def make_logger(level=None, logger=_Logger, observer=None):
     if "self" in cf.f_locals:
         # We're probably in a class init or method
         cls = cf.f_locals["self"].__class__
-        namespace = '{0}.{1}'.format(cls.__module__, cls.__name__)
+        namespace = "{0}.{1}".format(cls.__module__, cls.__name__)
     else:
         namespace = cf.f_globals["__name__"]
         if cf.f_code.co_name != "<module>":
             # If it's not the module, and not in a class instance, add the code
             # object's name.
             namespace = namespace + "." + cf.f_code.co_name
-    logger = Logger(level=level, namespace=namespace, logger=logger,
-                    observer=observer)
+    logger = Logger(level=level, namespace=namespace, logger=logger, observer=observer)
     return logger
 
 
@@ -217,13 +217,14 @@ class _LogObserver(object):
 
     An observer which formats events to a given file.
     """
+
     to_tx = {
-        'critical': LogLevel.critical,
-        'error': LogLevel.error,
-        'warn': LogLevel.warn,
-        'info': LogLevel.info,
-        'debug': LogLevel.debug,
-        'trace': LogLevel.debug,
+        "critical": LogLevel.critical,
+        "error": LogLevel.error,
+        "warn": LogLevel.warn,
+        "info": LogLevel.info,
+        "debug": LogLevel.debug,
+        "trace": LogLevel.debug,
     }
 
     def __init__(self, out):
@@ -247,31 +248,31 @@ class _LogObserver(object):
         # on it, the log_format will be None for the traceback after
         # "Unhandled error in Deferred" -- perhaps this is a Twisted
         # bug?
-        if event['log_format'] is None:
-            msg = '{0} {1}{2}'.format(
+        if event["log_format"] is None:
+            msg = "{0} {1}{2}".format(
                 formatTime(event["log_time"]),
-                failure_format_traceback(event['log_failure']),
+                failure_format_traceback(event["log_failure"]),
                 os.linesep,
             )
             if self._encode:
-                msg = msg.encode('utf8')
+                msg = msg.encode("utf8")
             self._file.write(msg)
         else:
             # although Logger will already have filtered out unwanted
             # levels, bare Logger instances from Twisted code won't have.
-            if 'log_level' in event and self._acceptable_level(event['log_level']):
-                msg = '{0} {1}{2}'.format(
+            if "log_level" in event and self._acceptable_level(event["log_level"]):
+                msg = "{0} {1}{2}".format(
                     formatTime(event["log_time"]),
                     formatEvent(event),
                     os.linesep,
                 )
                 if self._encode:
-                    msg = msg.encode('utf8')
+                    msg = msg.encode("utf8")
 
                 self._file.write(msg)
 
 
-def start_logging(out=_stdout, level='info'):
+def start_logging(out=_stdout, level="info"):
     """
     Start logging to the file-like object in ``out``. By default, this
     is stdout.
@@ -281,7 +282,7 @@ def start_logging(out=_stdout, level='info'):
     if level not in log_levels:
         raise RuntimeError(
             "Invalid log level '{0}'; valid are: {1}".format(
-                level, ', '.join(log_levels)
+                level, ", ".join(log_levels)
             )
         )
 
@@ -316,7 +317,7 @@ class _TxApi(object):
         returns a unicode error-message
         """
         try:
-            return '{0}: {1}'.format(
+            return "{0}: {1}".format(
                 fail.value.__class__.__name__,
                 fail.getErrorMessage(),
             )
@@ -396,7 +397,8 @@ class _TxApi(object):
             return self._get_loop().callLater(delay, fun, *args, **kwargs)
 
         return _BatchedTimer(
-            bucket_seconds * 1000.0, chunk_size,
+            bucket_seconds * 1000.0,
+            chunk_size,
             seconds_provider=get_seconds,
             delayed_call_creator=create_delayed_call,
         )
@@ -449,7 +451,7 @@ class _TxApi(object):
     def gather(self, futures, consume_exceptions=True):
         def completed(res):
             rtn = []
-            for (ok, value) in res:
+            for ok, value in res:
                 rtn.append(value)
                 if not ok and not consume_exceptions:
                     value.raiseException()
@@ -487,6 +489,7 @@ class _TxApi(object):
         # possible in case someone is installing a custom one.
         if self._config.loop is None:
             from twisted.internet import reactor
+
             self._config.loop = reactor
         return self._config.loop
 

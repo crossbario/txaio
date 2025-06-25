@@ -32,7 +32,7 @@ import os
 import pytest
 import txaio
 
-Log = namedtuple('Log', ['args'])
+Log = namedtuple("Log", ["args"])
 
 
 class LoggingHandler(BytesIO):
@@ -41,7 +41,7 @@ class LoggingHandler(BytesIO):
     def messages(self):
         # Because we print the \n after, there will always be an empty
         # 'message', so just don't include it.
-        return self.getvalue().split(os.linesep.encode('ascii'))[:-1]
+        return self.getvalue().split(os.linesep.encode("ascii"))[:-1]
 
 
 _handler = LoggingHandler()
@@ -55,10 +55,10 @@ def log_started(framework):
     early_log = txaio.make_logger()
     early_log.info("early log")
 
-    txaio.start_logging(out=_handler, level='debug')
+    txaio.start_logging(out=_handler, level="debug")
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def handler(log_started):
     """
     Resets the global TestHandler instance for each test.
@@ -83,8 +83,8 @@ def test_categories(handler, framework):
     logger.critical(
         "you won't see me",
         log_category="TX100",
-        adjective='hilarious',
-        nouns=['skunk', 'elephant', 'wombat'],
+        adjective="hilarious",
+        nouns=["skunk", "elephant", "wombat"],
     )
 
     assert len(handler.messages) == 1
@@ -104,8 +104,8 @@ def test_categories_subsequent(handler, framework):
     # do something a little fancy, with attribute access etc.
     logger.critical(
         log_category="TX100",
-        adjective='hilarious',
-        nouns=['skunk', 'elephant', 'wombat'],
+        adjective="hilarious",
+        nouns=["skunk", "elephant", "wombat"],
     )
 
     assert len(handler.messages) == 1
@@ -118,8 +118,8 @@ def test_critical(handler, framework):
     # do something a little fancy, with attribute access etc.
     logger.critical(
         "{adjective} {nouns[2]}",
-        adjective='hilarious',
-        nouns=['skunk', 'elephant', 'wombat'],
+        adjective="hilarious",
+        nouns=["skunk", "elephant", "wombat"],
     )
 
     assert len(handler.messages) == 1
@@ -132,8 +132,8 @@ def test_info(handler, framework):
     # do something a little fancy, with attribute access etc.
     logger.info(
         "{adjective} {nouns[1]}",
-        adjective='hilarious',
-        nouns=['skunk', 'elephant', 'wombat'],
+        adjective="hilarious",
+        nouns=["skunk", "elephant", "wombat"],
     )
 
     assert len(handler.messages) == 1
@@ -142,7 +142,7 @@ def test_info(handler, framework):
 
 def test_legacy_error_with_traceback(handler, framework):
     if framework.using_twisted:
-        return pytest.skip('test only for asyncio users')
+        return pytest.skip("test only for asyncio users")
 
     import logging
 
@@ -151,7 +151,7 @@ def test_legacy_error_with_traceback(handler, framework):
     except RuntimeError:
         logging.error("bad stuff", exc_info=True)
 
-    assert 'RuntimeError: the bad stuff' in str(handler.messages)
+    assert "RuntimeError: the bad stuff" in str(handler.messages)
 
 
 def test_trace(handler, framework):
@@ -217,7 +217,7 @@ def test_debug_with_object(handler, framework):
     class Shape(object):
         sides = 4
         name = "bamboozle"
-        config = dict(foo='bar')
+        config = dict(foo="bar")
 
     logger.info(
         "{what.config[foo]} {what.sides} {what.name}",
@@ -247,10 +247,10 @@ def test_double_start(handler, framework):
 
 def test_invalid_level(framework):
     try:
-        txaio.start_logging(level='foo')
+        txaio.start_logging(level="foo")
         assert False, "should get exception"
     except RuntimeError as e:
-        assert 'Invalid log level' in str(e)
+        assert "Invalid log level" in str(e)
 
 
 def test_class_descriptor(handler, framework):
@@ -313,12 +313,14 @@ def test_txlog_write_binary(handler, framework):
     out_file = BytesIO()
     observer = _LogObserver(out_file)
 
-    observer({
-        "log_format": "hi: {testentry}",
-        "testentry": "hello",
-        "log_level": observer.to_tx["info"],
-        "log_time": 1442890018.002233
-    })
+    observer(
+        {
+            "log_format": "hi: {testentry}",
+            "testentry": "hello",
+            "log_level": observer.to_tx["info"],
+            "log_time": 1442890018.002233,
+        }
+    )
 
     output = out_file.getvalue()
     assert b"hi: hello" in output
@@ -334,12 +336,14 @@ def test_txlog_write_text(handler, framework_tx):
     out_file = StringIO()
     observer = _LogObserver(out_file)
 
-    observer({
-        "log_format": "hi: {testentry}",
-        "testentry": "hello",
-        "log_level": observer.to_tx["info"],
-        "log_time": 1442890018.002233
-    })
+    observer(
+        {
+            "log_format": "hi: {testentry}",
+            "testentry": "hello",
+            "log_level": observer.to_tx["info"],
+            "log_time": 1442890018.002233,
+        }
+    )
 
     output = out_file.getvalue()
     assert "hi: hello" in output
@@ -355,11 +359,15 @@ def test_aiolog_write_binary(handler, framework_aio):
     out_file = BytesIO()
     observer = _TxaioFileHandler(out_file)
 
-    observer.emit(Log(args={
-        "log_message": "hi: {testentry}",
-        "testentry": "hello",
-        "log_time": 1442890018.002233
-    }))
+    observer.emit(
+        Log(
+            args={
+                "log_message": "hi: {testentry}",
+                "testentry": "hello",
+                "log_time": 1442890018.002233,
+            }
+        )
+    )
 
     output = out_file.getvalue()
     assert b"hi: hello" in output
@@ -375,11 +383,15 @@ def test_aiolog_write_text(handler, framework_aio):
     out_file = StringIO()
     observer = _TxaioFileHandler(out_file)
 
-    observer.emit(Log(args={
-        "log_message": "hi: {testentry}",
-        "testentry": "hello",
-        "log_time": 1442890018.002233
-    }))
+    observer.emit(
+        Log(
+            args={
+                "log_message": "hi: {testentry}",
+                "testentry": "hello",
+                "log_time": 1442890018.002233,
+            }
+        )
+    )
 
     output = out_file.getvalue()
     assert "hi: hello" in output

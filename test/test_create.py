@@ -10,7 +10,7 @@ def test_illegal_args(framework):
 
 
 def test_create_result(framework):
-    f = txaio.create_future(result='foo')
+    f = txaio.create_future(result="foo")
     if txaio.using_twisted:
         assert f.called
     else:
