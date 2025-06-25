@@ -22,12 +22,17 @@ docs:
 spelling:
 	cd docs && sphinx-build -b spelling . _spelling
 
-pep8:
-	pep8 test/*.py txaio/*.py
+black:
+	black txaio test examples setup.py docs/conf.py
 
 # This will run pep8, pyflakes and can skip lines that end with # noqa
+# lobal config` is unused: name is never assigned in scope
+#	flake8 --max-line-length=119 test/*.py txaio/*.py
 flake8:
-	flake8 --max-line-length=119 test/*.py txaio/*.py
+	flake8 -v --isolated --max-line-length=88 txaio test
+
+list_noqu:
+	grep -r "noqa" txaio/ test/
 
 # cleanup everything
 clean:

@@ -53,9 +53,10 @@ extras_require_asyncio = []
 #
 extras_require_dev = [
     "wheel",  # MIT
+    "flake8>=7.3.0",
     "pytest>=2.6.4",  # MIT
     "pytest-cov>=1.8.1",  # MIT
-    "pep8>=1.6.2",  # MIT
+    "black>=25.1.0",
     "pyenchant>=1.6.6",  # LGPL
     "sphinx>=7.2.6",  # BSD
     "sphinxcontrib-spelling>=2.1.2",  # BSD
