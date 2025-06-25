@@ -250,7 +250,7 @@ def start_logging(out=_stdout, level="info"):
                 stdout.
     :param level: the maximum log-level to emit (a string)
     """
-    global _log_level, _loggers, _started_logging
+    global _log_level, _started_logging
     if level not in log_levels:
         raise RuntimeError(
             "Invalid log level '{0}'; valid are: {1}".format(

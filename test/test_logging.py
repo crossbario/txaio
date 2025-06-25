@@ -63,7 +63,6 @@ def handler(log_started):
     """
     Resets the global TestHandler instance for each test.
     """
-    global _handler
     _handler.truncate(0)
     _handler.seek(0)
     return _handler

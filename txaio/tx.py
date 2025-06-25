@@ -82,7 +82,6 @@ def add_log_categories(categories):
 
 
 def with_config(loop=None):
-    global config
     if loop is not None:
         if config.loop is not None and config.loop is not loop:
             raise RuntimeError(
@@ -277,7 +276,7 @@ def start_logging(out=_stdout, level="info"):
     Start logging to the file-like object in ``out``. By default, this
     is stdout.
     """
-    global _loggers, _observer, _log_level, _started_logging
+    global _observer, _log_level, _started_logging
 
     if level not in log_levels:
         raise RuntimeError(
