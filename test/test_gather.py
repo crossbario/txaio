@@ -30,9 +30,9 @@ from util import _await
 
 
 def test_gather_two(framework):
-    '''
+    """
     Wait for two Futures.
-    '''
+    """
 
     errors = []
     results = []
@@ -42,12 +42,14 @@ def test_gather_two(framework):
         def codependant(*args, **kw):
             calls.append((args, kw))
             return 42
+
         return txaio.as_future(codependant)
 
     def method(*args, **kw):
         calls.append((args, kw))
         return "OHAI"
-    f0 = txaio.as_future(method, 1, 2, 3, key='word')
+
+    f0 = txaio.as_future(method, 1, 2, 3, key="word")
     f1 = txaio.as_future(foo)
 
     f2 = txaio.gather([f0, f1])
@@ -58,6 +60,7 @@ def test_gather_two(framework):
     def error(fail):
         errors.append(fail)
         # fail.printTraceback()
+
     txaio.add_callbacks(f2, done, error)
 
     for f in [f0, f1, f2]:
@@ -65,16 +68,16 @@ def test_gather_two(framework):
 
     assert len(results) == 1
     assert len(errors) == 0
-    assert results[0] == ['OHAI', 42] or results[0] == [42, 'OHAI']
+    assert results[0] == ["OHAI", 42] or results[0] == [42, "OHAI"]
     assert len(calls) == 2
-    assert calls[0] == ((1, 2, 3), dict(key='word'))
+    assert calls[0] == ((1, 2, 3), dict(key="word"))
     assert calls[1] == (tuple(), dict())
 
 
 def test_gather_no_consume(framework):
-    '''
+    """
     consume_exceptions=False
-    '''
+    """
 
     errors = []
     results = []
@@ -91,6 +94,7 @@ def test_gather_no_consume(framework):
     def error(fail):
         errors.append(fail)
         # fail.printTraceback()
+
     txaio.add_callbacks(f0, done, error)
     txaio.add_callbacks(f1, done, error)
     txaio.add_callbacks(f2, done, error)

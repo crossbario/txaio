@@ -10,14 +10,14 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Python 3.11
+    - name: Set up Python 3.12
       uses: actions/setup-python@v3
       with:
-        python-version: '3.11'
+        python-version: '3.12'
         architecture: 'x64'
 
     - name: Install Python package dependencies
@@ -32,11 +32,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04]
+        os: [ubuntu-24.04]
         # os: [ubuntu-20.04, macos-latest, windows-latest]
 
         # https://github.com/actions/setup-python#specifying-a-pypy-version
-        python-version: ['3.9', '3.11', 'pypy-3.9', 'pypy-3.10']
+        python-version: ['3.9', '3.12', 'pypy-3.9', 'pypy-3.10']
 
     # https://github.blog/changelog/2020-04-15-github-actions-new-workflow-features/
     # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstepscontinue-on-error
@@ -67,14 +67,14 @@ jobs:
         tox -c tox.ini
 
   docs:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Python 3.11
+    - name: Set up Python 3.12
       uses: actions/setup-python@v3
       with:
-        python-version: '3.11'
+        python-version: '3.12'
         architecture: 'x64'
 
     - name: Install Python package dependencies

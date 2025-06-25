@@ -28,18 +28,20 @@ import sys
 
 
 def run_once():
-    '''
+    """
     A helper that takes one trip through the event-loop to process any
     pending Futures. This is a no-op for Twisted, because you don't
     need to use the event-loop to get callbacks to happen in Twisted.
-    '''
+    """
 
     import txaio
+
     if txaio.using_twisted:
         return
 
     try:
         import asyncio
+
         if sys.version_info >= (3, 7):
             # https://github.com/crossbario/txaio/issues/139
             from _asyncio_test_utils import run_once as _run_once
@@ -49,6 +51,7 @@ def run_once():
 
     except ImportError:
         import trollius as asyncio
+
         # let any trollius import error out; if we're not using
         # twisted, and have no asyncio *and* no trollius, that's a
         # problem.
@@ -64,12 +67,13 @@ def run_once():
 
 
 def _await(future):
-    '''
+    """
     Essentially just a way to call "run_until_complete" that becomes a
     no-op if we're using Twisted.
-    '''
+    """
 
     import txaio
+
     if txaio.using_twisted:
         return
 

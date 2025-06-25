@@ -96,6 +96,7 @@ def dummy_ssl_context():
 def run_briefly(loop):
     async def once():
         pass
+
     gen = once()
     t = loop.create_task(gen)
     # Don't log a warning if the task is not done after run_until_complete().
@@ -157,12 +158,11 @@ class SSLWSGIServerMixin:
         # contains the ssl key and certificate files) differs
         # between the stdlib and stand-alone asyncio.
         # Prefer our own if we can find it.
-        here = os.path.join(os.path.dirname(__file__), '..', 'tests')
+        here = os.path.join(os.path.dirname(__file__), "..", "tests")
         if not os.path.isdir(here):
-            here = os.path.join(os.path.dirname(os.__file__),
-                                'test', 'test_asyncio')
-        keyfile = os.path.join(here, 'ssl_key.pem')
-        certfile = os.path.join(here, 'ssl_cert.pem')
+            here = os.path.join(os.path.dirname(os.__file__), "test", "test_asyncio")
+        keyfile = os.path.join(here, "ssl_key.pem")
+        certfile = os.path.join(here, "ssl_cert.pem")
         context = ssl.SSLContext()
         context.load_cert_chain(certfile, keyfile)
 
@@ -182,10 +182,10 @@ class SSLWSGIServer(SSLWSGIServerMixin, SilentWSGIServer):
 def _run_test_server(*, address, use_ssl=False, server_cls, server_ssl_cls):
 
     def app(environ, start_response):
-        status = '200 OK'
-        headers = [('Content-type', 'text/plain')]
+        status = "200 OK"
+        headers = [("Content-type", "text/plain")]
         start_response(status, headers)
-        return [b'Test message']
+        return [b"Test message"]
 
     # Run the test WSGI server in a separate thread in order not to
     # interfere with event handling in the main thread
@@ -194,7 +194,8 @@ def _run_test_server(*, address, use_ssl=False, server_cls, server_ssl_cls):
     httpd.set_app(app)
     httpd.address = httpd.server_address
     server_thread = threading.Thread(
-        target=lambda: httpd.serve_forever(poll_interval=0.05))
+        target=lambda: httpd.serve_forever(poll_interval=0.05)
+    )
     server_thread.start()
     try:
         yield httpd
@@ -204,13 +205,13 @@ def _run_test_server(*, address, use_ssl=False, server_cls, server_ssl_cls):
         server_thread.join()
 
 
-if hasattr(socket, 'AF_UNIX'):
+if hasattr(socket, "AF_UNIX"):
 
     class UnixHTTPServer(socketserver.UnixStreamServer, HTTPServer):
 
         def server_bind(self):
             socketserver.UnixStreamServer.server_bind(self)
-            self.server_name = '127.0.0.1'
+            self.server_name = "127.0.0.1"
             self.server_port = 80
 
     class UnixWSGIServer(UnixHTTPServer, WSGIServer):
@@ -230,7 +231,7 @@ if hasattr(socket, 'AF_UNIX'):
             # as the second return value will be a path;
             # hence we return some fake data sufficient
             # to get the tests going
-            return request, ('127.0.0.1', '')
+            return request, ("127.0.0.1", "")
 
     class SilentUnixWSGIServer(UnixWSGIServer):
 
@@ -258,26 +259,32 @@ if hasattr(socket, 'AF_UNIX'):
     @contextlib.contextmanager
     def run_test_unix_server(*, use_ssl=False):
         with unix_socket_path() as path:
-            yield from _run_test_server(address=path, use_ssl=use_ssl,
-                                        server_cls=SilentUnixWSGIServer,
-                                        server_ssl_cls=UnixSSLWSGIServer)
+            yield from _run_test_server(
+                address=path,
+                use_ssl=use_ssl,
+                server_cls=SilentUnixWSGIServer,
+                server_ssl_cls=UnixSSLWSGIServer,
+            )
 
 
 @contextlib.contextmanager
-def run_test_server(*, host='127.0.0.1', port=0, use_ssl=False):
-    yield from _run_test_server(address=(host, port), use_ssl=use_ssl,
-                                server_cls=SilentWSGIServer,
-                                server_ssl_cls=SSLWSGIServer)
+def run_test_server(*, host="127.0.0.1", port=0, use_ssl=False):
+    yield from _run_test_server(
+        address=(host, port),
+        use_ssl=use_ssl,
+        server_cls=SilentWSGIServer,
+        server_ssl_cls=SSLWSGIServer,
+    )
 
 
 def make_test_protocol(base):
     dct = {}
     for name in dir(base):
-        if name.startswith('__') and name.endswith('__'):
+        if name.startswith("__") and name.endswith("__"):
             # skip magic names
             continue
         dct[name] = MockCallback(return_value=None)
-    return type('TestProtocol', (base,) + base.__bases__, dct)()
+    return type("TestProtocol", (base,) + base.__bases__, dct)()
 
 
 class TestSelector(selectors.BaseSelector):
@@ -323,8 +330,10 @@ class TestLoop(base_events.BaseEventLoop):
         super().__init__()
 
         if gen is None:
+
             def gen():
                 yield
+
             self._check_on_close = False
         else:
             self._check_on_close = True
@@ -373,18 +382,18 @@ class TestLoop(base_events.BaseEventLoop):
 
     def assert_reader(self, fd, callback, *args):
         if fd not in self.readers:
-            raise AssertionError(f'fd {fd} is not registered')
+            raise AssertionError(f"fd {fd} is not registered")
         handle = self.readers[fd]
         if handle._callback != callback:
             raise AssertionError(
-                f'unexpected callback: {handle._callback} != {callback}')
+                f"unexpected callback: {handle._callback} != {callback}"
+            )
         if handle._args != args:
-            raise AssertionError(
-                f'unexpected callback args: {handle._args} != {args}')
+            raise AssertionError(f"unexpected callback args: {handle._args} != {args}")
 
     def assert_no_reader(self, fd):
         if fd in self.readers:
-            raise AssertionError(f'fd {fd} is registered')
+            raise AssertionError(f"fd {fd} is registered")
 
     def _add_writer(self, fd, callback, *args):
         self.writers[fd] = events.Handle(callback, args, self, None)
@@ -398,12 +407,12 @@ class TestLoop(base_events.BaseEventLoop):
             return False
 
     def assert_writer(self, fd, callback, *args):
-        assert fd in self.writers, 'fd {} is not registered'.format(fd)
+        assert fd in self.writers, "fd {} is not registered".format(fd)
         handle = self.writers[fd]
-        assert handle._callback == callback, '{!r} != {!r}'.format(
-            handle._callback, callback)
-        assert handle._args == args, '{!r} != {!r}'.format(
-            handle._args, args)
+        assert handle._callback == callback, "{!r} != {!r}".format(
+            handle._callback, callback
+        )
+        assert handle._args == args, "{!r} != {!r}".format(handle._args, args)
 
     def _ensure_fd_no_transport(self, fd):
         if not isinstance(fd, int):
@@ -411,16 +420,15 @@ class TestLoop(base_events.BaseEventLoop):
                 fd = int(fd.fileno())
             except (AttributeError, TypeError, ValueError):
                 # This code matches selectors._fileobj_to_fd function.
-                raise ValueError("Invalid file object: "
-                                 "{!r}".format(fd)) from None
+                raise ValueError("Invalid file object: " "{!r}".format(fd)) from None
         try:
             transport = self._transports[fd]
         except KeyError:
             pass
         else:
             raise RuntimeError(
-                'File descriptor {!r} is used by transport {!r}'.format(
-                    fd, transport))
+                "File descriptor {!r} is used by transport {!r}".format(fd, transport)
+            )
 
     def add_reader(self, fd, callback, *args):
         """Add a reader callback."""
@@ -465,7 +473,7 @@ class TestLoop(base_events.BaseEventLoop):
 
 
 def MockCallback(**kwargs):
-    return mock.Mock(spec=['__call__'], **kwargs)
+    return mock.Mock(spec=["__call__"], **kwargs)
 
 
 class MockPattern(str):
@@ -477,6 +485,7 @@ class MockPattern(str):
     For instance:
        mock_call.assert_called_with(MockPattern('spam.*ham'))
     """
+
     def __eq__(self, other):
         return bool(re.search(str(self), other, re.S))
 
@@ -546,14 +555,15 @@ def disable_logger():
     """
     old_level = logger.level
     try:
-        logger.setLevel(logging.CRITICAL+1)
+        logger.setLevel(logging.CRITICAL + 1)
         yield
     finally:
         logger.setLevel(old_level)
 
 
-def mock_nonblocking_socket(proto=socket.IPPROTO_TCP, type=socket.SOCK_STREAM,
-                            family=socket.AF_INET):
+def mock_nonblocking_socket(
+    proto=socket.IPPROTO_TCP, type=socket.SOCK_STREAM, family=socket.AF_INET
+):
     """Create a mock of a non-blocking socket."""
     sock = mock.MagicMock(socket.socket)
     sock.proto = proto

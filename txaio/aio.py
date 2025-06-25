@@ -27,11 +27,15 @@
 import asyncio
 from asyncio import iscoroutine
 from asyncio import Future
+
 try:
     from types import AsyncGeneratorType
 except ImportError:
+
     class AsyncGeneratorType:
         pass
+
+
 import io
 import os
 import sys
@@ -99,8 +103,10 @@ def with_config(loop=None):
 
 # logging should probably all be folded into _AsyncioApi as well
 _stderr, _stdout = sys.stderr, sys.stdout
-_loggers = weakref.WeakSet()  # weak-ref's of each logger we've created before start_logging()
-_log_level = 'info'  # re-set by start_logging
+_loggers = (
+    weakref.WeakSet()
+)  # weak-ref's of each logger we've created before start_logging()
+_log_level = "info"  # re-set by start_logging
 _started_logging = False
 _categories = {}
 
@@ -142,21 +148,21 @@ class FailedFuture(IFailedFuture):
 # logging API methods
 
 
-def _log(logger, level, format=u'', **kwargs):
+def _log(logger, level, format="", **kwargs):
 
     # Look for a log_category, switch it in if we have it
     if "log_category" in kwargs and kwargs["log_category"] in _categories:
         format = _categories.get(kwargs["log_category"])
 
-    kwargs['log_time'] = time.time()
-    kwargs['log_level'] = level
-    kwargs['log_format'] = format
+    kwargs["log_time"] = time.time()
+    kwargs["log_level"] = level
+    kwargs["log_format"] = format
     # NOTE: turning kwargs into a single "argument which
     # is a dict" on purpose, since a LogRecord only keeps
     # args, not kwargs.
-    if level == 'trace':
-        level = 'debug'
-        kwargs['txaio_trace'] = True
+    if level == "trace":
+        level = "debug"
+        kwargs["txaio_trace"] = True
 
     msg = format.format(**kwargs)
     getattr(logger._logger, level)(msg)
@@ -179,7 +185,7 @@ class _TxaioLogWrapper(ILogger):
         target_level = log_levels.index(level)
         # this binds either _log or _no_op above to this instance,
         # depending on the desired level.
-        for (idx, name) in enumerate(log_levels):
+        for idx, name in enumerate(log_levels):
             if idx <= target_level:
                 log_method = functools.partial(_log, self, name)
             else:
@@ -196,26 +202,21 @@ class _TxaioFileHandler(logging.Handler, object):
 
     def emit(self, record):
         if isinstance(record.args, dict):
-            fmt = record.args.get(
-                'log_format',
-                record.args.get('log_message', '')
-            )
+            fmt = record.args.get("log_format", record.args.get("log_message", ""))
             message = fmt.format(**record.args)
-            dt = datetime.fromtimestamp(record.args.get('log_time', 0))
+            dt = datetime.fromtimestamp(record.args.get("log_time", 0))
         else:
             message = record.getMessage()
             if record.levelno == logging.ERROR and record.exc_info:
-                message += '\n'
+                message += "\n"
                 for line in traceback.format_exception(*record.exc_info):
                     message = message + line
             dt = datetime.fromtimestamp(record.created)
-        msg = '{0} {1}{2}'.format(
-            dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
-            message,
-            os.linesep
+        msg = "{0} {1}{2}".format(
+            dt.strftime("%Y-%m-%dT%H:%M:%S%z"), message, os.linesep
         )
         if self._encode:
-            msg = msg.encode('utf8')
+            msg = msg.encode("utf8")
         self._file.write(msg)
 
 
@@ -226,7 +227,7 @@ def make_logger():
     if "self" in cf.f_locals:
         # We're probably in a class init or method
         cls = cf.f_locals["self"].__class__
-        namespace = '{0}.{1}'.format(cls.__module__, cls.__name__)
+        namespace = "{0}.{1}".format(cls.__module__, cls.__name__)
     else:
         namespace = cf.f_globals["__name__"]
         if cf.f_code.co_name != "<module>":
@@ -241,7 +242,7 @@ def make_logger():
     return logger
 
 
-def start_logging(out=_stdout, level='info'):
+def start_logging(out=_stdout, level="info"):
     """
     Begin logging.
 
@@ -249,11 +250,11 @@ def start_logging(out=_stdout, level='info'):
                 stdout.
     :param level: the maximum log-level to emit (a string)
     """
-    global _log_level, _loggers, _started_logging
+    global _log_level, _started_logging
     if level not in log_levels:
         raise RuntimeError(
             "Invalid log level '{0}'; valid are: {1}".format(
-                level, ', '.join(log_levels)
+                level, ", ".join(log_levels)
             )
         )
 
@@ -269,12 +270,12 @@ def start_logging(out=_stdout, level='info'):
     # now added at least one handler to the root logger
     logging.raiseExceptions = True  # FIXME
     level_to_stdlib = {
-        'critical': logging.CRITICAL,
-        'error': logging.ERROR,
-        'warn': logging.WARNING,
-        'info': logging.INFO,
-        'debug': logging.DEBUG,
-        'trace': logging.DEBUG,
+        "critical": logging.CRITICAL,
+        "error": logging.ERROR,
+        "warn": logging.WARNING,
+        "info": logging.INFO,
+        "debug": logging.DEBUG,
+        "trace": logging.DEBUG,
     }
     logging.getLogger().setLevel(level_to_stdlib[level])
     # make sure any loggers we created before now have their log-level
@@ -328,7 +329,7 @@ class _AsyncioApi(object):
         returns a unicode error-message
         """
         try:
-            return '{0}: {1}'.format(
+            return "{0}: {1}".format(
                 fail._value.__class__.__name__,
                 str(fail._value),
             )
@@ -359,7 +360,9 @@ class _AsyncioApi(object):
         except Exception:
             return "Failed to format failure traceback for '{0}'".format(fail)
 
-    def create_future(self, result=_unspecified, error=_unspecified, canceller=_unspecified):
+    def create_future(
+        self, result=_unspecified, error=_unspecified, canceller=_unspecified
+    ):
         if result is not _unspecified and error is not _unspecified:
             raise ValueError("Cannot have both result and error.")
 
@@ -374,11 +377,13 @@ class _AsyncioApi(object):
         # txaio apes that here for asyncio. The argument is the Future
         # that has been cancelled.
         if canceller is not _unspecified:
+
             def done(f):
                 try:
                     f.exception()
                 except asyncio.CancelledError:
                     canceller(f)
+
             f.add_done_callback(done)
 
         return f
@@ -404,9 +409,7 @@ class _AsyncioApi(object):
             elif isinstance(res, AsyncGeneratorType):
                 raise RuntimeError(
                     "as_future() received an async generator function; does "
-                    "'{}' use 'yield' when you meant 'await'?".format(
-                        str(fun)
-                    )
+                    "'{}' use 'yield' when you meant 'await'?".format(str(fun))
                 )
             else:
                 return create_future_success(res)
@@ -438,7 +441,8 @@ class _AsyncioApi(object):
             return self._loop.time()
 
         return _BatchedTimer(
-            bucket_seconds * 1000.0, chunk_size,
+            bucket_seconds * 1000.0,
+            chunk_size,
             seconds_provider=get_seconds,
             delayed_call_creator=self.call_later,
         )
@@ -482,6 +486,7 @@ class _AsyncioApi(object):
         callback or errback may be None, but at least one must be
         non-None.
         """
+
         def done(f):
             try:
                 res = f.result()
@@ -490,6 +495,7 @@ class _AsyncioApi(object):
             except (Exception, asyncio.CancelledError):
                 if errback:
                     errback(create_failure())
+
         return future.add_done_callback(done)
 
     def gather(self, futures, consume_exceptions=True):

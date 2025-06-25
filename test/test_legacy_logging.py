@@ -40,13 +40,14 @@ def test_log_stdlib(framework_aio):
     class TestHandler(logging.Handler):
         def emit(self, record):
             records.append(record.msg)
+
     handler = TestHandler()
     lg.addHandler(handler)
 
     try:
         log = txaio.make_logger()
-        log.info("foo={foo}", foo='bar')
+        log.info("foo={foo}", foo="bar")
     finally:
         lg.removeHandler(handler)
 
-    assert 'foo=bar' in records
+    assert "foo=bar" in records

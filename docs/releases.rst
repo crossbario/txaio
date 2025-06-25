@@ -1,6 +1,16 @@
 txio releases
 =============
 
+25.6.1
+------
+
+- new: announcement of upcoming (but not yet effective) new AI policy clarifying matter with respect to AI assisted contributions (see #1663 in AutobahnPython)
+- fix: update license file to include contributors (#188)
+- fix: remove obsolete dependency on six (#186)
+- fix: update pypy version in CI workflow (#187)
+- fix: setupcfg.py:508: SetuptoolsDeprecationWarning: The license_file parameter is deprecated, use license_files instead.
+- Copyrights transferred from Crossbar.io Technologies GmbH (Germany) to typedef int GmbH (Germany)
+
 23.1.1
 ------
 

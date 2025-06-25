@@ -35,6 +35,7 @@ def test_default_resolve(framework):
 
     def cb(f):
         results.append(f)
+
     txaio.add_callbacks(f, cb, None)
     txaio.resolve(f)
 
@@ -50,6 +51,7 @@ def test_callback(framework):
 
     def cb(f):
         results.append(f)
+
     txaio.add_callbacks(f, cb, None)
     txaio.resolve(f, "it worked")
 
@@ -65,6 +67,7 @@ def test_immediate_result(framework):
 
     def cb(f):
         results.append(f)
+
     txaio.add_callbacks(f, cb, None)
 
     run_once()

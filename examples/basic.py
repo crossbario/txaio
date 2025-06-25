@@ -25,17 +25,21 @@
 ###############################################################################
 
 import txaio
+
 txaio.use_twisted()
+
 
 def cb(value):
     print("Callback:", value)
     return value  # should always return input arg
+
 
 def eb(fail):
     # fail will implement txaio.IFailedPromise
     print("Errback:", fail)
     # fail.printTraceback()
     return fail  # should always return input arg
+
 
 f0 = txaio.create_future()
 f1 = txaio.create_future()
@@ -53,4 +57,5 @@ if txaio.using_asyncio:
     # simple example (since all results are already available), but
     # you'd simply use reactor.run()/.stop() or task.react() as normal
     import asyncio
+
     asyncio.get_event_loop().run_until_complete(f1)
