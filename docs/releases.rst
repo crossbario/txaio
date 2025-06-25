@@ -9,6 +9,7 @@ txio releases
 - fix: remove obsolete dependency on six (#186)
 - fix: update pypy version in CI workflow (#187)
 - fix: setupcfg.py:508: SetuptoolsDeprecationWarning: The license_file parameter is deprecated, use license_files instead.
+- Copyrights transferred from Crossbar.io Technologies GmbH (Germany) to typedef int GmbH (Germany)
 
 23.1.1
 ------

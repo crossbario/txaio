@@ -98,12 +98,9 @@ master_doc = 'contents'
 
 # General information about the project.
 project = 'txaio'
-author = 'Crossbar.io Project'
+author = 'The WAMP/Autobahn/Crossbar.io OSS Project'
 this_year = '{0}'.format(time.strftime('%Y'))
-if this_year != '2015':
-    copyright = '2015-{0}, Crossbar.io Technologies GmbH'.format(this_year)
-else:
-    copyright = '2015, Crossbar.io Technologies GmbH'
+copyright = '2015-{0}, typedef int GmbH (Germany)'.format(this_year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
