@@ -14,3 +14,4 @@ Contents
    programming-guide
    releases
    api
+   AI_POLICY

@@ -30,26 +30,6 @@ Platform support
 > Note: txaio up to version 18.8.1 also supported Python 2.7 and Python 3.4. Beginning with release v20.1.1, txaio only supports Python 3.5+. Beginning with release v20.12.1, txaio only supports Python 3.6+.
 
 
-AI Policy
----------
-
-.. important::
-
-   **A Note on Upcoming Policy Changes Regarding AI-Assisted Content**
-
-   Up to and including version **v25.6.1**, this project contains no code or documentation generated with the assistance of AI tools. This version represents the final release under our historical contribution policy.
-
-   Starting with future versions (after v25.6.1), our contribution policy will change. Subsequent releases **MAY** contain code or documentation created with AI assistance.
-
-   We urge all users and contributors to review our comprehensive `AI Policy <AI_POLICY.rst>`. This document details:
-   - The rules and warranties required for all future contributions.
-   - The potential intellectual property implications for the project and its users.
-
-   This policy was established following an open community discussion, which you can review on `GitHub issue #184 <https://github.com/crossbario/txaio/issues/184>`.
-
-   We are providing this transparent notice to enable you to make an informed decision. If our new AI policy is incompatible with your own (or your organization's) development practices or risk tolerance, please take this into consideration when deciding whether to upgrade beyond version v25.6.1.
-
-
 How it works
 ------------
 
@@ -79,6 +59,35 @@ Code like the following can then run on *either* system:
     txaio.reject(f1, RuntimeError("it failed"))
 
 Please refer to the `documentation <https://txaio.readthedocs.io/en/latest/>`_ for description and usage of the library features.
+
+
+AI Policy
+---------
+
+.. important::
+
+   **A Note on Upcoming Policy Changes Regarding AI-Assisted Content**
+
+   Up to and including version **v25.6.1**, this project contains no code or documentation
+   generated with the assistance of AI tools. This version represents the final release under
+   our historical contribution policy.
+
+   Starting with future versions (after v25.6.1), our contribution policy will change.
+   Subsequent releases **MAY** contain code or documentation created with AI assistance.
+
+   We urge all users and contributors to review our `AI Policy <AI_POLICY.rst>`_. This document
+   details:
+
+   - The rules and warranties required for all future contributions.
+   - The potential intellectual property implications for the project and its users.
+
+   This policy was established following an open community discussion, which you can review
+   on `GitHub issue #1663 <https://github.com/crossbario/autobahn-python/issues/1663>`.
+
+   We are providing this transparent notice to enable you to make an informed decision.
+   If our new AI policy is incompatible with your own (or your organization's) development
+   practices or risk tolerance, please take this into consideration when deciding whether
+   to upgrade beyond version v25.6.1.
 
 
 .. |Version| image:: https://img.shields.io/pypi/v/txaio.svg
