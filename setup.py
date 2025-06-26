@@ -42,7 +42,7 @@ with open("README.rst") as f:
 #
 extras_require_twisted = [
     "zope.interface>=5.2.0",  # Zope Public License
-    "twisted>=20.3.0",  # MIT
+    "twisted>=22.10.0",       # MIT
 ]
 
 # asyncio dependencies: Python 3.5+ has asyncio builtin
@@ -82,10 +82,13 @@ setup(
     long_description_content_type='text/x-rst',
     license="MIT License",
     author="typedef int GmbH",
-    author_email="autobahnws@googlegroups.com",
-    url="https://github.com/crossbario/txaio",
+    author_email="contact@typedefint.eu",
+    url="https://txaio.readthedocs.io/",
+    project_urls={
+        'Source': 'https://github.com/crossbario/txaio',
+    },
     platforms=("Any"),
-    python_requires=">=3.9",
+    python_requires=">=3.10",
     extras_require={
         "twisted": extras_require_twisted,
         "asyncio": extras_require_asyncio,
@@ -112,7 +115,6 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
