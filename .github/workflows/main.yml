@@ -12,10 +12,10 @@ jobs:
   check:
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python 3.12
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
         architecture: 'x64'
@@ -33,25 +33,22 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-24.04]
-        # os: [ubuntu-20.04, macos-latest, windows-latest]
 
         # https://github.com/actions/setup-python#specifying-a-pypy-version
-        python-version: ['3.9', '3.12', 'pypy-3.9', 'pypy-3.10']
+        python-version: ['3.10', '3.12', 'pypy-3.10']
 
     # https://github.blog/changelog/2020-04-15-github-actions-new-workflow-features/
     # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstepscontinue-on-error
     continue-on-error: false
 
     steps:
-    # Checkout sources
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    # Use this Python
-    # https://github.com/actions/setup-python/blob/main/README.md
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        architecture: 'x64'
 
     - name: Install Python package dependencies
       run: |
@@ -69,10 +66,10 @@ jobs:
   docs:
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python 3.12
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
         architecture: 'x64'
