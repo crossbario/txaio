@@ -1,5 +1,5 @@
-API
-===
+Application Programming Interface
+=================================
 
 The API is identical whether you're using Twisted or asyncio under the
 hood. Two ``bool`` variables are available if you need to know which

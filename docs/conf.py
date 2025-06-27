@@ -61,6 +61,9 @@ RTD_BUILD = os.environ.get("READTHEDOCS", None) == "True"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    # https://myst-parser.readthedocs.io/
+    # https://myst-parser.readthedocs.io/en/latest/syntax/cross-referencing.html
+    "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
@@ -96,7 +99,7 @@ source_suffix = ".rst"
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = "contents"
+# master_doc = "index"
 
 # General information about the project.
 project = "txaio"

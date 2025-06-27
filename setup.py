@@ -34,7 +34,7 @@ CPY = platform.python_implementation() == "CPython"
 with open("txaio/_version.py") as f:
     exec(f.read())  # defines __version__
 
-with open("README.rst") as f:
+with open("README.md") as f:
     docstr = f.read()
 
 
@@ -57,6 +57,7 @@ extras_require_dev = [
     "pytest>=2.6.4",  # MIT
     "pytest-cov>=1.8.1",  # MIT
     "black>=25.1.0",
+    "myst_parser>=4.0.1",
     "pyenchant>=1.6.6",  # LGPL
     "sphinx>=7.2.6",  # BSD
     "sphinxcontrib-spelling>=2.1.2",  # BSD
@@ -79,7 +80,7 @@ setup(
     version=__version__,
     description="Compatibility API between asyncio/Twisted/Trollius",
     long_description=docstr,
-    long_description_content_type='text/x-rst',
+    long_description_content_type='text/markdown',
     license="MIT License",
     author="typedef int GmbH",
     author_email="contact@typedefint.eu",
