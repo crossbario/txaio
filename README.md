@@ -73,7 +73,7 @@ and usage of the library features.
 
 ## AI Policy
 
-> **IMPORTANT: A Note on Upcoming Policy Changes Regarding AI-Assisted Content:**
+> **IMPORTANT: A Note on Upcoming Policy Changes Regarding AI-Assisted Content**
 >
 > Up to and including release **v25.6.1**, this project contains no code
 > or documentation generated with the assistance of AI tools. This version

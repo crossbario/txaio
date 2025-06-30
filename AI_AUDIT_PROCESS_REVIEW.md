@@ -1,37 +1,34 @@
-Below you find a review of our new AI policy and process by an AI
+# AI Audit Process Review
+
+Below you find a review of our new [AI Policy](https://github.com/crossbario/autobahn-python/blob/master/AI_POLICY.md) and process by an AI
 itself (Microsoft Copilot / GitHub), not only in abstract general
-terms, but applied to and in the context of one concrete
-real-world PR.
-
-See
-[anchor issue](https://github.com/crossbario/txaio/issues/1663)
-for the complete history.
-
-This "recursion" finally closes the loop and the topic on a
-"metalevel" for me. Happy for now.
-[Fixed points for the Win!](https://en.wikipedia.org/wiki/Fixed-point_combinator)
-;)
-
-Cheers! @oberstet (So 29. Jun 10:31:16 CEST 2025)
-
-File `ai-policy-review-2025-06-29_Version2.md`, verbatim
-contents, formatting prettified with `prettier`.
-
----
-
-# AI Policy Review Conversation Log
+terms, but applied to and in the context of
+[one concrete real-world PR](https://github.com/crossbario/autobahn-python/pull/1667).
 
 **Date of conversation:** 2025-06-29 **Participants:**
 
 - User: [@oberstet](https://github.com/oberstet)
 - AI Assistant: GitHub Copilot Chat
 
+See
+[anchor issue](https://github.com/crossbario/autobahn-python/issues/1663)
+for the discussion how this policy came into existance.
+
+This AI assistant based review of the new AI process itself,
+this "recursion" finally closes the loop and the topic on a "metalevel" for me.
+Happy for now. [Fixed points for the Win!](https://en.wikipedia.org/wiki/Fixed-point_combinator) ;)
+
+Cheers! @oberstet (So 29. Jun 10:31:16 CEST 2025)
+
+File `ai-policy-review-2025-06-29_Version2.md` below, verbatim
+contents, formatting prettified with `prettier`.
+
 ---
 
 ## User: Initial Question
 
 could you please review
-[_this_ PR](https://github.com/crossbario/txaio/pull/1668)
+[_this_ PR](https://github.com/crossbario/autobahn-python/pull/1668)
 with respect to our new upcoming AI assistance policy? in
 particular, handling of and resulting audit level evidence
 tracked, including the AI assistance disclosure file part of the
@@ -44,7 +41,7 @@ its comment. All on master branch as well. lemme know if you are
 missing something.
 
 if you _can_, please also review
-[@crossbario/txaio/pull/1668](https://github.com/crossbario/txaio/pull/1668)
+[@crossbario/autobahn-python/pull/1668](https://github.com/crossbario/autobahn-python/pull/1668)
 which I am working to finally prepare the release of v25.6.1 -
 which is the first version of AutobahnPython which includes the
 _announcement_ of the upcoming AI policy. said policy then will
@@ -67,7 +64,7 @@ WAMP. lots of work, I want to get it right;)
 ## Copilot: PR & Policy Review
 
 Here is a thorough review of PR
-[#1668](https://github.com/crossbario/txaio/pull/1668),
+[#1668](https://github.com/crossbario/autobahn-python/pull/1668),
 with a focus on your new AI assistance policy, disclosure, and
 "audit hard" evidence requirements:
 
@@ -98,7 +95,7 @@ with a focus on your new AI assistance policy, disclosure, and
   ```
   - [x] I did **not** use any AI-assistance tools to help create this pull request.
   - [ ] I **did** use AI-assistance tools to *help* create this pull request.
-  - [x] I have read, understood and followed the projects' [AI Policy](https://github.com/crossbario/txaio/blob/main/AI_POLICY.md) when creating code, documentation etc. for this pull request.
+  - [x] I have read, understood and followed the projects' [AI Policy](https://github.com/crossbario/autobahn-python/blob/main/AI_POLICY.md) when creating code, documentation etc. for this pull request.
 
   Submitted by: @oberstet
   Date: 2025-06-29
@@ -127,7 +124,7 @@ with a focus on your new AI assistance policy, disclosure, and
 #### c) **AI Policy Accessibility**
 
 - The PR and template reference the full policy at:
-  - [`AI_POLICY.md`](https://github.com/crossbario/txaio/blob/main/AI_POLICY.md)
+  - [`AI_POLICY.md`](https://github.com/crossbario/autobahn-python/blob/main/AI_POLICY.md)
 - The template reiterates key prohibitions and requirements.
 
 ---
@@ -216,7 +213,7 @@ projects well with minor adjustments as needed.**
 
 Thanks! Sounds good. Now, for the record, I would like to add
 this conversation to
-[@crossbario/txaio/issues/1663](https://github.com/crossbario/txaio/issues/1663)
+[@crossbario/autobahn-python/issues/1663](https://github.com/crossbario/autobahn-python/issues/1663)
 which is the "anchor" for this whole issue - so that it (my
 question and your response in this conversation) can be read
 _publicly_. How do I do that?
@@ -231,7 +228,7 @@ The following references were attached as context:
 
 Great question! To add this conversation (your question and my
 review/response) to the public issue
-[@crossbario/txaio#1663](https://github.com/crossbario/txaio/issues/1663)
+[@crossbario/autobahn-python#1663](https://github.com/crossbario/autobahn-python/issues/1663)
 for archival and transparency, follow these steps:
 
 ---
@@ -243,7 +240,7 @@ for archival and transparency, follow these steps:
    - My full review/response (from above)
 
 2. **Go to the issue:**
-   [https://github.com/crossbario/txaio/issues/1663](https://github.com/crossbario/txaio/issues/1663)
+   [https://github.com/crossbario/autobahn-python/issues/1663](https://github.com/crossbario/autobahn-python/issues/1663)
 
 3. **Scroll to the bottom** and use the "Leave a comment" box.
 
@@ -439,6 +436,6 @@ to _this_ follow question of mine here? thanks!
 
 This Markdown file now accurately includes explicit links (e.g.
 for
-[_this_ PR](https://github.com/crossbario/txaio/pull/1668)),
+[_this_ PR](https://github.com/crossbario/autobahn-python/pull/1668)),
 and the full conversation right down to your correction request
 itself.
