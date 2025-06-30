@@ -1,10 +1,13 @@
 # txaio
 
 [![Version](https://img.shields.io/pypi/v/txaio.svg)](https://pypi.python.org/pypi/txaio)
-[![Build Workflow](https://github.com/crossbario/txaio/workflows/main/badge.svg)](https://github.com/crossbario/txaio/actions?query=workflow%3Amain)
+[![Test](https://github.com/crossbario/txaio/workflows/main/badge.svg)](https://github.com/crossbario/txaio/actions?query=workflow%3Amain)
+[![Docs](https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat)](https://txaio.readthedocs.io/en/latest/)
+<!--
+[![Docs](https://readthedocs.org/projects/txaio/badge/?version=latest)](https://txaio.readthedocs.io/en/latest/)
 [![Deploy Workflow](https://github.com/crossbario/txaio/workflows/deploy/badge.svg)](https://github.com/crossbario/txaio/actions?query=workflow%3Adeploy)
 [![Coverage](https://codecov.io/github/crossbario/txaio/coverage.svg?branch=master)](https://codecov.io/github/crossbario/txaio)
-[![Docs](https://readthedocs.org/projects/txaio/badge/?version=latest)](https://txaio.readthedocs.io/en/latest/)
+-->
 
 ------------------------------------------------------------------------
 
@@ -70,20 +73,17 @@ and usage of the library features.
 
 ## AI Policy
 
-Important
-
-**A Note on Upcoming Policy Changes Regarding AI-Assisted Content**
-
-Up to and including version **v25.6.1**, this project contains no code
-or documentation generated with the assistance of AI tools. This version
-represents the final release under our historical contribution policy.
-
-Starting with future versions (after v25.6.1), our contribution policy
-will change. Subsequent releases **MAY** contain code or documentation
-created with AI assistance.
+> **IMPORTANT: A Note on Upcoming Policy Changes Regarding AI-Assisted Content:**
+>
+> Up to and including release **v25.6.1**, this project contains no code
+> or documentation generated with the assistance of AI tools. This version
+> represents the final release under our historical contribution policy.
+> Starting with future versions (*after* release v25.6.1), our contribution policy
+> will change. Subsequent releases **MAY** contain code or documentation
+> created with AI assistance.
 
 We urge all users and contributors to review our [AI
-Policy](https://github.com/crossbario/txaio/blob/main/AI_POLICY.rst).
+Policy](https://github.com/crossbario/txaio/blob/master/AI_POLICY.md).
 This document details:
 
 -   The rules and warranties required for all future contributions.

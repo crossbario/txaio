@@ -99,7 +99,7 @@ source_suffix = ".rst"
 # source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-# master_doc = "index"
+master_doc = "index"
 
 # General information about the project.
 project = "txaio"
@@ -277,11 +277,7 @@ htmlhelp_basename = "txaiodoc"
 
 # http://sphinx-doc.org/ext/intersphinx.html
 intersphinx_mapping = {
-    "py2": ("https://docs.python.org/2", None),
-    "py3": ("https://docs.python.org/3", None),
-    # ERROR: Invalid target URI value `'https://docs.python.org/3'` in intersphinx_mapping['python'][0].
-    # Target URIs must be unique (other instance in intersphinx_mapping['py3']).
-    # "python": ("https://docs.python.org/3", None),
+    "python": ("https://docs.python.org/3", None),
     "rtd": ("https://docs.readthedocs.io/en/latest/", None),
     "autobahn": ("https://autobahn.readthedocs.io/en/latest/", None),
     "zlmdb": ("https://zlmdb.readthedocs.io/en/latest/", None),
