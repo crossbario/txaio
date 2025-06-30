@@ -1,6 +1,6 @@
 # AI Disclosure Process
 
-## Purpose
+## AI Disclosure Process: Purpose
 
 This document defines a robust, tamper-evident, and
 cryptographically verifiable process for contributors to disclose
