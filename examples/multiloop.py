@@ -28,7 +28,6 @@
 # This example only works with asyncio
 
 import asyncio
-import pytest
 import txaio
 
 txaio.use_asyncio()

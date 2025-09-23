@@ -49,8 +49,10 @@ dev = [
     "pytest>=2.6.4",
     "pytest-cov>=1.8.1",
     "black>=25.1.0",
+    "mypy>=1.18.2",
     "myst_parser>=4.0.1",
     "pyenchant>=1.6.6",
+    "ruff>=0.13.1",
     "sphinx>=7.2.6",
     "sphinxcontrib-spelling>=2.1.2",
     "sphinxcontrib-images>=0.9.4",
@@ -177,7 +179,7 @@ deps = flake8>=7.3.0
 commands = flake8 txaio test
 
 [testenv:mypy]
-deps = 
+deps =
     mypy
     twisted
     zope.interface

@@ -25,7 +25,6 @@
 ###############################################################################
 
 
-import sys
 import platform
 from setuptools import setup
 
@@ -42,7 +41,7 @@ with open("README.md") as f:
 #
 extras_require_twisted = [
     "zope.interface>=5.2.0",  # Zope Public License
-    "twisted>=22.10.0",       # MIT
+    "twisted>=22.10.0",  # MIT
 ]
 
 # asyncio dependencies: Python 3.5+ has asyncio builtin
@@ -77,16 +76,16 @@ extras_require_all = extras_require_twisted + extras_require_asyncio
 
 setup(
     name="txaio",
-    version=__version__,
+    version=__version__,  # noqa
     description="Compatibility API between asyncio/Twisted/Trollius",
     long_description=docstr,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     license="MIT License",
     author="typedef int GmbH",
     author_email="contact@typedefint.eu",
     url="https://txaio.readthedocs.io/",
     project_urls={
-        'Source': 'https://github.com/crossbario/txaio',
+        "Source": "https://github.com/crossbario/txaio",
     },
     platforms=("Any"),
     python_requires=">=3.10",

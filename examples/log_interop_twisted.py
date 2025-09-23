@@ -29,9 +29,9 @@ import txaio
 
 txaio.use_twisted()
 
-from twisted import logger
-from twisted.logger import ILogObserver
-from zope.interface import provider
+from twisted import logger  # noqa
+from twisted.logger import ILogObserver  # noqa
+from zope.interface import provider  # noqa
 
 
 # some library you use is using txaio logging stuff

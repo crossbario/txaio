@@ -495,7 +495,7 @@ check-typing venv="": (install-tools venv) (install venv)
     fi
     VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
     echo "==> Running static type checks with ${VENV_NAME}..."
-    "${VENV_PATH}/bin/mypy" autobahn/
+    "${VENV_PATH}/bin/mypy" txaio/
 
 # Run tests and generate an HTML coverage report in a specific directory.
 check-coverage venv="": (install-tools venv) (install venv)
