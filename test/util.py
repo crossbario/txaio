@@ -47,7 +47,7 @@ def run_once():
             from _asyncio_test_utils import run_once as _run_once
         else:
             from asyncio.test_utils import run_once as _run_once
-        return _run_once(txaio.config.loop or asyncio.get_event_loop())
+        return _run_once(txaio.config.loop or _get_loop())
 
     except ImportError:
         import trollius as asyncio
@@ -64,6 +64,16 @@ def run_once():
         loop.stop()
         loop.run_forever()
         asyncio.gather(*asyncio.Task.all_tasks())
+
+
+def _get_loop():
+    import asyncio
+    try:
+        return asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop
 
 
 def _await(future):
