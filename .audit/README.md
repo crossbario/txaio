@@ -12,7 +12,7 @@ as described below.
 
 - [ ] I did **not** use any AI-assistance tools to help create this pull request.
 - [x] I **did** use AI-assistance tools to *help* create this pull request.
-- [x] I have read, understood and followed the projects' [AI Policy](https://github.com/crossbario/txaio/blob/main/AI_POLICY.md) when creating code, documentation etc. for this pull request.
+- [x] I have read, understood and followed the projects' [AI Policy](https://github.com/crossbario/autobahn-python/blob/main/AI_POLICY.md) when creating code, documentation etc. for this pull request.
 
 Submitted by: @your-github-username
 Date: YYYY-MM-DD
@@ -30,7 +30,7 @@ Branch: branch-name
 
 - [x] I did **not** use any AI-assistance tools to help create this pull request.
 - [ ] I **did** use AI-assistance tools to *help* create this pull request.
-- [x] I have read, understood and followed the projects' [AI Policy](https://github.com/crossbario/txaio/blob/main/AI_POLICY.md) when creating code, documentation etc. for this pull request.
+- [x] I have read, understood and followed the projects' [AI Policy](https://github.com/crossbario/autobahn-python/blob/main/AI_POLICY.md) when creating code, documentation etc. for this pull request.
 
 Submitted by: @your-github-username
 Date: YYYY-MM-DD
