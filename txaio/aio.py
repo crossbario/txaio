@@ -321,7 +321,12 @@ class _AsyncioApi(object):
         # otherwise give out the event loop of the thread this is called in
         # rather fetching the loop once in __init__, which may not neccessarily
         # be called from the thread we now run the event loop in.
-        return asyncio.get_event_loop()
+        try:
+            return asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            return loop
 
     def failure_message(self, fail):
         """
