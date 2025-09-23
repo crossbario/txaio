@@ -54,6 +54,10 @@ clean:
 	find . -name "*.pyc" -type f -exec rm -f {} \;
 #	find . -name "*__pycache__" -type d -exec rm -rf {} \;
 
+clean_docs:
+	rm -rf ./docs/_build
+	rm -rf ./docs/_spelling
+
 # upload to our internal deployment system
 upload: clean
 	python setup.py bdist_wheel

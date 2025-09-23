@@ -25,7 +25,6 @@
 ###############################################################################
 
 
-import sys
 import platform
 from setuptools import setup
 
@@ -34,7 +33,7 @@ CPY = platform.python_implementation() == "CPython"
 with open("txaio/_version.py") as f:
     exec(f.read())  # defines __version__
 
-with open("README.rst") as f:
+with open("README.md") as f:
     docstr = f.read()
 
 
@@ -42,7 +41,7 @@ with open("README.rst") as f:
 #
 extras_require_twisted = [
     "zope.interface>=5.2.0",  # Zope Public License
-    "twisted>=22.10.0",       # MIT
+    "twisted>=22.10.0",  # MIT
 ]
 
 # asyncio dependencies: Python 3.5+ has asyncio builtin
@@ -57,6 +56,7 @@ extras_require_dev = [
     "pytest>=2.6.4",  # MIT
     "pytest-cov>=1.8.1",  # MIT
     "black>=25.1.0",
+    "myst_parser>=4.0.1",
     "pyenchant>=1.6.6",  # LGPL
     "sphinx>=7.2.6",  # BSD
     "sphinxcontrib-spelling>=2.1.2",  # BSD
@@ -76,16 +76,16 @@ extras_require_all = extras_require_twisted + extras_require_asyncio
 
 setup(
     name="txaio",
-    version=__version__,
+    version=__version__,  # noqa
     description="Compatibility API between asyncio/Twisted/Trollius",
     long_description=docstr,
-    long_description_content_type='text/x-rst',
+    long_description_content_type="text/markdown",
     license="MIT License",
     author="typedef int GmbH",
     author_email="contact@typedefint.eu",
     url="https://txaio.readthedocs.io/",
     project_urls={
-        'Source': 'https://github.com/crossbario/txaio',
+        "Source": "https://github.com/crossbario/txaio",
     },
     platforms=("Any"),
     python_requires=">=3.10",

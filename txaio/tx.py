@@ -346,7 +346,7 @@ class _TxApi(object):
         if result is not _unspecified and error is not _unspecified:
             raise ValueError("Cannot have both result and error.")
 
-        f = Deferred(canceller=canceller)
+        f: Deferred = Deferred(canceller=canceller)
         if result is not _unspecified:
             resolve(f, result)
         elif error is not _unspecified:
@@ -475,7 +475,7 @@ class _TxApi(object):
         :param delay: Time to sleep in seconds.
         :type delay: float
         """
-        d = Deferred()
+        d: Deferred = Deferred()
         self._get_loop().callLater(delay, d.callback, None)
         return d
 
