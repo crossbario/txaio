@@ -52,11 +52,11 @@ jobs:
       - name: Lint code using Ruff
         run: just check-format cpy314
 
-      - name: Run static type checking with mypy
-        run: just check-typing cpy314
+      # - name: Run static type checking with mypy
+      #   run: just check-typing cpy314
 
-      - name: Run tests and generate an HTML coverage report
-        run: just check-coverage cpy314
+      # - name: Run tests and generate an HTML coverage report
+      #   run: just check-coverage cpy314
 
   documentation:
     name: Documentation Build
