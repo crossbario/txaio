@@ -1,0 +1,194 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "txaio"
+version = "25.9.1"
+description = "Compatibility API between asyncio/Twisted/Trollius"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {file = "LICENSE"}
+authors = [
+    {name = "typedef int GmbH", email = "contact@typedefint.eu"}
+]
+maintainers = [
+    {name = "typedef int GmbH", email = "contact@typedefint.eu"}
+]
+keywords = ["asyncio", "twisted", "trollius", "coroutine"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Framework :: Twisted",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+twisted = [
+    "zope.interface>=5.2.0",
+    "twisted>=22.10.0",
+]
+asyncio = []
+dev = [
+    "build",
+    "wheel",
+    "flake8>=7.3.0",
+    "pytest>=2.6.4",
+    "pytest-cov>=1.8.1",
+    "black>=25.1.0",
+    "myst_parser>=4.0.1",
+    "pyenchant>=1.6.6",
+    "sphinx>=7.2.6",
+    "sphinxcontrib-spelling>=2.1.2",
+    "sphinxcontrib-images>=0.9.4",
+    "sphinxcontrib-bibtex>=2.6.1",
+    "sphinx-autoapi>=3.0.0",
+    "sphinx-rtd-theme>=2.0.0",
+    "tox>=2.1.1",
+    "twine>=1.6.5",
+    "tox-gh-actions>=2.2.0",
+]
+all = [
+    "zope.interface>=5.2.0",
+    "twisted>=22.10.0",
+]
+
+[project.urls]
+Homepage = "https://txaio.readthedocs.io/"
+Documentation = "https://txaio.readthedocs.io/"
+Repository = "https://github.com/crossbario/txaio"
+Source = "https://github.com/crossbario/txaio"
+"Bug Tracker" = "https://github.com/crossbario/txaio/issues"
+
+[tool.setuptools]
+packages = ["txaio"]
+zip-safe = true
+include-package-data = true
+
+[tool.setuptools.package-data]
+txaio = ["py.typed"]
+
+[tool.wheel]
+universal = true
+
+[tool.black]
+line-length = 88
+target-version = ['py311', 'py312', 'py313', 'py314']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.flake8]
+max-line-length = 88
+isolated = true
+extend-ignore = [
+    "E203",  # whitespace before ':'
+    "W503",  # line break before binary operator
+]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "-v",
+]
+
+[tool.coverage.run]
+source = ["txaio"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = "twisted.*"
+ignore_missing_imports = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py{311,312,313,314}-{twisted,asyncio}, flake8, mypy, coverage
+
+[testenv]
+deps =
+    pytest
+    pytest-cov
+    twisted: twisted>=22.10.0
+    twisted: zope.interface>=5.2.0
+    asyncio: # no extra deps for asyncio
+commands =
+    pytest {posargs}
+
+[testenv:flake8]
+deps = flake8>=7.3.0
+commands = flake8 txaio test
+
+[testenv:mypy]
+deps = 
+    mypy
+    twisted
+    zope.interface
+commands = mypy txaio
+
+[testenv:coverage]
+deps =
+    pytest
+    pytest-cov
+    twisted
+    zope.interface
+commands =
+    pytest --cov=txaio --cov-report=html --cov-report=term-missing
+"""
