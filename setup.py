@@ -34,7 +34,7 @@ with open("txaio/_version.py") as f:
     exec(f.read())  # defines __version__
 
 # Force Python 3+ wheel tag with f-string syntax
-print(f"Building txaio version {__version__}")
+print(f"Building txaio version {__version__}")  # noqa
 
 with open("README.md") as f:
     docstr = f.read()

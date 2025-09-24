@@ -1,0 +1,65 @@
+# GitHub Actions workflow for building and publishing txaio wheels.
+#
+# This is a simplified version based on the autobahn-python workflow,
+# adapted for a pure Python package.
+#
+name: Build and Publish
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build sdist and wheel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install build just
+
+      - name: Build package
+        run: just build
+
+      - name: Upload distribution package
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish-to-pypi:
+    name: Publish package to PyPI
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    # Run only when a tag is pushed
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/txaio
+
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+
+    steps:
+      - name: Download distribution package
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
