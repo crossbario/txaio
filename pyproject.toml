@@ -7,7 +7,7 @@ name = "txaio"
 version = "25.9.1"
 description = "Compatibility API between asyncio/Twisted/Trollius"
 readme = {file = "README.md", content-type = "text/markdown"}
-license = {file = "LICENSE"}
+license = "MIT"
 authors = [
     {name = "typedef int GmbH", email = "contact@typedefint.eu"}
 ]
@@ -16,7 +16,6 @@ maintainers = [
 ]
 keywords = ["asyncio", "twisted", "trollius", "coroutine"]
 classifiers = [
-    "License :: OSI Approved :: MIT License",
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
     "Framework :: Twisted",
@@ -84,7 +83,7 @@ include-package-data = true
 txaio = ["py.typed"]
 
 [tool.wheel]
-universal = true
+universal = false
 
 [tool.black]
 line-length = 88
