@@ -184,6 +184,9 @@ jobs:
           # Generate release tag based on timestamp and commit
           RELEASE_TAG="wheels-$(date +'%Y%m%d')-${{ github.sha }}"
 
+          # Delete existing release if it exists (ignore errors)
+          gh release delete "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --yes || true
+
           # Create release
           gh release create "$RELEASE_TAG" \
             --repo "$GITHUB_REPOSITORY" \
@@ -261,6 +264,11 @@ jobs:
           echo ""
           echo "Wheel count: $(ls dist/*.whl | wc -l)"
           echo "Source distributions: $(ls dist/*.tar.gz | wc -l)"
+
+      - name: Remove non-distribution files
+        run: |
+          # Remove build metadata files that shouldn't go to PyPI
+          rm -f dist/build-info.txt dist/*-docs.tar.gz
 
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
