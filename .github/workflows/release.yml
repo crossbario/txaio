@@ -5,13 +5,15 @@ name: release
 on:
   # Build wheels on feature branches and PRs (test only)
   push:
-    branches: ["**"]
+    branches: ["master"] # run for pushes to master branch
+    tags: ["v*"] # run for pushes to tags
   pull_request:
-    branches: [master]
-
-  # Publish to GitHub Releases when merged to master OR
-  # Publish to PyPI when tagged
+    branches: [master] # run for pushes to PR-branches targeting master
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Tag name to publish (leave empty to skip)"
+        required: false
 
 env:
   # Ensure uv and just are available in PATH
@@ -21,6 +23,8 @@ jobs:
   build-docs:
     name: Build documentation
     runs-on: ubuntu-latest
+
+    # Build documentation when merged to master
 
     steps:
       - name: Checkout code
@@ -68,6 +72,8 @@ jobs:
     name: Build wheels and source distribution
     runs-on: ubuntu-latest
 
+    # Build wheels and source distribution when merged to master
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -109,7 +115,6 @@ jobs:
           =================
 
           Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          Container: ${{ matrix.target.base_image }}
           Platform: AMD64
           Build Method: GitHub Actions + just/uv/venv
 
@@ -147,7 +152,6 @@ jobs:
     runs-on: ubuntu-latest
 
     # Publish to GitHub Releases when merged to master
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
 
     steps:
       - name: Download build artifacts
@@ -199,10 +203,12 @@ jobs:
     needs: build-docs
     runs-on: ubuntu-latest
 
-    # Publish docs to RTD when tagged
-    if: github.ref_type == 'tag'
+    # Publish docs to RTD when merged to and tagged on master
+    if: github.ref_type == 'tag' || github.event.inputs.release_tag != ''
 
     steps:
+      - run: echo "Publishing RTD for tag ${{ github.ref_type == 'tag' && github.ref_name || github.event.inputs.release_tag }}"
+
       - name: Debug GitHub context
         run: |
           echo "github.ref: ${{ github.ref }}"
@@ -232,8 +238,8 @@ jobs:
     needs: build-package
     runs-on: ubuntu-latest
 
-    # Publish to PyPI when tagged
-    if: github.ref_type == 'tag'
+    # Publish to PyPI when merged to and tagged on master
+    if: github.ref_type == 'tag' || github.event.inputs.release_tag != ''
 
     environment:
       name: pypi
@@ -243,6 +249,8 @@ jobs:
       id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
 
     steps:
+      - run: echo "Publishing PyPI for tag ${{ github.ref_type == 'tag' && github.ref_name || github.event.inputs.release_tag }}"
+
       - name: Debug GitHub context
         run: |
           echo "github.ref: ${{ github.ref }}"
