@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "txaio"
-version = "25.9.1"
+version = "25.9.2"
 description = "Compatibility API between asyncio/Twisted/Trollius"
 readme = {file = "README.md", content-type = "text/markdown"}
 license = "MIT"
