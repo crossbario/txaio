@@ -94,7 +94,7 @@ jobs:
           echo "Just: $(just --version)"
           echo "uv: $(uv --version)"
           echo "Rust: $(rustc --version)"
-          echo "Python: $(python3 --version)"
+          echo "Python: $(./.venvs/cpy311/bin/python3)"
           echo "GCC: $(gcc --version | head -1)"
           echo "glibc: $(ldd --version 2>/dev/null | head -1 || echo 'N/A')"
 
@@ -105,13 +105,13 @@ jobs:
         run: |
           mkdir -p dist/
           cat > dist/build-info.txt << EOF
-          Build Information for ${{ matrix.target.name }}
-          =============================================
+          Build Information
+          =================
 
           Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           Container: ${{ matrix.target.base_image }}
           Platform: AMD64
-          Build Method: GitHub Actions + Docker Container
+          Build Method: GitHub Actions + just/uv/venv
 
           System Information:
           - OS: $(cat /etc/os-release | grep PRETTY_NAME | cut -d'"' -f2)
@@ -121,9 +121,9 @@ jobs:
           Build Tools:
           - Just: $(just --version)
           - uv: $(uv --version)
-          - Rust: $(rustc --version)
-          - Python: $(python3 --version)
           - GCC: $(gcc --version | head -1)
+          - Rust: $(rustc --version)
+          - Python: $(./.venvs/cpy311/bin/python3)
           EOF
 
       - name: List build artifacts
