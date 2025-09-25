@@ -197,7 +197,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Publish docs to RTD when tagged
-    if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
+    if: github.ref_type == 'tag'
 
     steps:
       - name: Debug GitHub context
@@ -230,7 +230,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Publish to PyPI when tagged
-    if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
+    if: github.ref_type == 'tag'
 
     environment:
       name: pypi
