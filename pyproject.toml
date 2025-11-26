@@ -44,10 +44,8 @@ asyncio = []
 dev = [
     "build",
     "wheel",
-    "flake8>=7.3.0",
     "pytest>=2.6.4",
     "pytest-cov>=1.8.1",
-    "black>=25.1.0",
     "mypy>=1.18.2",
     "myst_parser>=4.0.1",
     "pyenchant>=1.6.6",
@@ -58,9 +56,7 @@ dev = [
     "sphinxcontrib-bibtex>=2.6.1",
     "sphinx-autoapi>=3.0.0",
     "sphinx-rtd-theme>=2.0.0",
-    "tox>=2.1.1",
     "twine>=1.6.5",
-    "tox-gh-actions>=2.2.0",
 ]
 all = [
     "zope.interface>=5.2.0",
@@ -85,29 +81,45 @@ txaio = ["py.typed"]
 [tool.wheel]
 universal = false
 
-[tool.black]
+[tool.ruff]
+# Same as Black.
 line-length = 88
-target-version = ['py311', 'py312', 'py313', 'py314']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
+indent-width = 4
+target-version = "py311"
 
-[tool.flake8]
-max-line-length = 88
-isolated = true
-extend-ignore = [
-    "E203",  # whitespace before ':'
-    "W503",  # line break before binary operator
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of pycodestyle (`E`) codes by default.
+select = ["E4", "E7", "E9", "F"]
+
+# Files and directories to ignore
+exclude = [
+    ".tox",
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
 ]
+
+# Violations to ignore (technical debt - aim to remove over time)
+ignore = [
+    "E501",  # line too long (handled by formatter)
+]
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.pytest.ini_options]
 testpaths = ["test"]
@@ -157,39 +169,3 @@ strict_equality = true
 [[tool.mypy.overrides]]
 module = "twisted.*"
 ignore_missing_imports = true
-
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-envlist = py{311,312,313,314}-{twisted,asyncio}, flake8, mypy, coverage
-
-[testenv]
-deps =
-    pytest
-    pytest-cov
-    twisted: twisted>=22.10.0
-    twisted: zope.interface>=5.2.0
-    asyncio: # no extra deps for asyncio
-commands =
-    pytest {posargs}
-
-[testenv:flake8]
-deps = flake8>=7.3.0
-commands = flake8 txaio test
-
-[testenv:mypy]
-deps =
-    mypy
-    twisted
-    zope.interface
-commands = mypy txaio
-
-[testenv:coverage]
-deps =
-    pytest
-    pytest-cov
-    twisted
-    zope.interface
-commands =
-    pytest --cov=txaio --cov-report=html --cov-report=term-missing
-"""

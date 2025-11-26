@@ -20,11 +20,34 @@ set script-interpreter := ['uv', 'run', '--script']
 # project base directory = directory of this justfile
 PROJECT_DIR := justfile_directory()
 
-# Default recipe: list all recipes
+# Default recipe: show project header and list all recipes
 default:
-    @echo ""
-    @just --list
-    @echo ""
+    #!/usr/bin/env bash
+    set -e
+    VERSION=$(grep '^version' pyproject.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+    GIT_REV=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    echo ""
+    echo "==============================================================================="
+    echo "                                    txaio                                      "
+    echo ""
+    echo "           Compatibility API between asyncio/Twisted/Trollius                 "
+    echo ""
+    echo "   Python Package:         txaio                                              "
+    echo "   Python Package Version: ${VERSION}                                         "
+    echo "   Git Version:            ${GIT_REV}                                         "
+    echo "   Protocol Specification: https://wamp-proto.org/                            "
+    echo "   Documentation:          https://txaio.readthedocs.io                       "
+    echo "   Package Releases:       https://pypi.org/project/txaio/                    "
+    echo "   Nightly/Dev Releases:   https://github.com/crossbario/txaio/releases       "
+    echo "   Source Code:            https://github.com/crossbario/txaio                "
+    echo "   Copyright:              typedef int GmbH (Germany/EU)                      "
+    echo "   License:                MIT License                                        "
+    echo ""
+    echo "       >>>   Created by The WAMP/Autobahn/Crossbar.io OSS Project   <<<       "
+    echo "==============================================================================="
+    echo ""
+    just --list
+    echo ""
 
 # Tell uv to always copy files instead of trying to hardlink them.
 # set export UV_LINK_MODE := 'copy'
@@ -452,11 +475,11 @@ autoformat venv="": (install-tools venv)
     echo "==> Automatically formatting code with ${VENV_NAME}..."
 
     # 1. Run the FORMATTER first. This will handle line lengths, quotes, etc.
-    "${VENV_PATH}/bin/ruff" format --exclude ./tests ./autobahn
+    "${VENV_PATH}/bin/ruff" format --exclude ./test ./txaio
 
     # 2. Run the LINTER'S FIXER second. This will handle things like
     #    removing unused imports, sorting __all__, etc.
-    "${VENV_PATH}/bin/ruff" check --fix --exclude ./tests ./autobahn
+    "${VENV_PATH}/bin/ruff" check --fix --exclude ./test ./txaio
     echo "--> Formatting complete."
 
 # Lint code using Ruff in a single environment
@@ -502,7 +525,7 @@ check-coverage venv="": (install-tools venv) (install venv)
     mkdir -p docs/_build/html
     # for now, ignore any non-zero exit code by prefixing with hyphen (FIXME: remove later)
     "${VENV_PATH}/bin/pytest" \
-        --cov=autobahn \
+        --cov=txaio \
         --cov-report=html:docs/_build/html/coverage
 
     echo "--> Coverage report generated in docs/_build/html/coverage/index.html"
@@ -546,6 +569,7 @@ docs venv="": (install-tools venv)
     echo "==> Building documentation..."
     "${VENV_PATH}/bin/sphinx-build" -b html docs/ docs/_build/html
 
+# Open the built documentation in the default browser
 docs-view venv="": (docs venv)
     echo "==> Opening documentation in viewer ..."
     open docs/_build/html/index.html

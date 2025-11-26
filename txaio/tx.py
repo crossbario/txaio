@@ -98,9 +98,7 @@ def with_config(loop=None):
 # means ``log_source`` will be wrong, but we don't document that as a
 # key that you can depend on anyway :/
 class Logger(object):
-
     def __init__(self, level=None, logger=None, namespace=None, observer=None):
-
         assert logger, "Should not be instantiated directly."
 
         self._logger = logger(observer=observer, namespace=namespace)
@@ -122,7 +120,6 @@ class Logger(object):
         return self
 
     def _log(self, level, *args, **kwargs):
-
         # Look for a log_category, switch it in if we have it
         if "log_category" in kwargs and kwargs["log_category"] in _categories:
             args = tuple()
@@ -131,7 +128,6 @@ class Logger(object):
         self._logger.emit(level, *args, **kwargs)
 
     def emit(self, level, *args, **kwargs):
-
         if log_levels.index(self._log_level) < log_levels.index(level):
             return
 
@@ -168,7 +164,6 @@ class Logger(object):
 
             else:
                 if getattr(self, name, None) in (_no_op, None):
-
                     if name == "trace":
                         setattr(self, "trace", self._trace)
                     else:
@@ -306,7 +301,6 @@ _unspecified = object()
 
 
 class _TxApi(object):
-
     def __init__(self, config):
         self._config = config
 
