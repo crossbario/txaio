@@ -630,7 +630,7 @@ clean-build:
     find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
     echo "==> Build artifacts cleaned."
 
-# Verify wheels using twine check
+# Verify wheels using twine check (pure Python package - auditwheel not applicable)
 verify-wheels venv="": (install-tools venv)
     #!/usr/bin/env bash
     set -e
@@ -641,8 +641,15 @@ verify-wheels venv="": (install-tools venv)
         echo "==> Defaulting to venv: '${VENV_NAME}'"
     fi
     VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
+
     echo "==> Verifying wheels with twine check..."
     "${VENV_PATH}/bin/twine" check dist/*
+
+    echo ""
+    echo "==> Note: This is a pure Python package (py3-none-any wheel)."
+    echo "    auditwheel verification is not applicable (no native extensions)."
+    echo "    For native extension packages, auditwheel would check binary compatibility."
+    echo ""
     echo "==> Wheel verification complete."
 
 # Publish package to PyPI (requires twine setup)
