@@ -583,7 +583,7 @@ docs-clean:
 # -- Building and Publishing
 # -----------------------------------------------------------------------------
 
-# Build distribution packages (wheels and source tarball)
+# Build wheel package (pure Python - single universal wheel)
 build venv="": (install-tools venv)
     #!/usr/bin/env bash
     set -e
@@ -595,21 +595,58 @@ build venv="": (install-tools venv)
     fi
     VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
     VENV_PYTHON=$(just --quiet _get-venv-python "${VENV_NAME}")
-    echo "==> Building distribution packages..."
-    # Set environment variable for NVX acceleration
-    AUTOBAHN_USE_NVX=1 ${VENV_PYTHON} -m build
-    ls -la dist/
+    echo "==> Building wheel package with ${VENV_NAME}..."
+    ${VENV_PYTHON} -m build --wheel
+    ls -la dist/*.whl
 
-# Meta-recipe to run `build` on all environments
-build-all:
+# Build wheels for all environments (pure Python - only needs one build)
+build-all: (build "cpy311")
     #!/usr/bin/env bash
-    for venv in {{ENVS}}; do
-        just build ${venv}
-    done
-    ls -la dist/
+    echo "==> Pure Python package: single universal wheel built."
+    echo "==> Note: For native extension packages, this would build per-environment wheels."
+    ls -la dist/*.whl
+
+# Build source distribution
+build-sourcedist venv="": (install-tools venv)
+    #!/usr/bin/env bash
+    set -e
+    VENV_NAME="{{ venv }}"
+    if [ -z "${VENV_NAME}" ]; then
+        echo "==> No venv name specified. Auto-detecting from system Python..."
+        VENV_NAME=$(just --quiet _get-system-venv-name)
+        echo "==> Defaulting to venv: '${VENV_NAME}'"
+    fi
+    VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
+    VENV_PYTHON=$(just --quiet _get-venv-python "${VENV_NAME}")
+    echo "==> Building source distribution with ${VENV_NAME}..."
+    ${VENV_PYTHON} -m build --sdist
+    ls -la dist/*.tar.gz
+
+# Clean build artifacts
+clean-build:
+    #!/usr/bin/env bash
+    echo "==> Cleaning build artifacts..."
+    rm -rf build/ dist/ *.egg-info/
+    find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+    echo "==> Build artifacts cleaned."
+
+# Verify wheels using twine check
+verify-wheels venv="": (install-tools venv)
+    #!/usr/bin/env bash
+    set -e
+    VENV_NAME="{{ venv }}"
+    if [ -z "${VENV_NAME}" ]; then
+        echo "==> No venv name specified. Auto-detecting from system Python..."
+        VENV_NAME=$(just --quiet _get-system-venv-name)
+        echo "==> Defaulting to venv: '${VENV_NAME}'"
+    fi
+    VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
+    echo "==> Verifying wheels with twine check..."
+    "${VENV_PATH}/bin/twine" check dist/*
+    echo "==> Wheel verification complete."
 
 # Publish package to PyPI (requires twine setup)
-publish venv="": (build venv)
+publish venv="": (build venv) (build-sourcedist venv) (verify-wheels venv)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"
