@@ -413,6 +413,30 @@ install-dev-all:
         just install-dev ${venv}
     done
 
+# Upgrade dependencies in a single environment (usage: `just upgrade cpy314`)
+upgrade venv="": (create venv)
+    #!/usr/bin/env bash
+    set -e
+    VENV_NAME="{{ venv }}"
+    if [ -z "${VENV_NAME}" ]; then
+        echo "==> No venv name specified. Auto-detecting from system Python..."
+        VENV_NAME=$(just --quiet _get-system-venv-name)
+        echo "==> Defaulting to venv: '${VENV_NAME}'"
+    fi
+    VENV_PYTHON=$(just --quiet _get-venv-python "${VENV_NAME}")
+    echo "==> Upgrading dependencies in ${VENV_NAME}..."
+    ${VENV_PYTHON} -m pip install --upgrade pip
+    ${VENV_PYTHON} -m pip install --upgrade -e .[all,dev]
+    echo "==> Dependencies upgraded in ${VENV_NAME}."
+
+# Meta-recipe to run `upgrade` on all environments
+upgrade-all:
+    #!/usr/bin/env bash
+    set -e
+    for venv in {{ENVS}}; do
+        just upgrade ${venv}
+    done
+
 # -----------------------------------------------------------------------------
 # -- Installation: Tools (Ruff, Sphinx, etc)
 # -----------------------------------------------------------------------------
@@ -461,7 +485,7 @@ install-rust:
 # -----------------------------------------------------------------------------
 
 # Automatically fix all formatting and code style issues.
-autoformat venv="": (install-tools venv)
+fix-format venv="": (install-tools venv)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"
@@ -481,6 +505,9 @@ autoformat venv="": (install-tools venv)
     #    removing unused imports, sorting __all__, etc.
     "${VENV_PATH}/bin/ruff" check --fix --exclude ./test ./txaio
     echo "--> Formatting complete."
+
+# Alias for fix-format (backward compatibility)
+autoformat venv="": (fix-format venv)
 
 # Lint code using Ruff in a single environment
 check-format venv="": (install-tools venv)
@@ -550,6 +577,14 @@ test venv="": (install-tools venv) (install venv)
     VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
     echo "==> Running test suite for ${VENV_NAME}..."
     "${VENV_PATH}/bin/pytest"
+
+# Meta-recipe to run `test` on all environments
+test-all:
+    #!/usr/bin/env bash
+    set -e
+    for venv in {{ENVS}}; do
+        just test ${venv}
+    done
 
 # -----------------------------------------------------------------------------
 # -- Documentation
@@ -652,8 +687,28 @@ verify-wheels venv="": (install-tools venv)
     echo ""
     echo "==> Wheel verification complete."
 
-# Publish package to PyPI (requires twine setup)
-publish venv="": (build venv) (build-sourcedist venv) (verify-wheels venv)
+# Publish package to PyPI (requires twine setup) - meta-recipe
+publish venv="" tag="": (publish-pypi venv tag) (publish-rtd tag)
+
+# Download GitHub release artifacts (usage: `just download-github-release` for nightly, or `just download-github-release stable`)
+download-github-release release_type="nightly":
+    #!/usr/bin/env bash
+    set -e
+    echo "==> Downloading GitHub release artifacts (${release_type})..."
+    mkdir -p dist/
+    if [ "{{ release_type }}" = "stable" ]; then
+        gh release download --repo crossbario/txaio --pattern "*.whl" --pattern "*.tar.gz" --dir dist/
+    else
+        gh release download --repo crossbario/txaio --pattern "*.whl" --pattern "*.tar.gz" --dir dist/ nightly || echo "No nightly release found, trying latest..."
+        if [ ! -f dist/*.whl ]; then
+            gh release download --repo crossbario/txaio --pattern "*.whl" --pattern "*.tar.gz" --dir dist/
+        fi
+    fi
+    echo "==> Downloaded artifacts:"
+    ls -la dist/
+
+# Download release artifacts from GitHub and publish to PyPI
+publish-pypi venv="" tag="": (install-tools venv)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"
@@ -663,5 +718,34 @@ publish venv="": (build venv) (build-sourcedist venv) (verify-wheels venv)
         echo "==> Defaulting to venv: '${VENV_NAME}'"
     fi
     VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
+
+    TAG="{{ tag }}"
+    if [ -z "${TAG}" ]; then
+        echo "==> No tag specified, using local build..."
+        just build ${VENV_NAME}
+        just build-sourcedist ${VENV_NAME}
+    else
+        echo "==> Downloading release artifacts for tag ${TAG}..."
+        mkdir -p dist/
+        gh release download --repo crossbario/txaio --pattern "*.whl" --pattern "*.tar.gz" --dir dist/ "${TAG}"
+    fi
+
+    echo "==> Verifying artifacts..."
+    "${VENV_PATH}/bin/twine" check dist/*
+
     echo "==> Publishing to PyPI..."
     "${VENV_PATH}/bin/twine" upload dist/*
+
+# Trigger Read the Docs build for a specific tag
+publish-rtd tag="":
+    #!/usr/bin/env bash
+    set -e
+    TAG="{{ tag }}"
+    if [ -z "${TAG}" ]; then
+        echo "==> No tag specified. RTD will build from webhook on push."
+        echo "    To manually trigger: https://readthedocs.org/projects/txaio/builds/"
+    else
+        echo "==> RTD build triggered by GitHub webhook on tag push."
+        echo "    Monitor build at: https://readthedocs.org/projects/txaio/builds/"
+        echo "    Documentation will be available at: https://txaio.readthedocs.io/en/${TAG}/"
+    fi
