@@ -499,11 +499,11 @@ fix-format venv="": (install-tools venv)
     echo "==> Automatically formatting code with ${VENV_NAME}..."
 
     # 1. Run the FORMATTER first. This will handle line lengths, quotes, etc.
-    "${VENV_PATH}/bin/ruff" format --exclude ./test ./txaio
+    "${VENV_PATH}/bin/ruff" format --exclude ./tests ./src/txaio
 
     # 2. Run the LINTER'S FIXER second. This will handle things like
     #    removing unused imports, sorting __all__, etc.
-    "${VENV_PATH}/bin/ruff" check --fix --exclude ./test ./txaio
+    "${VENV_PATH}/bin/ruff" check --fix --exclude ./tests ./src/txaio
     echo "--> Formatting complete."
 
 # Alias for fix-format (backward compatibility)
@@ -535,7 +535,7 @@ check-typing venv="": (install-tools venv) (install venv)
     fi
     VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
     echo "==> Running static type checks with ${VENV_NAME}..."
-    "${VENV_PATH}/bin/mypy" txaio/
+    "${VENV_PATH}/bin/mypy" src/txaio/
 
 # Run tests and generate an HTML coverage report in a specific directory.
 check-coverage venv="": (install-tools venv) (install venv)
@@ -552,7 +552,7 @@ check-coverage venv="": (install-tools venv) (install venv)
     mkdir -p docs/_build/html
     # for now, ignore any non-zero exit code by prefixing with hyphen (FIXME: remove later)
     "${VENV_PATH}/bin/pytest" \
-        --cov=txaio \
+        --cov=src/txaio \
         --cov-report=html:docs/_build/html/coverage
 
     echo "--> Coverage report generated in docs/_build/html/coverage/index.html"
@@ -590,8 +590,22 @@ test-all:
 # -- Documentation
 # -----------------------------------------------------------------------------
 
+# Install documentation tools (Sphinx, Furo, etc.)
+install-docs venv="": (create venv)
+    #!/usr/bin/env bash
+    set -e
+    VENV_NAME="{{ venv }}"
+    if [ -z "${VENV_NAME}" ]; then
+        echo "==> No venv name specified. Auto-detecting from system Python..."
+        VENV_NAME=$(just --quiet _get-system-venv-name)
+        echo "==> Defaulting to venv: '${VENV_NAME}'"
+    fi
+    VENV_PYTHON=$(just --quiet _get-venv-python "${VENV_NAME}")
+    echo "==> Installing documentation tools in ${VENV_NAME}..."
+    ${VENV_PYTHON} -m pip install -e .[docs]
+
 # Build the HTML documentation using Sphinx
-docs venv="": (install-tools venv)
+docs venv="": (install-docs venv)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"
