@@ -1,1 +1,1 @@
-../CLAUDE.md
+../.ai/AI_GUIDELINES.md
