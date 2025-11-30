@@ -21,7 +21,8 @@ AI Policy
 .. toctree::
    :maxdepth: 2
 
-   AI_POLICY.md
-   CLAUDE.md
-   AI_AUDIT_PROCESS.md
-   AI_AUDIT_PROCESS_REVIEW.md
+   ai/AI_POLICY.md
+   ai/AI_GUIDELINES.md
+   ai/AI_AUDIT_FILE.md
+   ai/AI_AUDIT_PROCESS.md
+   ai/AI_AUDIT_PROCESS_REVIEW.md
