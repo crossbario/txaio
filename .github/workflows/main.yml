@@ -66,8 +66,11 @@ jobs:
       - name: Run static type checking with ty
         run: just check-typing cpy314
 
-      # - name: Run tests and generate an HTML coverage report
-      #   run: just check-coverage cpy314
+      - name: Run tests
+        run: just test cpy314
+
+      - name: Run tests with coverage report
+        run: just check-coverage cpy314
 
   documentation:
     name: Documentation Build
