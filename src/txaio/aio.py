@@ -149,7 +149,6 @@ class FailedFuture(IFailedFuture):
 
 
 def _log(logger, level, format="", **kwargs):
-
     # Look for a log_category, switch it in if we have it
     if "log_category" in kwargs and kwargs["log_category"] in _categories:
         format = _categories.get(kwargs["log_category"])

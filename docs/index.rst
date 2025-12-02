@@ -1,10 +1,11 @@
-.. include:: README.md
-    :parser: myst_parser.sphinx_
+txaio
+=====
 
------
+**txaio** is a helper library for writing code that runs unmodified on both
+`Twisted <https://twisted.org/>`_ and `asyncio <https://docs.python.org/3/library/asyncio.html>`_.
 
 Contents
-========
+--------
 
 .. toctree::
    :maxdepth: 3
@@ -12,9 +13,16 @@ Contents
    overview
    programming-guide
    api
-   OVERVIEW.md
-   AI_AUDIT_PROCESS.md
-   AI_AUDIT_PROCESS_REVIEW.md
-   AI_POLICY.md
-   CLAUDE.md
    releases
+
+AI Policy
+---------
+
+.. toctree::
+   :maxdepth: 2
+
+   ai/AI_POLICY.md
+   ai/AI_GUIDELINES.md
+   ai/AI_AUDIT_FILE.md
+   ai/AI_AUDIT_PROCESS.md
+   ai/AI_AUDIT_PROCESS_REVIEW.md

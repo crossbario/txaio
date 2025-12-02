@@ -20,11 +20,34 @@ set script-interpreter := ['uv', 'run', '--script']
 # project base directory = directory of this justfile
 PROJECT_DIR := justfile_directory()
 
-# Default recipe: list all recipes
+# Default recipe: show project header and list all recipes
 default:
-    @echo ""
-    @just --list
-    @echo ""
+    #!/usr/bin/env bash
+    set -e
+    VERSION=$(grep '^version' pyproject.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+    GIT_REV=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    echo ""
+    echo "==============================================================================="
+    echo "                                    txaio                                      "
+    echo ""
+    echo "           Compatibility API between asyncio/Twisted/Trollius                 "
+    echo ""
+    echo "   Python Package:         txaio                                              "
+    echo "   Python Package Version: ${VERSION}                                         "
+    echo "   Git Version:            ${GIT_REV}                                         "
+    echo "   Protocol Specification: https://wamp-proto.org/                            "
+    echo "   Documentation:          https://txaio.readthedocs.io                       "
+    echo "   Package Releases:       https://pypi.org/project/txaio/                    "
+    echo "   Nightly/Dev Releases:   https://github.com/crossbario/txaio/releases       "
+    echo "   Source Code:            https://github.com/crossbario/txaio                "
+    echo "   Copyright:              typedef int GmbH (Germany/EU)                      "
+    echo "   License:                MIT License                                        "
+    echo ""
+    echo "       >>>   Created by The WAMP/Autobahn/Crossbar.io OSS Project   <<<       "
+    echo "==============================================================================="
+    echo ""
+    just --list
+    echo ""
 
 # Tell uv to always copy files instead of trying to hardlink them.
 # set export UV_LINK_MODE := 'copy'
@@ -390,6 +413,30 @@ install-dev-all:
         just install-dev ${venv}
     done
 
+# Upgrade dependencies in a single environment (usage: `just upgrade cpy314`)
+upgrade venv="": (create venv)
+    #!/usr/bin/env bash
+    set -e
+    VENV_NAME="{{ venv }}"
+    if [ -z "${VENV_NAME}" ]; then
+        echo "==> No venv name specified. Auto-detecting from system Python..."
+        VENV_NAME=$(just --quiet _get-system-venv-name)
+        echo "==> Defaulting to venv: '${VENV_NAME}'"
+    fi
+    VENV_PYTHON=$(just --quiet _get-venv-python "${VENV_NAME}")
+    echo "==> Upgrading dependencies in ${VENV_NAME}..."
+    ${VENV_PYTHON} -m pip install --upgrade pip
+    ${VENV_PYTHON} -m pip install --upgrade -e .[all,dev]
+    echo "==> Dependencies upgraded in ${VENV_NAME}."
+
+# Meta-recipe to run `upgrade` on all environments
+upgrade-all:
+    #!/usr/bin/env bash
+    set -e
+    for venv in {{ENVS}}; do
+        just upgrade ${venv}
+    done
+
 # -----------------------------------------------------------------------------
 # -- Installation: Tools (Ruff, Sphinx, etc)
 # -----------------------------------------------------------------------------
@@ -438,7 +485,7 @@ install-rust:
 # -----------------------------------------------------------------------------
 
 # Automatically fix all formatting and code style issues.
-autoformat venv="": (install-tools venv)
+fix-format venv="": (install-tools venv)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"
@@ -452,12 +499,15 @@ autoformat venv="": (install-tools venv)
     echo "==> Automatically formatting code with ${VENV_NAME}..."
 
     # 1. Run the FORMATTER first. This will handle line lengths, quotes, etc.
-    "${VENV_PATH}/bin/ruff" format --exclude ./tests ./autobahn
+    "${VENV_PATH}/bin/ruff" format --exclude ./tests ./src/txaio
 
     # 2. Run the LINTER'S FIXER second. This will handle things like
     #    removing unused imports, sorting __all__, etc.
-    "${VENV_PATH}/bin/ruff" check --fix --exclude ./tests ./autobahn
+    "${VENV_PATH}/bin/ruff" check --fix --exclude ./tests ./src/txaio
     echo "--> Formatting complete."
+
+# Alias for fix-format (backward compatibility)
+autoformat venv="": (fix-format venv)
 
 # Lint code using Ruff in a single environment
 check-format venv="": (install-tools venv)
@@ -485,7 +535,7 @@ check-typing venv="": (install-tools venv) (install venv)
     fi
     VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
     echo "==> Running static type checks with ${VENV_NAME}..."
-    "${VENV_PATH}/bin/mypy" txaio/
+    "${VENV_PATH}/bin/mypy" src/txaio/
 
 # Run tests and generate an HTML coverage report in a specific directory.
 check-coverage venv="": (install-tools venv) (install venv)
@@ -502,7 +552,7 @@ check-coverage venv="": (install-tools venv) (install venv)
     mkdir -p docs/_build/html
     # for now, ignore any non-zero exit code by prefixing with hyphen (FIXME: remove later)
     "${VENV_PATH}/bin/pytest" \
-        --cov=autobahn \
+        --cov=src/txaio \
         --cov-report=html:docs/_build/html/coverage
 
     echo "--> Coverage report generated in docs/_build/html/coverage/index.html"
@@ -528,12 +578,34 @@ test venv="": (install-tools venv) (install venv)
     echo "==> Running test suite for ${VENV_NAME}..."
     "${VENV_PATH}/bin/pytest"
 
+# Meta-recipe to run `test` on all environments
+test-all:
+    #!/usr/bin/env bash
+    set -e
+    for venv in {{ENVS}}; do
+        just test ${venv}
+    done
+
 # -----------------------------------------------------------------------------
 # -- Documentation
 # -----------------------------------------------------------------------------
 
+# Install documentation tools (Sphinx, Furo, etc.)
+install-docs venv="": (create venv)
+    #!/usr/bin/env bash
+    set -e
+    VENV_NAME="{{ venv }}"
+    if [ -z "${VENV_NAME}" ]; then
+        echo "==> No venv name specified. Auto-detecting from system Python..."
+        VENV_NAME=$(just --quiet _get-system-venv-name)
+        echo "==> Defaulting to venv: '${VENV_NAME}'"
+    fi
+    VENV_PYTHON=$(just --quiet _get-venv-python "${VENV_NAME}")
+    echo "==> Installing documentation tools in ${VENV_NAME}..."
+    ${VENV_PYTHON} -m pip install -e .[docs]
+
 # Build the HTML documentation using Sphinx
-docs venv="": (install-tools venv)
+docs venv="": (install-docs venv)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"
@@ -546,6 +618,7 @@ docs venv="": (install-tools venv)
     echo "==> Building documentation..."
     "${VENV_PATH}/bin/sphinx-build" -b html docs/ docs/_build/html
 
+# Open the built documentation in the default browser
 docs-view venv="": (docs venv)
     echo "==> Opening documentation in viewer ..."
     open docs/_build/html/index.html
@@ -559,7 +632,7 @@ docs-clean:
 # -- Building and Publishing
 # -----------------------------------------------------------------------------
 
-# Build distribution packages (wheels and source tarball)
+# Build wheel package (pure Python - single universal wheel)
 build venv="": (install-tools venv)
     #!/usr/bin/env bash
     set -e
@@ -571,21 +644,19 @@ build venv="": (install-tools venv)
     fi
     VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
     VENV_PYTHON=$(just --quiet _get-venv-python "${VENV_NAME}")
-    echo "==> Building distribution packages..."
-    # Set environment variable for NVX acceleration
-    AUTOBAHN_USE_NVX=1 ${VENV_PYTHON} -m build
-    ls -la dist/
+    echo "==> Building wheel package with ${VENV_NAME}..."
+    ${VENV_PYTHON} -m build --wheel
+    ls -la dist/*.whl
 
-# Meta-recipe to run `build` on all environments
-build-all:
+# Build wheels for all environments (pure Python - only needs one build)
+build-all: (build "cpy311")
     #!/usr/bin/env bash
-    for venv in {{ENVS}}; do
-        just build ${venv}
-    done
-    ls -la dist/
+    echo "==> Pure Python package: single universal wheel built."
+    echo "==> Note: For native extension packages, this would build per-environment wheels."
+    ls -la dist/*.whl
 
-# Publish package to PyPI (requires twine setup)
-publish venv="": (build venv)
+# Build source distribution
+build-sourcedist venv="": (install-tools venv)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"
@@ -595,5 +666,100 @@ publish venv="": (build venv)
         echo "==> Defaulting to venv: '${VENV_NAME}'"
     fi
     VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
+    VENV_PYTHON=$(just --quiet _get-venv-python "${VENV_NAME}")
+    echo "==> Building source distribution with ${VENV_NAME}..."
+    ${VENV_PYTHON} -m build --sdist
+    ls -la dist/*.tar.gz
+
+# Clean build artifacts
+clean-build:
+    #!/usr/bin/env bash
+    echo "==> Cleaning build artifacts..."
+    rm -rf build/ dist/ *.egg-info/
+    find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+    echo "==> Build artifacts cleaned."
+
+# Verify wheels using twine check (pure Python package - auditwheel not applicable)
+verify-wheels venv="": (install-tools venv)
+    #!/usr/bin/env bash
+    set -e
+    VENV_NAME="{{ venv }}"
+    if [ -z "${VENV_NAME}" ]; then
+        echo "==> No venv name specified. Auto-detecting from system Python..."
+        VENV_NAME=$(just --quiet _get-system-venv-name)
+        echo "==> Defaulting to venv: '${VENV_NAME}'"
+    fi
+    VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
+
+    echo "==> Verifying wheels with twine check..."
+    "${VENV_PATH}/bin/twine" check dist/*
+
+    echo ""
+    echo "==> Note: This is a pure Python package (py3-none-any wheel)."
+    echo "    auditwheel verification is not applicable (no native extensions)."
+    echo "    For native extension packages, auditwheel would check binary compatibility."
+    echo ""
+    echo "==> Wheel verification complete."
+
+# Publish package to PyPI (requires twine setup) - meta-recipe
+publish venv="" tag="": (publish-pypi venv tag) (publish-rtd tag)
+
+# Download GitHub release artifacts (usage: `just download-github-release` for nightly, or `just download-github-release stable`)
+download-github-release release_type="nightly":
+    #!/usr/bin/env bash
+    set -e
+    echo "==> Downloading GitHub release artifacts (${release_type})..."
+    mkdir -p dist/
+    if [ "{{ release_type }}" = "stable" ]; then
+        gh release download --repo crossbario/txaio --pattern "*.whl" --pattern "*.tar.gz" --dir dist/
+    else
+        gh release download --repo crossbario/txaio --pattern "*.whl" --pattern "*.tar.gz" --dir dist/ nightly || echo "No nightly release found, trying latest..."
+        if [ ! -f dist/*.whl ]; then
+            gh release download --repo crossbario/txaio --pattern "*.whl" --pattern "*.tar.gz" --dir dist/
+        fi
+    fi
+    echo "==> Downloaded artifacts:"
+    ls -la dist/
+
+# Download release artifacts from GitHub and publish to PyPI
+publish-pypi venv="" tag="": (install-tools venv)
+    #!/usr/bin/env bash
+    set -e
+    VENV_NAME="{{ venv }}"
+    if [ -z "${VENV_NAME}" ]; then
+        echo "==> No venv name specified. Auto-detecting from system Python..."
+        VENV_NAME=$(just --quiet _get-system-venv-name)
+        echo "==> Defaulting to venv: '${VENV_NAME}'"
+    fi
+    VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
+
+    TAG="{{ tag }}"
+    if [ -z "${TAG}" ]; then
+        echo "==> No tag specified, using local build..."
+        just build ${VENV_NAME}
+        just build-sourcedist ${VENV_NAME}
+    else
+        echo "==> Downloading release artifacts for tag ${TAG}..."
+        mkdir -p dist/
+        gh release download --repo crossbario/txaio --pattern "*.whl" --pattern "*.tar.gz" --dir dist/ "${TAG}"
+    fi
+
+    echo "==> Verifying artifacts..."
+    "${VENV_PATH}/bin/twine" check dist/*
+
     echo "==> Publishing to PyPI..."
     "${VENV_PATH}/bin/twine" upload dist/*
+
+# Trigger Read the Docs build for a specific tag
+publish-rtd tag="":
+    #!/usr/bin/env bash
+    set -e
+    TAG="{{ tag }}"
+    if [ -z "${TAG}" ]; then
+        echo "==> No tag specified. RTD will build from webhook on push."
+        echo "    To manually trigger: https://readthedocs.org/projects/txaio/builds/"
+    else
+        echo "==> RTD build triggered by GitHub webhook on tag push."
+        echo "    Monitor build at: https://readthedocs.org/projects/txaio/builds/"
+        echo "    Documentation will be available at: https://txaio.readthedocs.io/en/${TAG}/"
+    fi

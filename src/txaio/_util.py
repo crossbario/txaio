@@ -29,7 +29,6 @@ import time
 
 
 if sys.version_info >= (3, 7):
-
     time_ns = time.time_ns
     perf_counter_ns = time.perf_counter_ns
 
