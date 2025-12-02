@@ -151,7 +151,11 @@ jobs:
     needs: [build-package, build-docs]
     runs-on: ubuntu-latest
 
-    # Publish to GitHub Releases when merged to master
+    # Publish to GitHub Releases when merged to master (NOT on PRs)
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+
+    permissions:
+      contents: write  # Required for creating releases
 
     steps:
       - name: Download build artifacts
