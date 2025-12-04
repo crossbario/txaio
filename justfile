@@ -162,7 +162,7 @@ distclean:
     # 1. Remove top-level directories known to us.
     #    This is fast for the common cases.
     echo "--> Removing venvs, cache, and build/dist directories..."
-    rm -rf {{UV_CACHE_DIR}} {{VENV_DIR}} build/ dist/ .pytest_cache/ .ruff_cache/ .mypy_cache/
+    rm -rf {{UV_CACHE_DIR}} {{VENV_DIR}} build/ dist/ .pytest_cache/ .ruff_cache/ .ty/
 
     # 2. Use `find` to hunt down and destroy nested artifacts that can be
     #    scattered throughout the source tree. This is the most thorough part.
@@ -523,8 +523,9 @@ check-format venv="": (install-tools venv)
     echo "==> Linting code with ${VENV_NAME}..."
     "${VENV_PATH}/bin/ruff" check .
 
-# Run static type checking with mypy
-check-typing venv="": (install-tools venv) (install venv)
+# Run static type checking with ty (Astral's Rust-based type checker)
+# ty is installed as a standalone tool via `uv tool install ty`, not as a Python package
+check-typing venv="": (install venv)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"
@@ -534,8 +535,20 @@ check-typing venv="": (install-tools venv) (install venv)
         echo "==> Defaulting to venv: '${VENV_NAME}'"
     fi
     VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
-    echo "==> Running static type checks with ${VENV_NAME}..."
-    "${VENV_PATH}/bin/mypy" src/txaio/
+    echo "==> Running static type checks with ty (using ${VENV_NAME} for type stubs)..."
+    # ty uses the venv's Python for resolving third-party type stubs
+    # Note: Some rules are ignored due to txaio's design patterns:
+    # - unresolved-attribute: txaio dynamically sets module attributes (using_twisted, using_asyncio)
+    # - possibly-missing-attribute: sys._getframe() returns FrameType | None
+    # - call-non-callable: callback type inference edge cases
+    # - deprecated: abc.abstractproperty usage (fix later)
+    ty check \
+        --python "${VENV_PATH}/bin/python" \
+        --ignore unresolved-attribute \
+        --ignore possibly-missing-attribute \
+        --ignore call-non-callable \
+        --ignore deprecated \
+        src/
 
 # Run tests and generate an HTML coverage report in a specific directory.
 check-coverage venv="": (install-tools venv) (install venv)

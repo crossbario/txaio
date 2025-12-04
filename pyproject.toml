@@ -87,7 +87,8 @@ dev = [
 
     # Code quality
     "ruff>=0.4.0",
-    "mypy>=1.10.0",
+    # Note: ty (Astral type checker) is installed via `uv tool install ty`
+    # It's a standalone Rust binary, not a Python package dependency
 ]
 
 all = [
@@ -183,20 +184,13 @@ exclude_lines = [
     "@(abc\\.)?abstractmethod",
 ]
 
-[tool.mypy]
-python_version = "3.11"
-warn_return_any = false
-warn_unused_configs = true
-disallow_untyped_defs = false
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-warn_unreachable = true
-strict_equality = true
-
-[[tool.mypy.overrides]]
-module = "twisted.*"
-ignore_missing_imports = true
+[tool.ty]
+# ty is Astral's extremely fast Python type checker (Rust-based)
+# https://github.com/astral-sh/ty
+#
+# txaio uses dynamic module attribute assignment for framework switching
+# (txaio.using_twisted, txaio.using_asyncio) which ty flags as errors.
+# These are intentional runtime modifications, so we suppress them.
+[tool.ty.rules]
+# Suppress unresolved-attribute for dynamic framework switching pattern
+# unresolved-attribute = "ignore"

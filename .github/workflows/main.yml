@@ -7,17 +7,40 @@ on:
     branches: [master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: read
+
 env:
   UV_CACHE_DIR: ${{ github.workspace }}/.uv-cache
 
 jobs:
+  identifiers:
+    # GitHub needs to know where .cicd/workflows/identifiers.yml lives at parse time,
+    # and submodules aren't included in that context! thus the following does NOT work:
+    # uses: ./.cicd/workflows/identifiers.yml
+    # we MUST reference the remote repo directly:
+    uses: wamp-proto/wamp-cicd/.github/workflows/identifiers.yml@main
+    # IMPORTANT: we still need .cicd as a Git submodule in the using repo though!
+    # because e.g. identifiers.yml wants to access scripts/sanitize.sh !
+
   quality-checks:
     name: Code Quality Checks
+    needs: identifiers
     runs-on: ubuntu-24.04
+
+    env:
+      BASE_REPO: ${{ needs.identifiers.outputs.base_repo }}
+      BASE_BRANCH: ${{ needs.identifiers.outputs.base_branch }}
+      PR_NUMBER: ${{ needs.identifiers.outputs.pr_number }}
+      PR_REPO: ${{ needs.identifiers.outputs.pr_repo }}
+      PR_BRANCH: ${{ needs.identifiers.outputs.pr_branch }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Install Just
         env:
@@ -37,10 +60,14 @@ jobs:
                -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
+      - name: Install ty (Astral type checker)
+        run: uv tool install ty
+
       - name: Verify toolchain installation
         run: |
           just --version
           uv --version
+          ty --version
 
       - name: Setup uv cache
         uses: actions/cache@v4
@@ -59,19 +86,40 @@ jobs:
       - name: Lint code using Ruff
         run: just check-format cpy314
 
-      # - name: Run static type checking with mypy
-      #   run: just check-typing cpy314
+      - name: Run static type checking with ty
+        run: just check-typing cpy314
 
-      # - name: Run tests and generate an HTML coverage report
-      #   run: just check-coverage cpy314
+      - name: Run tests
+        run: just test cpy314
+
+      - name: Run tests with coverage report
+        run: just check-coverage cpy314
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: docs/_build/html/coverage/
+          retention-days: 14
 
   documentation:
     name: Documentation Build
+    needs: identifiers
     runs-on: ubuntu-24.04
+
+    env:
+      BASE_REPO: ${{ needs.identifiers.outputs.base_repo }}
+      BASE_BRANCH: ${{ needs.identifiers.outputs.base_branch }}
+      PR_NUMBER: ${{ needs.identifiers.outputs.pr_number }}
+      PR_REPO: ${{ needs.identifiers.outputs.pr_repo }}
+      PR_BRANCH: ${{ needs.identifiers.outputs.pr_branch }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Install Just
         env:
@@ -123,7 +171,14 @@ jobs:
   build-package:
     name: Package Build
     runs-on: ubuntu-24.04
-    needs: [quality-checks]
+    needs: [identifiers, quality-checks]
+
+    env:
+      BASE_REPO: ${{ needs.identifiers.outputs.base_repo }}
+      BASE_BRANCH: ${{ needs.identifiers.outputs.base_branch }}
+      PR_NUMBER: ${{ needs.identifiers.outputs.pr_number }}
+      PR_REPO: ${{ needs.identifiers.outputs.pr_repo }}
+      PR_BRANCH: ${{ needs.identifiers.outputs.pr_branch }}
 
     strategy:
       matrix:
@@ -132,6 +187,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Install Just
         env:
