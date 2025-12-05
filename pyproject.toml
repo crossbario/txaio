@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "txaio"
@@ -103,15 +103,23 @@ Repository = "https://github.com/crossbario/txaio"
 Source = "https://github.com/crossbario/txaio"
 "Bug Tracker" = "https://github.com/crossbario/txaio/issues"
 
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["txaio*"]
+# Hatchling build configuration
+[tool.hatch.build.targets.wheel]
+packages = ["src/txaio"]
 
-[tool.setuptools.package-data]
-txaio = ["py.typed"]
-
-[tool.wheel]
-universal = false
+[tool.hatch.build.targets.sdist]
+# By default, hatchling includes all git-tracked files
+# Exclude build artifacts from sdist
+exclude = [
+    "/.github",
+    "/docs/_build",
+    "/.venvs",
+    "/.uv-cache",
+    "/.coverage",
+    "/.pytest_cache",
+    "/.mypy_cache",
+    "/.ruff_cache",
+]
 
 [tool.ruff]
 # Same as Black.
