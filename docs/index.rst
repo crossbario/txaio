@@ -14,15 +14,4 @@ Contents
    programming-guide
    api
    releases
-
-AI Policy
----------
-
-.. toctree::
-   :maxdepth: 2
-
-   ai/AI_POLICY.md
-   ai/AI_GUIDELINES.md
-   ai/AI_AUDIT_FILE.md
-   ai/AI_AUDIT_PROCESS.md
-   ai/AI_AUDIT_PROCESS_REVIEW.md
+   ai/index
