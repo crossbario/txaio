@@ -617,8 +617,40 @@ install-docs venv="": (create venv)
     echo "==> Installing documentation tools in ${VENV_NAME}..."
     ${VENV_PYTHON} -m pip install -e .[docs]
 
+# Build optimized SVGs from docs/_graphics/*.svg using scour
+_build-images venv="": (install-docs venv)
+    #!/usr/bin/env bash
+    set -e
+    VENV_NAME="{{ venv }}"
+    if [ -z "${VENV_NAME}" ]; then
+        VENV_NAME=$(just --quiet _get-system-venv-name)
+    fi
+    VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
+
+    SOURCEDIR="{{ PROJECT_DIR }}/docs/_graphics"
+    TARGETDIR="{{ PROJECT_DIR }}/docs/_static/img"
+
+    echo "==> Building optimized SVG images..."
+    mkdir -p "${TARGETDIR}"
+
+    if [ -d "${SOURCEDIR}" ]; then
+        find "${SOURCEDIR}" -name "*.svg" -type f | while read -r source_file; do
+            filename=$(basename "${source_file}")
+            target_file="${TARGETDIR}/${filename}"
+            echo "  Processing: ${filename}"
+            "${VENV_PATH}/bin/scour" \
+                --remove-descriptive-elements \
+                --enable-comment-stripping \
+                --enable-viewboxing \
+                --indent=none \
+                --no-line-breaks \
+                --shorten-ids \
+                "${source_file}" "${target_file}"
+        done
+    fi
+
 # Build the HTML documentation using Sphinx
-docs venv="": (install-docs venv)
+docs venv="": (install-docs venv) (_build-images venv)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"

@@ -122,6 +122,9 @@ html_theme_options = {
     },
 }
 
+# Logo (optimized SVG generated from docs/_graphics/ by `just _build-images`)
+html_logo = "_static/img/autobahn_logo_blue.svg"
+
 # Static files
 html_static_path = ["_static"]
 html_css_files = [
