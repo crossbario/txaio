@@ -11,8 +11,8 @@ sys.path.insert(0, os.path.abspath("../src"))
 
 # -- Project information -----------------------------------------------------
 project = "txaio"
-author = "Crossbar.io Project"
-copyright = f"{datetime.now():%Y}, typedef int GmbH"
+author = "The WAMP/Autobahn/Crossbar.io OSS Project"
+copyright = f"2015-{datetime.now():%Y}, typedef int GmbH (Germany)"
 
 # Dynamically get version from the package
 try:
@@ -34,6 +34,8 @@ extensions = [
     "sphinx.ext.autosectionlabel",   # {ref} headings automatically
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",           # Link to highlighted source
+    "sphinx.ext.ifconfig",           # Conditional content based on config
+    "sphinx.ext.doctest",            # Test code examples in documentation
 
     # Modern UX extensions
     "sphinx_design",                 # Cards, tabs, grids
