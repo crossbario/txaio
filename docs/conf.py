@@ -106,26 +106,31 @@ intersphinx_cache_limit = 5  # Cache remote inventories for 5 days
 html_theme = "furo"
 html_title = f"{project} {release}"
 
-# Furo theme options with Noto fonts
+# Furo theme options with Noto fonts and Autobahn subarea colors
 html_theme_options = {
     # Source repository links
     "source_repository": "https://github.com/crossbario/txaio/",
     "source_branch": "master",
     "source_directory": "docs/",
 
-    # Noto fonts from Google Fonts
+    # Noto fonts and Autobahn Medium Blue (#027eae) accent color
     "light_css_variables": {
         "font-stack": "'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         "font-stack--monospace": "'Noto Sans Mono', SFMono-Regular, Menlo, Consolas, monospace",
+        "color-brand-primary": "#027eae",
+        "color-brand-content": "#027eae",
     },
     "dark_css_variables": {
         "font-stack": "'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         "font-stack--monospace": "'Noto Sans Mono', SFMono-Regular, Menlo, Consolas, monospace",
+        "color-brand-primary": "#027eae",
+        "color-brand-content": "#027eae",
     },
 }
 
-# Logo (optimized SVG generated from docs/_graphics/ by `just _build-images`)
+# Logo and favicon (synced from autobahn-python by `just sync-images`)
 html_logo = "_static/img/autobahn_logo_blue.svg"
+html_favicon = "_static/favicon.ico"
 
 # Static files
 html_static_path = ["_static"]
@@ -152,7 +157,8 @@ ogp_site_url = "https://txaio.readthedocs.io/en/latest/"
 todo_include_todos = True               # Show TODO items in docs
 add_module_names = False                # Cleaner module paths in API docs
 autosectionlabel_prefix_document = True # Avoid section label collisions
-pygments_style = "sphinx"               # Code highlighting style
+pygments_style = "sphinx"
+pygments_dark_style = "monokai"
 
 # Exclude patterns
 exclude_patterns = ["_build", "README.md"]

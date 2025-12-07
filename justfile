@@ -617,40 +617,40 @@ install-docs venv="": (create venv)
     echo "==> Installing documentation tools in ${VENV_NAME}..."
     ${VENV_PYTHON} -m pip install -e .[docs]
 
-# Build optimized SVGs from docs/_graphics/*.svg using scour
-_build-images venv="": (install-docs venv)
+# Sync images (logo and favicon) from autobahn-python (Autobahn subarea source)
+sync-images:
     #!/usr/bin/env bash
     set -e
-    VENV_NAME="{{ venv }}"
-    if [ -z "${VENV_NAME}" ]; then
-        VENV_NAME=$(just --quiet _get-system-venv-name)
+
+    SOURCEDIR="{{ PROJECT_DIR }}/../autobahn-python/docs/_static"
+    TARGETDIR="{{ PROJECT_DIR }}/docs/_static"
+    IMGDIR="${TARGETDIR}/img"
+
+    echo "==> Syncing images from autobahn-python..."
+    mkdir -p "${IMGDIR}"
+
+    # Copy optimized logo SVG
+    if [ -f "${SOURCEDIR}/img/autobahn_logo_blue.svg" ]; then
+        cp "${SOURCEDIR}/img/autobahn_logo_blue.svg" "${IMGDIR}/"
+        echo "  Copied: autobahn_logo_blue.svg"
+    else
+        echo "  Warning: autobahn_logo_blue.svg not found in autobahn-python"
+        echo "  Run 'just optimize-images' in autobahn-python first"
     fi
-    VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
 
-    SOURCEDIR="{{ PROJECT_DIR }}/docs/_graphics"
-    TARGETDIR="{{ PROJECT_DIR }}/docs/_static/img"
-
-    echo "==> Building optimized SVG images..."
-    mkdir -p "${TARGETDIR}"
-
-    if [ -d "${SOURCEDIR}" ]; then
-        find "${SOURCEDIR}" -name "*.svg" -type f | while read -r source_file; do
-            filename=$(basename "${source_file}")
-            target_file="${TARGETDIR}/${filename}"
-            echo "  Processing: ${filename}"
-            "${VENV_PATH}/bin/scour" \
-                --remove-descriptive-elements \
-                --enable-comment-stripping \
-                --enable-viewboxing \
-                --indent=none \
-                --no-line-breaks \
-                --shorten-ids \
-                "${source_file}" "${target_file}"
-        done
+    # Copy favicon
+    if [ -f "${SOURCEDIR}/favicon.ico" ]; then
+        cp "${SOURCEDIR}/favicon.ico" "${TARGETDIR}/"
+        echo "  Copied: favicon.ico"
+    else
+        echo "  Warning: favicon.ico not found in autobahn-python"
+        echo "  Run 'just optimize-images' in autobahn-python first"
     fi
+
+    echo "==> Image sync complete."
 
 # Build the HTML documentation using Sphinx
-docs venv="": (install-docs venv) (_build-images venv)
+docs venv="": (install-docs venv) (sync-images)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"
