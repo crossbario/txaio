@@ -52,6 +52,10 @@ coverage.xml
 docs/_build/
 docs/_spelling/
 docs/_static/img/
+docs/autoapi/
+
+# Build artifacts
+.build/
 
 # PyBuilder
 target/

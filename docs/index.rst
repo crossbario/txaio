@@ -12,7 +12,6 @@ Contents
 
    overview
    programming-guide
-   api
    releases
    OVERVIEW.md
    ai/index
