@@ -8,9 +8,6 @@ This document contains a reverse-chronological list of changes to txaio.
     For detailed release information including wheels and artifacts,
     see :doc:`releases`.
 
-
-.. _changelog-25.12.1:
-
 25.12.1
 -------
 
@@ -29,18 +26,12 @@ This document contains a reverse-chronological list of changes to txaio.
 * ci: fix publish-github-releases to skip on PRs
 * ci: align release.yml with autobahn-python model to prevent accidental releases
 
-
-.. _changelog-25.9.2:
-
 25.9.2
 ------
 
 **Fix**
 
 * fix: minimum Python version specification in pyproject.toml (#198)
-
-
-.. _changelog-25.9.1:
 
 25.9.1
 ------
@@ -63,9 +54,6 @@ This document contains a reverse-chronological list of changes to txaio.
 * Minimum Python version bumped to 3.11, support 3.11-3.14 on CPython/PyPy
 * Copyrights maintained by typedef int GmbH (Germany)
 
-
-.. _changelog-25.6.1:
-
 25.6.1
 ------
 
@@ -84,9 +72,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * Copyrights transferred from Crossbar.io Technologies GmbH (Germany) to typedef int GmbH (Germany)
 
-
-.. _changelog-23.1.1:
-
 23.1.1
 ------
 
@@ -95,9 +80,6 @@ This document contains a reverse-chronological list of changes to txaio.
 * support for Python up to v3.11
 * update GitHub CI
 * copyright transferred to typedef int GmbH - no license change!
-
-
-.. _changelog-22.2.1:
 
 22.2.1
 ------
@@ -109,18 +91,12 @@ This document contains a reverse-chronological list of changes to txaio.
 * eliminate redundant dependency on mock (#170)
 * doc note that twisted supports native coroutines (#172)
 
-
-.. _changelog-21.2.1:
-
 21.2.1
 ------
 
 **Fix**
 
 * update minimum dependencies (here, and in other crossbar packages) in an attempt to tame the new pip dep resolver madness
-
-
-.. _changelog-20.12.1:
 
 20.12.1
 -------
@@ -130,9 +106,6 @@ This document contains a reverse-chronological list of changes to txaio.
 * CI/CD migrated to GitHub Actions
 * support Python 3.9 (CI / testing added)
 * minimum Python version is now 3.6
-
-
-.. _changelog-20.4.1:
 
 20.4.1
 ------
@@ -145,9 +118,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * fix event loop threading issue (PR #163)
 
-
-.. _changelog-20.3.1:
-
 20.3.1
 ------
 
@@ -159,9 +129,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * remove python2 support (finally)
 
-
-.. _changelog-20.1.1:
-
 20.1.1
 ------
 
@@ -172,9 +139,6 @@ This document contains a reverse-chronological list of changes to txaio.
 **Other**
 
 * IMPORTANT: beginning release v20.1.1, we only support Python 3.5 or later
-
-
-.. _changelog-18.8.1:
 
 18.8.1
 ------
@@ -188,9 +152,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * IMPORTANT: release v18.8.1 is the last release supporting Python 2. We will support Python 3.5 and later beginning with release v20.1.1.
 
-
-.. _changelog-18.7.1:
-
 18.7.1
 ------
 
@@ -202,9 +163,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * deprecate Python 3.3 support and CI testing
 
-
-.. _changelog-2.10.0:
-
 2.10.0
 ------
 
@@ -212,18 +170,12 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * the asyncio version of ``make_logger`` now deduces a proper namespace instead of using the root (thanks `spr0cketeer <https://github.com/spr0cketeer>`_)
 
-
-.. _changelog-2.9.0:
-
 2.9.0
 -----
 
 *March 2, 2018*
 
 (No detailed changelog available)
-
-
-.. _changelog-2.8.2:
 
 2.8.2
 -----
@@ -234,9 +186,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * no longer install LICENSE file into installation directory (conflicts!)
 
-
-.. _changelog-2.8.1:
-
 2.8.1
 -----
 
@@ -245,9 +194,6 @@ This document contains a reverse-chronological list of changes to txaio.
 **Fix**
 
 * the asyncio version of sleep() correctly returns a Future instance
-
-
-.. _changelog-2.8.0:
 
 2.8.0
 -----
@@ -262,9 +208,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * asyncio - remove the hacks for "simulating" chained futures (no longer works - cpy36 has native code for future)
 
-
-.. _changelog-2.7.1:
-
 2.7.1
 -----
 
@@ -274,9 +217,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * asyncio: example and docs for running multiple loops
 * asyncio: log exception tracebacks when they're available for error-message
-
-
-.. _changelog-2.7.0:
 
 2.7.0
 -----
@@ -288,9 +228,6 @@ This document contains a reverse-chronological list of changes to txaio.
 * allow alternate asyncio loops
 * new future creation API for alternate loops
 
-
-.. _changelog-2.6.1:
-
 2.6.1
 -----
 
@@ -300,9 +237,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * added inline sleep helper (Twisted only for now)
 
-
-.. _changelog-2.6.0:
-
 2.6.0
 -----
 
@@ -311,9 +245,6 @@ This document contains a reverse-chronological list of changes to txaio.
 **Fix**
 
 * avoid giving negative times to `callLater` with batched timers (issue #81)
-
-
-.. _changelog-2.5.2:
 
 2.5.2
 -----
@@ -329,9 +260,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * Copyrights transferred from Tavendo to Crossbar.io Technologies
 
-
-.. _changelog-2.5.1:
-
 2.5.1
 -----
 
@@ -340,9 +268,6 @@ This document contains a reverse-chronological list of changes to txaio.
 **Fix**
 
 * Bug with ``make_batched_timer`` remembering (via a closure) the reactor/event-loop too persistantly
-
-
-.. _changelog-2.5.0:
 
 2.5.0
 -----
@@ -357,9 +282,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * Document that ``@coroutine`` and ``@inlineCallbacks`` are not supported
 
-
-.. _changelog-2.4.0:
-
 2.4.0
 -----
 
@@ -368,9 +290,6 @@ This document contains a reverse-chronological list of changes to txaio.
 **New**
 
 * Added :func:`txaio.make_batched_timer` API. The main use-case for this is when you have lots of of timers, but their exact resolution isn't important; batching them into buckets causes far fewer delayed call instances to be outstanding in the underlying event-loop/reactor.
-
-
-.. _changelog-2.3.1:
 
 2.3.1
 -----
@@ -381,9 +300,6 @@ This document contains a reverse-chronological list of changes to txaio.
 
 * added universal wheels
 
-
-.. _changelog-2.3.0:
-
 2.3.0
 -----
 
@@ -392,8 +308,6 @@ This document contains a reverse-chronological list of changes to txaio.
 **New**
 
 * More logging infrastructure and APIs to support moving all of Crossbar.io's logging to txaio
-
-
 .. _changelog-previous:
 
 Previous Releases

@@ -5,18 +5,12 @@ This page provides links to release artifacts for each version of txaio.
 
 For detailed changelog entries, see :doc:`changelog`.
 
-
-.. _v25.12.1:
-
 25.12.1
 -------
 
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v25.12.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/25.12.1/>`__
 * `Documentation <https://txaio.readthedocs.io/en/v25.12.1/>`__
-
-
-.. _v25.9.2:
 
 25.9.2
 ------
@@ -25,18 +19,12 @@ For detailed changelog entries, see :doc:`changelog`.
 * `PyPI Package <https://pypi.org/project/txaio/25.9.2/>`__
 * `Documentation <https://txaio.readthedocs.io/en/v25.9.2/>`__
 
-
-.. _v25.9.1:
-
 25.9.1
 ------
 
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v25.9.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/25.9.1/>`__
 * `Documentation <https://txaio.readthedocs.io/en/v25.9.1/>`__
-
-
-.. _v25.6.1:
 
 25.6.1
 ------
@@ -45,18 +33,12 @@ For detailed changelog entries, see :doc:`changelog`.
 * `PyPI Package <https://pypi.org/project/txaio/25.6.1/>`__
 * `Documentation <https://txaio.readthedocs.io/en/v25.6.1/>`__
 
-
-.. _v23.1.1:
-
 23.1.1
 ------
 
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v23.1.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/23.1.1/>`__
 * `Documentation <https://txaio.readthedocs.io/en/v23.1.1/>`__
-
-
-.. _v22.2.1:
 
 22.2.1
 ------
@@ -65,17 +47,11 @@ For detailed changelog entries, see :doc:`changelog`.
 * `PyPI Package <https://pypi.org/project/txaio/22.2.1/>`__
 * `Documentation <https://txaio.readthedocs.io/en/v22.2.1/>`__
 
-
-.. _v21.2.1:
-
 21.2.1
 ------
 
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v21.2.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/21.2.1/>`__
-
-
-.. _v20.12.1:
 
 20.12.1
 -------
@@ -83,17 +59,11 @@ For detailed changelog entries, see :doc:`changelog`.
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v20.12.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/20.12.1/>`__
 
-
-.. _v20.4.1:
-
 20.4.1
 ------
 
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v20.4.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/20.4.1/>`__
-
-
-.. _v20.3.1:
 
 20.3.1
 ------
@@ -101,17 +71,11 @@ For detailed changelog entries, see :doc:`changelog`.
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v20.3.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/20.3.1/>`__
 
-
-.. _v20.1.1:
-
 20.1.1
 ------
 
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v20.1.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/20.1.1/>`__
-
-
-.. _v18.8.1:
 
 18.8.1
 ------
@@ -119,16 +83,11 @@ For detailed changelog entries, see :doc:`changelog`.
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v18.8.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/18.8.1/>`__
 
-
-.. _v18.7.1:
-
 18.7.1
 ------
 
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v18.7.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/18.7.1/>`__
-
-
 --------------
 
 .. _release-workflow:
@@ -137,8 +96,6 @@ Release Workflow (for Maintainers)
 ----------------------------------
 
 This section documents the release process for maintainers.
-
-
 Prerequisites
 ^^^^^^^^^^^^^
 
@@ -147,8 +104,6 @@ Before releasing, ensure you have:
 * Push access to the repository
 * PyPI credentials configured (or trusted publishing via GitHub Actions)
 * ``just`` and ``uv`` installed
-
-
 Step 1: Draft the Release
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -167,8 +122,6 @@ This will:
 * Add a changelog entry template to ``docs/changelog.rst``
 * Add a release entry template to ``docs/releases.rst``
 * Update the version in ``pyproject.toml``
-
-
 Step 2: Edit Changelog
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -177,8 +130,6 @@ Edit ``docs/changelog.rst`` and fill in the changelog details:
 * **New**: New features and capabilities
 * **Fix**: Bug fixes
 * **Other**: Breaking changes, deprecations, other notes
-
-
 Step 3: Validate the Release
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -195,8 +146,6 @@ This validates:
 * Version in ``pyproject.toml`` matches
 * All tests pass
 * Documentation builds successfully
-
-
 Step 4: Commit and Tag
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -206,8 +155,6 @@ Step 4: Commit and Tag
    git commit -m "Release <version>"
    git tag v<version>
    git push && git push --tags
-
-
 Step 5: Automated Release
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -217,8 +164,6 @@ After pushing the tag:
 2. Wheels and source distributions are uploaded to GitHub Releases
 3. PyPI publishing is triggered via trusted publishing (OIDC)
 4. Read the Docs builds documentation for the tagged version
-
-
 Manual PyPI Upload (if needed)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
