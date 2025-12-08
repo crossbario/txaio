@@ -8,10 +8,14 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
    overview
+   installation
+   getting-started
    programming-guide
    releases
+   changelog
+   contributing
    OVERVIEW.md
    ai/index
