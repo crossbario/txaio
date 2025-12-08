@@ -1,5 +1,5 @@
-Package Releases
-================
+Release Notes
+=============
 
 25.6.1
 ------
