@@ -6,6 +6,8 @@ This page provides links to release artifacts for each version of txaio.
 For detailed changelog entries, see :doc:`changelog`.
 
 
+.. _v25.12.1:
+
 25.12.1
 -------
 
@@ -13,6 +15,8 @@ For detailed changelog entries, see :doc:`changelog`.
 * `PyPI Package <https://pypi.org/project/txaio/25.12.1/>`__
 * `Documentation <https://txaio.readthedocs.io/en/v25.12.1/>`__
 
+
+.. _v25.9.2:
 
 25.9.2
 ------
@@ -22,6 +26,8 @@ For detailed changelog entries, see :doc:`changelog`.
 * `Documentation <https://txaio.readthedocs.io/en/v25.9.2/>`__
 
 
+.. _v25.9.1:
+
 25.9.1
 ------
 
@@ -29,6 +35,8 @@ For detailed changelog entries, see :doc:`changelog`.
 * `PyPI Package <https://pypi.org/project/txaio/25.9.1/>`__
 * `Documentation <https://txaio.readthedocs.io/en/v25.9.1/>`__
 
+
+.. _v25.6.1:
 
 25.6.1
 ------
@@ -38,6 +46,8 @@ For detailed changelog entries, see :doc:`changelog`.
 * `Documentation <https://txaio.readthedocs.io/en/v25.6.1/>`__
 
 
+.. _v23.1.1:
+
 23.1.1
 ------
 
@@ -45,6 +55,8 @@ For detailed changelog entries, see :doc:`changelog`.
 * `PyPI Package <https://pypi.org/project/txaio/23.1.1/>`__
 * `Documentation <https://txaio.readthedocs.io/en/v23.1.1/>`__
 
+
+.. _v22.2.1:
 
 22.2.1
 ------
@@ -54,12 +66,16 @@ For detailed changelog entries, see :doc:`changelog`.
 * `Documentation <https://txaio.readthedocs.io/en/v22.2.1/>`__
 
 
+.. _v21.2.1:
+
 21.2.1
 ------
 
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v21.2.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/21.2.1/>`__
 
+
+.. _v20.12.1:
 
 20.12.1
 -------
@@ -68,12 +84,16 @@ For detailed changelog entries, see :doc:`changelog`.
 * `PyPI Package <https://pypi.org/project/txaio/20.12.1/>`__
 
 
+.. _v20.4.1:
+
 20.4.1
 ------
 
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v20.4.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/20.4.1/>`__
 
+
+.. _v20.3.1:
 
 20.3.1
 ------
@@ -82,6 +102,8 @@ For detailed changelog entries, see :doc:`changelog`.
 * `PyPI Package <https://pypi.org/project/txaio/20.3.1/>`__
 
 
+.. _v20.1.1:
+
 20.1.1
 ------
 
@@ -89,12 +111,16 @@ For detailed changelog entries, see :doc:`changelog`.
 * `PyPI Package <https://pypi.org/project/txaio/20.1.1/>`__
 
 
+.. _v18.8.1:
+
 18.8.1
 ------
 
 * `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v18.8.1>`__
 * `PyPI Package <https://pypi.org/project/txaio/18.8.1/>`__
 
+
+.. _v18.7.1:
 
 18.7.1
 ------
@@ -104,6 +130,8 @@ For detailed changelog entries, see :doc:`changelog`.
 
 
 --------------
+
+.. _release-workflow:
 
 Release Workflow (for Maintainers)
 ----------------------------------
