@@ -8,6 +8,29 @@ This document contains a reverse-chronological list of changes to txaio.
     For detailed release information including wheels and artifacts,
     see :doc:`releases`.
 
+25.12.2
+-------
+
+**New**
+
+* Modernized documentation infrastructure with Furo theme, MyST Markdown support, and sphinx-autoapi for automatic API documentation generation (`#210 <https://github.com/crossbario/txaio/pull/210>`_)
+* Switch from setuptools to `Hatchling <https://hatch.pypa.io/latest/>`_
+* Added standardized project badges (PyPI, Python versions, CI, Docs, License, Downloads) to README.md and docs/index.rst
+* Added comprehensive documentation sections: Installation, Getting Started, Programming Guide, Contributing, and Releases
+* Added AI assistance documentation under ``docs/ai/`` with acknowledgement and audit files
+
+**Fix**
+
+* Fixed RST badge rendering by setting ``override_image_directive=False`` in sphinxcontrib-images configuration
+* Fixed F841 linting error in sphinx_auto_section_anchors.py (unused variable)
+* Fixed Incomplete source distribution in 25.12.1: missing tests/util.py (`#208 <https://github.com/crossbario/txaio/pull/208>`_)
+
+**Other**
+
+* Updated Sphinx requirement to >=8.2.3 for docs optional dependency
+* Updated .cicd submodule to latest with linting fix
+* Standardized conf.py configuration across WAMP ecosystem projects
+
 25.12.1
 -------
 
