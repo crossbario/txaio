@@ -161,6 +161,10 @@ spelling_show_suggestions = True
 # -- OpenGraph (Social Media Meta Tags) -------------------------------------
 ogp_site_url = "https://txaio.readthedocs.io/en/latest/"
 
+# -- Auto Section Anchors Configuration --------------------------------------
+# Force overwrite of auto-generated ids (id1, id2, etc.) with slug-based anchors
+auto_section_anchor_force = True
+
 # -- Miscellaneous -----------------------------------------------------------
 todo_include_todos = True               # Show TODO items in docs
 add_module_names = False                # Cleaner module paths in API docs
