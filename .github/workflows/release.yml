@@ -136,8 +136,11 @@ jobs:
           restore-keys: |
             uv-cache-ubuntu-release-
 
-      - name: Build package (wheel and source distribution)
+      - name: Build wheel package
         run: just build cpy311
+
+      - name: Build source distribution
+        run: just build-sourcedist cpy311
 
       - name: Build documentation
         run: |
@@ -249,8 +252,11 @@ jobs:
           restore-keys: |
             uv-cache-ubuntu-release-
 
-      - name: Build package (wheel and source distribution)
+      - name: Build wheel package
         run: just build cpy311
+
+      - name: Build source distribution
+        run: just build-sourcedist cpy311
 
       - name: Build documentation
         run: |
