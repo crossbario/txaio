@@ -617,8 +617,40 @@ install-docs venv="": (create venv)
     echo "==> Installing documentation tools in ${VENV_NAME}..."
     ${VENV_PYTHON} -m pip install -e .[docs]
 
+# Sync images (logo and favicon) from autobahn-python (Autobahn subarea source)
+sync-images:
+    #!/usr/bin/env bash
+    set -e
+
+    SOURCEDIR="{{ PROJECT_DIR }}/../autobahn-python/docs/_static"
+    TARGETDIR="{{ PROJECT_DIR }}/docs/_static"
+    IMGDIR="${TARGETDIR}/img"
+
+    echo "==> Syncing images from autobahn-python..."
+    mkdir -p "${IMGDIR}"
+
+    # Copy optimized logo SVG
+    if [ -f "${SOURCEDIR}/img/autobahn_logo_blue.svg" ]; then
+        cp "${SOURCEDIR}/img/autobahn_logo_blue.svg" "${IMGDIR}/"
+        echo "  Copied: autobahn_logo_blue.svg"
+    else
+        echo "  Warning: autobahn_logo_blue.svg not found in autobahn-python"
+        echo "  Run 'just optimize-images' in autobahn-python first"
+    fi
+
+    # Copy favicon
+    if [ -f "${SOURCEDIR}/favicon.ico" ]; then
+        cp "${SOURCEDIR}/favicon.ico" "${TARGETDIR}/"
+        echo "  Copied: favicon.ico"
+    else
+        echo "  Warning: favicon.ico not found in autobahn-python"
+        echo "  Run 'just optimize-images' in autobahn-python first"
+    fi
+
+    echo "==> Image sync complete."
+
 # Build the HTML documentation using Sphinx
-docs venv="": (install-docs venv)
+docs venv="": (install-docs venv) (sync-images)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"
@@ -640,6 +672,22 @@ docs-view venv="": (docs venv)
 docs-clean:
     echo "==> Cleaning documentation build artifacts..."
     rm -rf docs/_build
+
+# Run spelling check on documentation
+docs-spelling venv="": (install-docs venv)
+    #!/usr/bin/env bash
+    set -e
+    VENV_NAME="{{ venv }}"
+    if [ -z "${VENV_NAME}" ]; then
+        echo "==> No venv name specified. Auto-detecting from system Python..."
+        VENV_NAME=$(just --quiet _get-system-venv-name)
+        echo "==> Defaulting to venv: '${VENV_NAME}'"
+    fi
+    VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
+    TMPBUILDDIR="./.build"
+    mkdir -p "${TMPBUILDDIR}"
+    echo "==> Running spell check on documentation..."
+    "${VENV_PATH}/bin/sphinx-build" -b spelling -d "${TMPBUILDDIR}/docs/doctrees" docs "${TMPBUILDDIR}/docs/spelling"
 
 # -----------------------------------------------------------------------------
 # -- Building and Publishing
@@ -775,4 +823,186 @@ publish-rtd tag="":
         echo "==> RTD build triggered by GitHub webhook on tag push."
         echo "    Monitor build at: https://readthedocs.org/projects/txaio/builds/"
         echo "    Documentation will be available at: https://txaio.readthedocs.io/en/${TAG}/"
+    fi
+
+# -----------------------------------------------------------------------------
+# -- Release Workflow
+# -----------------------------------------------------------------------------
+
+# Generate changelog entry from git history (usage: `just prepare-changelog 25.12.1`)
+prepare-changelog version:
+    #!/usr/bin/env bash
+    set -e
+    VERSION="{{ version }}"
+    REPO="crossbario/txaio"
+
+    echo "==> Preparing changelog entry for version ${VERSION}..."
+
+    # Find the previous tag
+    PREV_TAG=$(git tag -l "v*" | sort -V | tail -2 | head -1)
+    CURR_TAG="v${VERSION}"
+
+    echo "    Previous tag: ${PREV_TAG}"
+    echo "    Current tag:  ${CURR_TAG}"
+    echo ""
+
+    # Check if tag exists
+    if git rev-parse "${CURR_TAG}" >/dev/null 2>&1; then
+        echo "==> Commits between ${PREV_TAG} and ${CURR_TAG}:"
+        git log --oneline "${PREV_TAG}..${CURR_TAG}"
+    else
+        echo "==> Commits since ${PREV_TAG} (tag ${CURR_TAG} not yet created):"
+        git log --oneline "${PREV_TAG}..HEAD"
+    fi
+
+    echo ""
+    echo "==> Suggested changelog entry format:"
+    echo ""
+    echo "${VERSION}"
+    echo "$(printf '%0.s-' $(seq 1 ${#VERSION}))"
+    echo ""
+    echo "**New**"
+    echo ""
+    echo "* <new feature description> (#issue)"
+    echo ""
+    echo "**Fix**"
+    echo ""
+    echo "* <bug fix description> (#issue)"
+    echo ""
+    echo "**Other**"
+    echo ""
+    echo "* <other changes>"
+    echo ""
+    echo "==> Add this entry to docs/changelog.rst after the introduction."
+
+# Draft a new release (usage: `just draft-release 25.12.2`)
+draft-release version:
+    #!/usr/bin/env bash
+    set -e
+    VERSION="{{ version }}"
+    REPO="crossbario/txaio"
+    PACKAGE="txaio"
+
+    echo "==> Drafting release ${VERSION}..."
+
+    # Check if changelog entry exists
+    if grep -q "^${VERSION}$" docs/changelog.rst; then
+        echo "    ✓ Changelog entry for ${VERSION} already exists"
+    else
+        echo "    ✗ Changelog entry for ${VERSION} not found"
+        echo ""
+        echo "    Add the following to docs/changelog.rst after the introduction:"
+        echo ""
+        echo "    ${VERSION}"
+        echo "    $(printf '%0.s-' $(seq 1 ${#VERSION}))"
+        echo ""
+        echo "    **New**"
+        echo ""
+        echo "    * <description>"
+        echo ""
+        echo "    **Fix**"
+        echo ""
+        echo "    * <description>"
+        echo ""
+    fi
+
+    # Check if release entry exists
+    if grep -q "^${VERSION}$" docs/releases.rst; then
+        echo "    ✓ Release entry for ${VERSION} already exists"
+    else
+        echo "    ✗ Release entry for ${VERSION} not found"
+        echo ""
+        echo "    Add the following to docs/releases.rst after the introduction:"
+        echo ""
+        echo "    ${VERSION}"
+        echo "    $(printf '%0.s-' $(seq 1 ${#VERSION}))"
+        echo ""
+        echo "    * \`GitHub Release <https://github.com/${REPO}/releases/tag/v${VERSION}>\`__"
+        echo "    * \`PyPI Package <https://pypi.org/project/${PACKAGE}/${VERSION}/>\`__"
+        echo "    * \`Documentation <https://${PACKAGE}.readthedocs.io/en/v${VERSION}/>\`__"
+        echo ""
+    fi
+
+    # Check pyproject.toml version
+    CURRENT_VERSION=$(grep '^version' pyproject.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+    if [ "${CURRENT_VERSION}" = "${VERSION}" ]; then
+        echo "    ✓ pyproject.toml version matches (${CURRENT_VERSION})"
+    else
+        echo "    ✗ pyproject.toml version mismatch: ${CURRENT_VERSION} != ${VERSION}"
+        echo "      Update pyproject.toml: version = \"${VERSION}\""
+    fi
+
+    echo ""
+    echo "==> After updating files, run: just prepare-release ${VERSION}"
+
+# Validate release is ready (usage: `just prepare-release 25.12.2`)
+prepare-release version venv="": (install-tools venv) (install venv)
+    #!/usr/bin/env bash
+    set -e
+    VERSION="{{ version }}"
+    VENV_NAME="{{ venv }}"
+
+    if [ -z "${VENV_NAME}" ]; then
+        VENV_NAME=$(just --quiet _get-system-venv-name)
+    fi
+    VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
+
+    echo "==> Validating release ${VERSION}..."
+    ERRORS=0
+
+    # Check changelog entry
+    if grep -q "^${VERSION}$" docs/changelog.rst; then
+        echo "    ✓ Changelog entry exists"
+    else
+        echo "    ✗ Changelog entry missing for ${VERSION}"
+        ERRORS=$((ERRORS + 1))
+    fi
+
+    # Check release entry
+    if grep -q "^${VERSION}$" docs/releases.rst; then
+        echo "    ✓ Release entry exists"
+    else
+        echo "    ✗ Release entry missing for ${VERSION}"
+        ERRORS=$((ERRORS + 1))
+    fi
+
+    # Check pyproject.toml version
+    CURRENT_VERSION=$(grep '^version' pyproject.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+    if [ "${CURRENT_VERSION}" = "${VERSION}" ]; then
+        echo "    ✓ pyproject.toml version matches"
+    else
+        echo "    ✗ pyproject.toml version mismatch: ${CURRENT_VERSION} != ${VERSION}"
+        ERRORS=$((ERRORS + 1))
+    fi
+
+    # Run tests
+    echo "    → Running tests..."
+    if "${VENV_PATH}/bin/pytest" -q; then
+        echo "    ✓ Tests passed"
+    else
+        echo "    ✗ Tests failed"
+        ERRORS=$((ERRORS + 1))
+    fi
+
+    # Build docs
+    echo "    → Building documentation..."
+    if "${VENV_PATH}/bin/sphinx-build" -q -b html docs/ docs/_build/html; then
+        echo "    ✓ Documentation builds"
+    else
+        echo "    ✗ Documentation build failed"
+        ERRORS=$((ERRORS + 1))
+    fi
+
+    echo ""
+    if [ ${ERRORS} -eq 0 ]; then
+        echo "==> ✓ Release ${VERSION} is ready!"
+        echo ""
+        echo "    Next steps:"
+        echo "    1. git add docs/changelog.rst docs/releases.rst pyproject.toml"
+        echo "    2. git commit -m \"Release ${VERSION}\""
+        echo "    3. git tag v${VERSION}"
+        echo "    4. git push && git push --tags"
+    else
+        echo "==> ✗ Release ${VERSION} has ${ERRORS} error(s). Fix them and re-run."
+        exit 1
     fi

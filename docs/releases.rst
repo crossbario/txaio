@@ -1,202 +1,199 @@
-Package Releases
-================
+Release Notes
+=============
+
+This page provides links to release artifacts for each version of txaio.
+
+For detailed changelog entries, see :doc:`changelog`.
+
+25.12.1
+-------
+
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v25.12.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/25.12.1/>`__
+* `Documentation <https://txaio.readthedocs.io/en/v25.12.1/>`__
+
+25.9.2
+------
+
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v25.9.2>`__
+* `PyPI Package <https://pypi.org/project/txaio/25.9.2/>`__
+* `Documentation <https://txaio.readthedocs.io/en/v25.9.2/>`__
+
+25.9.1
+------
+
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v25.9.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/25.9.1/>`__
+* `Documentation <https://txaio.readthedocs.io/en/v25.9.1/>`__
 
 25.6.1
 ------
 
-- new: announcement of upcoming (but not yet effective) new AI policy clarifying matter with respect to AI assisted contributions (see #1663 in AutobahnPython)
-- fix: update license file to include contributors (#188)
-- fix: remove obsolete dependency on six (#186)
-- fix: update pypy version in CI workflow (#187)
-- fix: setupcfg.py:508: SetuptoolsDeprecationWarning: The license_file parameter is deprecated, use license_files instead.
-- Copyrights transferred from Crossbar.io Technologies GmbH (Germany) to typedef int GmbH (Germany)
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v25.6.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/25.6.1/>`__
+* `Documentation <https://txaio.readthedocs.io/en/v25.6.1/>`__
 
 23.1.1
 ------
 
-- fix: support for Python up to v3.11
-- fix: update GitHub CI
-- fix: copyright transferred to typedef int GmbH - no license change!
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v23.1.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/23.1.1/>`__
+* `Documentation <https://txaio.readthedocs.io/en/v23.1.1/>`__
 
 22.2.1
 ------
 
-- fix: cancel handling in python 3.8/3.9. (#175)
-- fix: gracefully fail if coroutine called with wrong args (#176)
-- fix: eliminate redundant dep. on mock (#170)
-- fix: doc note that twisted supports native coroutines (#172)
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v22.2.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/22.2.1/>`__
+* `Documentation <https://txaio.readthedocs.io/en/v22.2.1/>`__
 
 21.2.1
 ------
 
-- fix: update minimum dependencies (here, and in other crossbar packages) in an attempt to tame the new pip dep resolver madness.
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v21.2.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/21.2.1/>`__
 
 20.12.1
 -------
 
-- new: CI/CD migrated to GitHub Actions
-- new: support Python 3.9 (CI / testing added)
-- new: minimum Python version is now 3.6
-
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v20.12.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/20.12.1/>`__
 
 20.4.1
 ------
 
-- new: upload wheel to S3 (bucket "crossbarbuilder") in CI deploy stage
-- fix: fix event loop threading issue (PR #163)
-
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v20.4.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/20.4.1/>`__
 
 20.3.1
 ------
 
-- new: support import-time framework selection
-- fix: remove python2 support (finally)
-
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v20.3.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/20.3.1/>`__
 
 20.1.1
 ------
 
-- IMPORTANT: beginning release v20.1.1, we only support Python 3.5 or later
-- new: moved ``time_ns`` and ``perf_counter_ns`` helper functions here
-
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v20.1.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/20.1.1/>`__
 
 18.8.1
 ------
 
-- IMPORTANT: release v18.8.1 is the last release supporting Python 2. We will support Python 3.5 and later beginning with release v20.1.1.
-- add API to support cancellation; this means passing a 1-argument callable to ``create_future`` and ``txaio.cancel`` to actually cancel a future
-- support Python 3.7 (CI / testing added)
-
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v18.8.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/18.8.1/>`__
 
 18.7.1
 ------
 
-- move to calver
-- deprecate Python 3.3 support and CI testing
+* `GitHub Release <https://github.com/crossbario/txaio/releases/tag/v18.7.1>`__
+* `PyPI Package <https://pypi.org/project/txaio/18.7.1/>`__
 
+--------------
 
-2.10.0
-------
+.. _release-workflow:
 
-- the asyncio version of ``make_logger`` now deduces a proper namespace instead of using the root (thanks `spr0cketeer <https://github.com/spr0cketeer>`_)
+Release Workflow (for Maintainers)
+----------------------------------
 
+This section documents the release process for maintainers.
 
-2.9.0
------
+Prerequisites
+^^^^^^^^^^^^^
 
-- March 2, 2018
+Before releasing, ensure you have:
 
+* Push access to the repository
+* PyPI credentials configured (or trusted publishing via GitHub Actions)
+* ``just`` and ``uv`` installed
 
-2.8.2
------
+Step 1: Draft the Release
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- September 4, 2017
-- fix: no longer install LICENSE file into installation directory (conflicts!)
+Generate changelog and release note templates:
 
+.. code-block:: bash
 
-2.8.1
------
+   # Generate changelog entry from git history (for catching up)
+   just prepare-changelog <version>
 
-- July 21, 2017
-- fix: the asyncio version of sleep() correctly returns a Future instance
+   # Generate release draft with templates for both files
+   just draft-release <version>
 
+This will:
 
-2.8.0
------
+* Add a changelog entry template to ``docs/changelog.rst``
+* Add a release entry template to ``docs/releases.rst``
+* Update the version in ``pyproject.toml``
 
-- June 8, 2017
-- fix: asyncio - remove the hacks for "simulating" chained futures (no longer works - cpy36 has native code for future)
-- new: run CI on Python 3.5 and 3.6
+Step 2: Edit Changelog
+^^^^^^^^^^^^^^^^^^^^^^
 
+Edit ``docs/changelog.rst`` and fill in the changelog details:
 
-2.7.1
------
+* **New**: New features and capabilities
+* **Fix**: Bug fixes
+* **Other**: Breaking changes, deprecations, other notes
 
-- May 1, 2017
-- asyncio: example and docs for running multiple loops
-- asyncio: log exception tracebacks when they're available for error-message
+Step 3: Validate the Release
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Ensure everything is in place:
 
-2.7.0
------
+.. code-block:: bash
 
-- April 15, 2017
-- allow alternate asyncio loops
-- new future creation API for alternate loops
+   just prepare-release <version>
 
+This validates:
 
-2.6.1
------
+* Changelog entry exists for this version
+* Release entry exists for this version
+* Version in ``pyproject.toml`` matches
+* All tests pass
+* Documentation builds successfully
 
-- February 9, 2017
-- added inline sleep helper (Twisted only for now)
+Step 4: Disable Git Hooks (if needed)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. code-block:: bash
 
-2.6.0
------
+   git config core.hooksPath /dev/null
+   git config core.hooksPath
 
-- December 29, 2016
-- avoid giving negative times to `callLater` with batched timers (issue #81)
+Step 5: Commit and Tag
+^^^^^^^^^^^^^^^^^^^^^^
 
+.. code-block:: bash
 
-2.5.2
------
+   git add docs/changelog.rst docs/releases.rst pyproject.toml
+   git commit -m "Release <version>"
+   git tag v<version>
+   git push && git push --tags
 
-- November 6, 2016
-- fix pytest3/2
-- fix Sphinx 1.4+ doc building
-- Copyrights transferred from Tavendo to Crossbar.io Technologies
+Step 6: Enable Git Hooks (if previously disabled)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. code-block:: bash
 
-2.5.1
------
+   git config core.hooksPath .ai/.githooks
+   git config core.hooksPath
 
-- April 28, 2016
-- Bug with ``make_batched_timer`` remembering (via a closure) the
-  reactor/event-loop too persistantly
+Step 7: Automated Release
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
+After pushing the tag:
 
-2.5.0
------
+1. GitHub Actions builds and tests the release
+2. Wheels and source distributions are uploaded to GitHub Releases
+3. PyPI publishing is triggered via trusted publishing (OIDC)
+4. Read the Docs builds documentation for the tagged version
 
-- April 28, 2016
-- Document that ``@coroutine`` and ``@inlineCallbacks`` are not supported
-- Objects returned from the :func:`txaio.make_batched_timer` API now
-  have millisecond resolution and spread out their notifications over
-  the entire range of the bucket.
+Manual PyPI Upload (if needed)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+If automated publishing fails:
 
-2.4.0
------
+.. code-block:: bash
 
-- April 22, 2016
-- Added :func:`txaio.make_batched_timer` API. The main use-case for
-  this is when you have lots of of timers, but their exact resolution
-  isn't important; batching them into buckets causes far fewer
-  delayed call instances to be outstanding in the underlying
-  event-loop/reactor.
-
-
-2.3.1
------
-
-- April 10, 2016
-- added universal wheels
-
-
-2.3.0
------
-
-- April 9, 2016
-- More logging infrastructure and APIs to support moving all of
-  Crossbar.io's logging to txaio.
-
-
-previous releases
------------------
-
-- We didn't produce any release notes prior to 2.4.0
-- Instead of making up summaries of all previous releases after the
-  fact, you will have to do something like ``git log v1.1.0..v2.0.0``
-  to see what changed between releases. If you **do** make a summary,
-  pull-requests are welcome!
+   just download-github-release v<version>
+   just publish-pypi "" v<version>

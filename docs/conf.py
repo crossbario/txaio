@@ -9,10 +9,13 @@ from datetime import datetime
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("../src"))
 
+# Add .cicd/scripts to path for shared Sphinx extensions
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.cicd', 'scripts')))
+
 # -- Project information -----------------------------------------------------
 project = "txaio"
-author = "Crossbar.io Project"
-copyright = f"{datetime.now():%Y}, typedef int GmbH"
+author = "The WAMP/Autobahn/Crossbar.io OSS Project"
+copyright = f"2015-{datetime.now():%Y}, typedef int GmbH (Germany)"
 
 # Dynamically get version from the package
 try:
@@ -34,6 +37,8 @@ extensions = [
     "sphinx.ext.autosectionlabel",   # {ref} headings automatically
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",           # Link to highlighted source
+    "sphinx.ext.ifconfig",           # Conditional content based on config
+    "sphinx.ext.doctest",            # Test code examples in documentation
 
     # Modern UX extensions
     "sphinx_design",                 # Cards, tabs, grids
@@ -44,6 +49,9 @@ extensions = [
 
     # API documentation (no-import, static analysis)
     "autoapi.extension",
+
+    # Shared WAMP ecosystem extensions (from .cicd submodule)
+    "sphinx_auto_section_anchors",   # Stable slug-based HTML anchors
 ]
 
 # Source file suffixes (both RST and MyST Markdown)
@@ -76,6 +84,8 @@ autoapi_generate_api_docs = True
 autoapi_options = [
     "members",
     "undoc-members",
+    "private-members",
+    "special-members",
     "show-inheritance",
     "show-module-summary",
     "imported-members",
@@ -104,23 +114,31 @@ intersphinx_cache_limit = 5  # Cache remote inventories for 5 days
 html_theme = "furo"
 html_title = f"{project} {release}"
 
-# Furo theme options with Noto fonts
+# Furo theme options with Noto fonts and Autobahn subarea colors
 html_theme_options = {
     # Source repository links
     "source_repository": "https://github.com/crossbario/txaio/",
     "source_branch": "master",
     "source_directory": "docs/",
 
-    # Noto fonts from Google Fonts
+    # Noto fonts and Autobahn Medium Blue (#027eae) accent color
     "light_css_variables": {
         "font-stack": "'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         "font-stack--monospace": "'Noto Sans Mono', SFMono-Regular, Menlo, Consolas, monospace",
+        "color-brand-primary": "#027eae",
+        "color-brand-content": "#027eae",
     },
     "dark_css_variables": {
         "font-stack": "'Noto Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         "font-stack--monospace": "'Noto Sans Mono', SFMono-Regular, Menlo, Consolas, monospace",
+        "color-brand-primary": "#027eae",
+        "color-brand-content": "#027eae",
     },
 }
+
+# Logo and favicon (synced from autobahn-python by `just sync-images`)
+html_logo = "_static/img/autobahn_logo_blue.svg"
+html_favicon = "_static/favicon.ico"
 
 # Static files
 html_static_path = ["_static"]
@@ -130,8 +148,11 @@ html_css_files = [
 ]
 
 # -- sphinxcontrib-images Configuration --------------------------------------
+# NOTE: override_image_directive must be False to preserve standard RST image
+# directive :target: option support, which is required for clickable badge
+# substitutions in docs/index.rst (e.g., |PyPI| |Python| |CI| etc.)
 images_config = {
-    "override_image_directive": True,
+    "override_image_directive": False,
     "default_image_width": "80%",
 }
 
@@ -143,11 +164,16 @@ spelling_show_suggestions = True
 # -- OpenGraph (Social Media Meta Tags) -------------------------------------
 ogp_site_url = "https://txaio.readthedocs.io/en/latest/"
 
+# -- Auto Section Anchors Configuration --------------------------------------
+# Force overwrite of auto-generated ids (id1, id2, etc.) with slug-based anchors
+auto_section_anchor_force = True
+
 # -- Miscellaneous -----------------------------------------------------------
 todo_include_todos = True               # Show TODO items in docs
 add_module_names = False                # Cleaner module paths in API docs
 autosectionlabel_prefix_document = True # Avoid section label collisions
-pygments_style = "sphinx"               # Code highlighting style
+pygments_style = "sphinx"
+pygments_dark_style = "monokai"
 
 # Exclude patterns
 exclude_patterns = ["_build", "README.md"]

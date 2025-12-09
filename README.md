@@ -1,13 +1,11 @@
 # txaio
 
-[![Version](https://img.shields.io/pypi/v/txaio.svg)](https://pypi.python.org/pypi/txaio)
-[![Test](https://github.com/crossbario/txaio/workflows/main/badge.svg)](https://github.com/crossbario/txaio/actions?query=workflow%3Amain)
-[![Docs](https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat)](https://txaio.readthedocs.io/en/latest/)
-<!--
+[![PyPI](https://img.shields.io/pypi/v/txaio.svg)](https://pypi.python.org/pypi/txaio)
+[![Python](https://img.shields.io/pypi/pyversions/txaio.svg)](https://pypi.python.org/pypi/txaio)
+[![CI](https://github.com/crossbario/txaio/workflows/main/badge.svg)](https://github.com/crossbario/txaio/actions?query=workflow%3Amain)
 [![Docs](https://readthedocs.org/projects/txaio/badge/?version=latest)](https://txaio.readthedocs.io/en/latest/)
-[![Deploy Workflow](https://github.com/crossbario/txaio/workflows/deploy/badge.svg)](https://github.com/crossbario/txaio/actions?query=workflow%3Adeploy)
-[![Coverage](https://codecov.io/github/crossbario/txaio/coverage.svg?branch=master)](https://codecov.io/github/crossbario/txaio)
--->
+[![License](https://img.shields.io/pypi/l/txaio.svg)](https://github.com/crossbario/txaio/blob/master/LICENSE)
+[![Downloads](https://img.shields.io/pypi/dm/txaio.svg)](https://pypi.python.org/pypi/txaio)
 
 ------------------------------------------------------------------------
 
