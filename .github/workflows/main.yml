@@ -182,10 +182,6 @@ jobs:
       PR_REPO: ${{ needs.identifiers.outputs.pr_repo }}
       PR_BRANCH: ${{ needs.identifiers.outputs.pr_branch }}
 
-    strategy:
-      matrix:
-        python-env: [cpy314, cpy311, pypy311]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -219,28 +215,33 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.UV_CACHE_DIR }}
-          key: uv-cache-ubuntu-build-${{ matrix.python-env }}-${{
+          key: uv-cache-ubuntu-build-${{
             hashFiles('pyproject.toml') }}
           restore-keys: |
-            uv-cache-ubuntu-build-${{ matrix.python-env }}-
             uv-cache-ubuntu-build-
 
       - name: Create Python environment and install tools
         run: |
-          just create ${{ matrix.python-env }}
-          just install-tools ${{ matrix.python-env }}
+          just create cpy311
+          just install-tools cpy311
 
-      - name: Build package
-        run: just build ${{ matrix.python-env }}
+      # Build the full release fileset once (txaio is pure-Python: a single
+      # universal wheel + source distribution). This is the canonical artifact
+      # that the release workflow downloads (verified) and publishes - so what
+      # is tested here is exactly what ships (chain-of-custody).
+      - name: Build wheel and source distribution
+        run: |
+          just build cpy311
+          just build-sourcedist cpy311
 
       - name: List built artifacts
         run: |
-          echo "Built artifacts for ${{ matrix.python-env }}:"
+          echo "Built release fileset (wheel + sdist):"
           ls -la dist/
 
-      - name: Upload build artifacts
+      - name: Upload build artifacts (verified)
         uses: wamp-proto/wamp-cicd/actions/upload-artifact-verified@main
         with:
-          name: package-${{ matrix.python-env }}
+          name: package
           path: dist/
           retention-days: 14

@@ -1,0 +1,195 @@
+name: release-post-comment
+
+on:
+  # Trigger after the release workflow completes
+  workflow_run:
+    workflows: ["release"]
+    types: [completed]
+
+  # Manual dispatch for debugging
+  workflow_dispatch:
+    inputs:
+      discussion_category:
+        description: "GitHub Discussions category name to post into (case-insensitive)"
+        required: false
+        type: string
+        default: "cicd"
+
+permissions:
+  contents: read # Required for reading releases
+  discussions: write # Required for posting to discussions
+
+jobs:
+  check-release-exists:
+    name: Check if release created (Early Exit Pattern)
+    runs-on: ubuntu-latest
+    outputs:
+      should_process: ${{ steps.check.outputs.should_process }}
+      release_name: ${{ steps.check.outputs.release_name }}
+      release_url: ${{ steps.check.outputs.release_url }}
+      release_type: ${{ steps.check.outputs.release_type }}
+
+    steps:
+      - name: Check if a fresh GitHub Release exists for this commit
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo '─────────────────────────────────────────────────'
+          echo '🔍 Checking if a fresh GitHub Release exists (Early Exit Pattern)'
+          echo '─────────────────────────────────────────────────'
+
+          COMMIT_SHA="${{ github.event.workflow_run.head_sha || github.sha }}"
+          echo "Commit SHA: $COMMIT_SHA"
+
+          # All releases, newest first
+          RELEASES_JSON=$(gh api repos/$GITHUB_REPOSITORY/releases --paginate 2>/dev/null || echo "[]")
+
+          FOUND_RELEASE_NAME=""
+          FOUND_RELEASE_URL=""
+          RELEASE_TYPE=""
+
+          # Helper: is the named release younger than one hour?
+          is_fresh() {
+            local created current rel_time diff
+            created=$(echo "$RELEASES_JSON" | jq -r ".[] | select(.tag_name == \"$1\") | .created_at")
+            current=$(date -u +%s)
+            rel_time=$(date -u -d "$created" +%s 2>/dev/null || echo "0")
+            diff=$((current - rel_time))
+            echo "   $1 created $created (age ${diff}s)"
+            [ "$diff" -lt 3600 ]
+          }
+
+          # Stable release first: tags like vX.Y.Z
+          STABLE=$(echo "$RELEASES_JSON" | jq -r '.[] | select(.tag_name | startswith("v")) | .tag_name' | head -1)
+          if [ -n "$STABLE" ] && is_fresh "$STABLE"; then
+            FOUND_RELEASE_NAME="$STABLE"
+            RELEASE_TYPE="stable"
+          fi
+
+          # Otherwise nightly: tags like master-YYYYMMDDHHMM
+          if [ -z "$FOUND_RELEASE_NAME" ]; then
+            NIGHTLY=$(echo "$RELEASES_JSON" | jq -r '.[] | select(.tag_name | startswith("master-")) | .tag_name' | head -1)
+            if [ -n "$NIGHTLY" ] && is_fresh "$NIGHTLY"; then
+              FOUND_RELEASE_NAME="$NIGHTLY"
+              RELEASE_TYPE="nightly"
+            fi
+          fi
+
+          if [ -z "$FOUND_RELEASE_NAME" ]; then
+            echo "⏳ No fresh GitHub Release found - nothing to announce (early exit)."
+            {
+              echo "should_process=false"
+              echo "release_name="
+              echo "release_url="
+              echo "release_type="
+            } >> $GITHUB_OUTPUT
+          else
+            FOUND_RELEASE_URL=$(echo "$RELEASES_JSON" | jq -r ".[] | select(.tag_name == \"$FOUND_RELEASE_NAME\") | .html_url")
+            echo "✅ Release found: $FOUND_RELEASE_NAME ($RELEASE_TYPE)"
+            echo "   URL: $FOUND_RELEASE_URL"
+            {
+              echo "should_process=true"
+              echo "release_name=$FOUND_RELEASE_NAME"
+              echo "release_url=$FOUND_RELEASE_URL"
+              echo "release_type=$RELEASE_TYPE"
+            } >> $GITHUB_OUTPUT
+          fi
+
+          echo '─────────────────────────────────────────────────'
+
+  post-discussion:
+    name: Post to GitHub Discussions (Nightly & Stable)
+    needs: [check-release-exists]
+    runs-on: ubuntu-latest
+
+    if: |
+      needs.check-release-exists.outputs.should_process == 'true' &&
+      (needs.check-release-exists.outputs.release_type == 'nightly' ||
+       needs.check-release-exists.outputs.release_type == 'stable')
+
+    env:
+      RELEASE_NAME: ${{ needs.check-release-exists.outputs.release_name }}
+      RELEASE_URL: ${{ needs.check-release-exists.outputs.release_url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Get release notes from GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "==> Fetching release notes for: $RELEASE_NAME"
+          RELEASE_JSON=$(gh api repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_NAME 2>/dev/null || echo "{}")
+          if [ "$RELEASE_JSON" = "{}" ]; then
+            echo "⚠️  Release not found: $RELEASE_NAME (should not happen after the check job)"
+            exit 1
+          fi
+          echo "$RELEASE_JSON" | jq -r '.body' > release-notes.md
+          echo "✅ Release notes retrieved"
+
+      - name: Install jinja2-cli for template rendering
+        run: pip install jinja2-cli
+
+      - name: Render discussion post from Jinja2 template
+        run: |
+          echo "==> Rendering GitHub Discussion post for $RELEASE_NAME"
+          RELEASE_NOTES=$(cat release-notes.md)
+          jinja2 .github/templates/discussion-post.md.j2 \
+            -D release_name="$RELEASE_NAME" \
+            -D release_url="$RELEASE_URL" \
+            -D release_notes="$RELEASE_NOTES" \
+            -o discussion-post.md
+          echo "==> Generated discussion post:"
+          cat discussion-post.md
+
+      - name: Post to GitHub Discussions
+        uses: actions/github-script@v7
+        env:
+          DISCUSSION_CATEGORY: ${{ github.event.inputs.discussion_category || 'cicd' }}
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('discussion-post.md', 'utf8');
+            const releaseName = process.env.RELEASE_NAME;
+            const title = `Release ${releaseName}`;
+            const wantCategory = (process.env.DISCUSSION_CATEGORY || 'cicd').toLowerCase();
+
+            // Resolve the repository node id and the target discussion category id
+            // by (case-insensitive) name, so we never hard-code a repo-specific
+            // opaque category id and are immune to category-name casing mistakes.
+            const repoInfo = await github.graphql(`
+              query($owner: String!, $repo: String!) {
+                repository(owner: $owner, name: $repo) {
+                  id
+                  discussionCategories(first: 50) { nodes { id name } }
+                }
+              }
+            `, { owner: context.repo.owner, repo: context.repo.repo });
+
+            const categories = repoInfo.repository.discussionCategories.nodes;
+            const category = categories.find(c => c.name.toLowerCase() === wantCategory);
+            if (!category) {
+              const names = categories.map(c => c.name).join(', ');
+              core.setFailed(`Discussion category '${wantCategory}' not found. Available: ${names}`);
+              return;
+            }
+
+            console.log(`Creating discussion '${title}' in category '${category.name}'`);
+            const result = await github.graphql(`
+              mutation($repositoryId: ID!, $categoryId: ID!, $title: String!, $body: String!) {
+                createDiscussion(input: {
+                  repositoryId: $repositoryId
+                  categoryId: $categoryId
+                  title: $title
+                  body: $body
+                }) { discussion { url } }
+              }
+            `, { repositoryId: repoInfo.repository.id, categoryId: category.id, title, body });
+
+            const url = result.createDiscussion.discussion.url;
+            console.log(`✅ Discussion created: ${url}`);
+            core.setOutput('discussion_url', url);
