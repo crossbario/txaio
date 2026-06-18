@@ -99,7 +99,7 @@ jobs:
 
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: wamp-proto/wamp-cicd/actions/upload-artifact-verified@main
         with:
           name: coverage-report
           path: docs/_build/html/coverage/
@@ -164,7 +164,7 @@ jobs:
         run: just docs cpy314
 
       - name: Upload documentation artifacts
-        uses: actions/upload-artifact@v4
+        uses: wamp-proto/wamp-cicd/actions/upload-artifact-verified@main
         with:
           name: documentation
           path: docs/_build/html/
@@ -239,7 +239,7 @@ jobs:
           ls -la dist/
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: wamp-proto/wamp-cicd/actions/upload-artifact-verified@main
         with:
           name: package-${{ matrix.python-env }}
           path: dist/

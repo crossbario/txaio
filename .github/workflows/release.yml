@@ -341,6 +341,17 @@ jobs:
           ls -lh dist/
           echo "======================================================================"
 
+      # Fail-closed validation of the exact PyPI payload. txaio is pure-Python,
+      # so the required fileset is the universal wheel plus the source dist.
+      - name: Validate release fileset (PyPI)
+        uses: wamp-proto/wamp-cicd/actions/check-release-fileset@main
+        with:
+          distdir: dist
+          mode: strict
+          targets: |
+            py3-none-any
+            source
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
