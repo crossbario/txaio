@@ -127,6 +127,15 @@ line-length = 88
 indent-width = 4
 target-version = "py311"
 
+# File-discovery excludes (top-level, in addition to ruff's built-in defaults).
+# The shared wamp-ai / wamp-cicd submodules carry their own source with their own
+# linting/CI (e.g. .cicd/scripts/git_version.py uses a substituted __git_version__
+# placeholder) and must not be linted as part of txaio.
+extend-exclude = [
+    ".ai",
+    ".cicd",
+]
+
 [tool.ruff.lint]
 # Enable Pyflakes (`F`) and a subset of pycodestyle (`E`) codes by default.
 select = ["E4", "E7", "E9", "F"]
