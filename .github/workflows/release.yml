@@ -113,56 +113,38 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Just
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/bin
-          echo "$HOME/bin" >> $GITHUB_PATH
-
-      - name: Install uv
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          source $HOME/.cargo/env
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Setup uv cache
-        uses: actions/cache@v4
+      # Chain-of-custody: download the exact, checksum-verified artifacts built
+      # and uploaded by the main workflow, instead of rebuilding them here.
+      - name: Download verified package (wheel + sdist)
+        uses: wamp-proto/wamp-cicd/actions/download-artifact-verified@main
         with:
-          path: ${{ env.UV_CACHE_DIR }}
-          key: uv-cache-ubuntu-release-${{ hashFiles('pyproject.toml') }}
-          restore-keys: |
-            uv-cache-ubuntu-release-
+          name: package
+          path: ${{ github.workspace }}/dist/
+          run-id: ${{ needs.check-main-workflow.outputs.main_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build wheel package
-        run: just build cpy311
-
-      - name: Build source distribution
-        run: just build-sourcedist cpy311
-
-      - name: Build documentation
-        run: |
-          just create cpy314
-          just install-tools cpy314
-          just docs cpy314
+      - name: Download verified documentation
+        uses: wamp-proto/wamp-cicd/actions/download-artifact-verified@main
+        with:
+          name: documentation
+          path: ${{ github.workspace }}/docs/_build/html/
+          run-id: ${{ needs.check-main-workflow.outputs.main_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create documentation archive
         run: |
-          cd docs/_build/html
-          tar -czf ../../../dist/txaio-docs.tar.gz *
-          cd ../../..
+          ( cd docs/_build/html && tar --exclude='CHECKSUMS.sha256' -czf "${GITHUB_WORKSPACE}/dist/txaio-docs.tar.gz" * )
 
       - name: Generate checksums
         run: |
           cd dist
+          rm -f CHECKSUMS.sha256
           sha256sum * > CHECKSUMS-ALL.sha256
           cat CHECKSUMS-ALL.sha256
 
-      - name: List built packages
+      - name: List release files
         run: |
-          echo "Built packages:"
+          echo "Release files:"
           ls -lh dist/
 
       - name: Create development GitHub release
@@ -229,50 +211,32 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Just
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/bin
-          echo "$HOME/bin" >> $GITHUB_PATH
-
-      - name: Install uv
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          source $HOME/.cargo/env
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Setup uv cache
-        uses: actions/cache@v4
+      # Chain-of-custody: publish the exact, checksum-verified artifacts built
+      # and uploaded by the main workflow - do not rebuild them here.
+      - name: Download verified package (wheel + sdist)
+        uses: wamp-proto/wamp-cicd/actions/download-artifact-verified@main
         with:
-          path: ${{ env.UV_CACHE_DIR }}
-          key: uv-cache-ubuntu-release-${{ hashFiles('pyproject.toml') }}
-          restore-keys: |
-            uv-cache-ubuntu-release-
+          name: package
+          path: ${{ github.workspace }}/dist/
+          run-id: ${{ needs.check-main-workflow.outputs.main_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build wheel package
-        run: just build cpy311
-
-      - name: Build source distribution
-        run: just build-sourcedist cpy311
-
-      - name: Build documentation
-        run: |
-          just create cpy314
-          just install-tools cpy314
-          just docs cpy314
+      - name: Download verified documentation
+        uses: wamp-proto/wamp-cicd/actions/download-artifact-verified@main
+        with:
+          name: documentation
+          path: ${{ github.workspace }}/docs/_build/html/
+          run-id: ${{ needs.check-main-workflow.outputs.main_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create documentation archive
         run: |
-          cd docs/_build/html
-          tar -czf ../../../dist/txaio-docs.tar.gz *
-          cd ../../..
+          ( cd docs/_build/html && tar --exclude='CHECKSUMS.sha256' -czf "${GITHUB_WORKSPACE}/dist/txaio-docs.tar.gz" * )
 
       - name: Generate checksums (for GitHub release)
         run: |
           cd dist
+          rm -f CHECKSUMS.sha256
           sha256sum * > CHECKSUMS-ALL.sha256
           cat CHECKSUMS-ALL.sha256
 
