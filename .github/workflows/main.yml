@@ -61,14 +61,15 @@ jobs:
                -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
-      - name: Install ty (Astral type checker)
-        run: uv tool install ty
+      # ty (Astral type checker) is declared in the [dev] extra and installed
+      # into the venv via `just install-tools` below; no separate global
+      # `uv tool install ty` step is needed. This keeps local and CI on the
+      # same (latest) ty resolved from the pyproject constraint.
 
       - name: Verify toolchain installation
         run: |
           just --version
           uv --version
-          ty --version
 
       - name: Setup uv cache
         uses: actions/cache@v4

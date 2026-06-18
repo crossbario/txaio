@@ -524,8 +524,8 @@ check-format venv="": (install-tools venv)
     "${VENV_PATH}/bin/ruff" check .
 
 # Run static type checking with ty (Astral's Rust-based type checker)
-# ty is installed as a standalone tool via `uv tool install ty`, not as a Python package
-check-typing venv="": (install venv)
+# ty is declared in the [dev] extra and installed into the venv by install-tools
+check-typing venv="": (install-tools venv) (install venv)
     #!/usr/bin/env bash
     set -e
     VENV_NAME="{{ venv }}"
@@ -542,7 +542,7 @@ check-typing venv="": (install venv)
     # - possibly-missing-attribute: sys._getframe() returns FrameType | None
     # - call-non-callable: callback type inference edge cases
     # - deprecated: abc.abstractproperty usage (fix later)
-    ty check \
+    "${VENV_PATH}/bin/ty" check \
         --python "${VENV_PATH}/bin/python" \
         --ignore unresolved-attribute \
         --ignore possibly-missing-attribute \

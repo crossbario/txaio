@@ -14,6 +14,7 @@ This document contains a reverse-chronological list of changes to txaio.
 **Other**
 
 * Bumped the shared ``wamp-ai`` and ``wamp-cicd`` Git submodules to match the rest of the WAMP project group (zlmdb / autobahn-python 26.6.1) for the coordinated release. The ``wamp-cicd`` bump picks up the GHSA-6658 shell-injection hardening in the shared ``identifiers.yml`` reusable workflow (untrusted GitHub event fields are now passed via ``env:`` as quoted data with a fail-closed branch-name allowlist) (`#218 <https://github.com/crossbario/txaio/issues/218>`_)
+* Declare the ``ty`` type checker in the ``dev`` extra and run it from the project venv (dropping the separate global ``uv tool install ty`` step), so local and CI resolve the same latest ``ty``. Fixed a newly-reported ``ty`` ``invalid-argument-type`` diagnostic in ``tx.py`` (the Twisted ``ILogObserver`` is provided via ``zope.interface`` ``@provider``, which static checkers cannot follow) with a localized ``cast`` rather than a blanket rule ignore. Excluded the ``.ai`` / ``.cicd`` submodules from ``ruff`` (they carry their own linting/CI) (`#218 <https://github.com/crossbario/txaio/issues/218>`_)
 
 25.12.2
 -------

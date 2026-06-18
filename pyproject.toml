@@ -87,8 +87,10 @@ dev = [
 
     # Code quality
     "ruff>=0.4.0",
-    # Note: ty (Astral type checker) is installed via `uv tool install ty`
-    # It's a standalone Rust binary, not a Python package dependency
+    # ty: Astral's type checker (standalone Rust binary, shipped as a wheel).
+    # Pre-1.0 and fast-moving: we deliberately follow latest upstream releases
+    # rather than pinning, so local and CI resolve the same (newest) ty.
+    "ty>=0.0.44",
 ]
 
 all = [
