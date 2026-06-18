@@ -11,6 +11,10 @@ This document contains a reverse-chronological list of changes to txaio.
 26.6.1
 ------
 
+**Fix**
+
+* Logging at ``warn`` level on the asyncio backend no longer triggers a ``DeprecationWarning`` from the standard library: ``txaio`` now dispatches the ``warn`` level to ``logging.Logger.warning`` instead of the deprecated ``.warn`` alias (`#89 <https://github.com/crossbario/txaio/issues/89>`_)
+
 **Other**
 
 * Bumped the shared ``wamp-ai`` and ``wamp-cicd`` Git submodules to match the rest of the WAMP project group (zlmdb / autobahn-python 26.6.1) for the coordinated release. The ``wamp-cicd`` bump picks up the GHSA-6658 shell-injection hardening in the shared ``identifiers.yml`` reusable workflow (untrusted GitHub event fields are now passed via ``env:`` as quoted data with a fail-closed branch-name allowlist) (`#218 <https://github.com/crossbario/txaio/issues/218>`_)
