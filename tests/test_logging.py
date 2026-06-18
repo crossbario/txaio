@@ -139,6 +139,28 @@ def test_info(handler, framework):
     assert handler.messages[0].endswith(b"hilarious elephant")
 
 
+def test_warn(handler, framework):
+    """
+    Logging at "warn" level emits the message and must not trigger the
+    deprecated stdlib ``logging.Logger.warn`` alias (#89): on the asyncio
+    backend the level name is dispatched to ``.warning``, not ``.warn``.
+    """
+    import warnings
+
+    logger = txaio.make_logger()
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        logger.warn(
+            "{adjective} {nouns[0]}",
+            adjective="hilarious",
+            nouns=["skunk", "elephant", "wombat"],
+        )
+
+    assert len(handler.messages) == 1
+    assert handler.messages[0].endswith(b"hilarious skunk")
+
+
 def test_legacy_error_with_traceback(handler, framework):
     if framework.using_twisted:
         return pytest.skip("test only for asyncio users")

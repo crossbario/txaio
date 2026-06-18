@@ -162,6 +162,10 @@ def _log(logger, level, format="", **kwargs):
     if level == "trace":
         level = "debug"
         kwargs["txaio_trace"] = True
+    elif level == "warn":
+        # stdlib logging.Logger.warn() is the deprecated alias of .warning();
+        # dispatch to the non-deprecated method to avoid a DeprecationWarning (#89)
+        level = "warning"
 
     msg = format.format(**kwargs)
     getattr(logger._logger, level)(msg)
