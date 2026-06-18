@@ -31,6 +31,7 @@ import weakref
 import inspect
 
 from functools import partial
+from typing import cast
 
 from twisted.python.failure import Failure
 from twisted.internet.defer import maybeDeferred, Deferred, DeferredList
@@ -291,9 +292,12 @@ def start_logging(out=_stdout, level="info"):
     if out:
         _observer = _LogObserver(out)
 
-    _observers = []
+    # _LogObserver provides ILogObserver via zope.interface's @provider, which
+    # static type checkers (ty) cannot follow; cast so the observer list matches
+    # globalLogBeginner.beginLoggingTo(observers: Iterable[ILogObserver]).
+    _observers: list[ILogObserver] = []
     if _observer:
-        _observers.append(_observer)
+        _observers.append(cast(ILogObserver, _observer))
     globalLogBeginner.beginLoggingTo(_observers)
 
 

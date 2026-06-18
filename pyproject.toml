@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "txaio"
-version = "25.12.2"
+version = "26.6.1"
 description = "Compatibility API between asyncio/Twisted/Trollius"
 readme = {file = "README.md", content-type = "text/markdown"}
 license = "MIT"
@@ -87,8 +87,10 @@ dev = [
 
     # Code quality
     "ruff>=0.4.0",
-    # Note: ty (Astral type checker) is installed via `uv tool install ty`
-    # It's a standalone Rust binary, not a Python package dependency
+    # ty: Astral's type checker (standalone Rust binary, shipped as a wheel).
+    # Pre-1.0 and fast-moving: we deliberately follow latest upstream releases
+    # rather than pinning, so local and CI resolve the same (newest) ty.
+    "ty>=0.0.44",
 ]
 
 all = [
@@ -126,6 +128,15 @@ exclude = [
 line-length = 88
 indent-width = 4
 target-version = "py311"
+
+# File-discovery excludes (top-level, in addition to ruff's built-in defaults).
+# The shared wamp-ai / wamp-cicd submodules carry their own source with their own
+# linting/CI (e.g. .cicd/scripts/git_version.py uses a substituted __git_version__
+# placeholder) and must not be linted as part of txaio.
+extend-exclude = [
+    ".ai",
+    ".cicd",
+]
 
 [tool.ruff.lint]
 # Enable Pyflakes (`F`) and a subset of pycodestyle (`E`) codes by default.
