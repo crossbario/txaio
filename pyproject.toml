@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "txaio"
-version = "26.6.1"
+version = "26.9.1.dev1"
 description = "Compatibility API between asyncio/Twisted/Trollius"
 readme = {file = "README.md", content-type = "text/markdown"}
 license = "MIT"
