@@ -136,6 +136,7 @@ target-version = "py311"
 extend-exclude = [
     ".ai",
     ".cicd",
+    ".autobahn-crossbar-ai",
 ]
 
 [tool.ruff.lint]
