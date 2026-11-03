@@ -35,7 +35,7 @@ version = __version__
 # see aio.py for asyncio implementation
 
 
-class _Config(object):
+class _Config:
     """
     This holds all valid configuration options, accessed as
     class-level variables. For example, if you were using asyncio:
@@ -100,7 +100,7 @@ _explicit_framework = None
 def use_twisted():
     global _explicit_framework
     if _explicit_framework is not None and _explicit_framework != "twisted":
-        raise RuntimeError("Explicitly using '{}' already".format(_explicit_framework))
+        raise RuntimeError(f"Explicitly using '{_explicit_framework}' already")
     _explicit_framework = "twisted"
     from txaio import tx
 
@@ -114,7 +114,7 @@ def use_twisted():
 def use_asyncio():
     global _explicit_framework
     if _explicit_framework is not None and _explicit_framework != "asyncio":
-        raise RuntimeError("Explicitly using '{}' already".format(_explicit_framework))
+        raise RuntimeError(f"Explicitly using '{_explicit_framework}' already")
     _explicit_framework = "asyncio"
     from txaio import aio
 

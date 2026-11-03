@@ -197,9 +197,9 @@ class _TxaioLogWrapper(ILogger):
         self._log_level = level
 
 
-class _TxaioFileHandler(logging.Handler, object):
+class _TxaioFileHandler(logging.Handler):
     def __init__(self, fileobj, **kw):
-        super(_TxaioFileHandler, self).__init__(**kw)
+        super().__init__(**kw)
         self._file = fileobj
         self._encode = guess_stream_needs_encoding(fileobj)
 
@@ -215,9 +215,7 @@ class _TxaioFileHandler(logging.Handler, object):
                 for line in traceback.format_exception(*record.exc_info):
                     message = message + line
             dt = datetime.fromtimestamp(record.created)
-        msg = "{0} {1}{2}".format(
-            dt.strftime("%Y-%m-%dT%H:%M:%S%z"), message, os.linesep
-        )
+        msg = f"{dt.strftime('%Y-%m-%dT%H:%M:%S%z')} {message}{os.linesep}"
         if self._encode:
             msg = msg.encode("utf8")
         self._file.write(msg)
@@ -230,7 +228,7 @@ def make_logger():
     if "self" in cf.f_locals:
         # We're probably in a class init or method
         cls = cf.f_locals["self"].__class__
-        namespace = "{0}.{1}".format(cls.__module__, cls.__name__)
+        namespace = f"{cls.__module__}.{cls.__name__}"
     else:
         namespace = cf.f_globals["__name__"]
         if cf.f_code.co_name != "<module>":
@@ -256,9 +254,7 @@ def start_logging(out=_stdout, level="info"):
     global _log_level, _started_logging
     if level not in log_levels:
         raise RuntimeError(
-            "Invalid log level '{0}'; valid are: {1}".format(
-                level, ", ".join(log_levels)
-            )
+            f"Invalid log level '{level}'; valid are: {', '.join(log_levels)}"
         )
 
     if _started_logging:
@@ -308,7 +304,7 @@ def get_global_log_level():
 _unspecified = object()
 
 
-class _AsyncioApi(object):
+class _AsyncioApi:
     using_twisted = False
     using_asyncio = True
 
@@ -337,12 +333,9 @@ class _AsyncioApi(object):
         returns a unicode error-message
         """
         try:
-            return "{0}: {1}".format(
-                fail._value.__class__.__name__,
-                str(fail._value),
-            )
+            return f"{fail._value.__class__.__name__}: {str(fail._value)}"
         except Exception:
-            return 'Failed to produce failure message for "{0}"'.format(fail)
+            return f'Failed to produce failure message for "{fail}"'
 
     def failure_traceback(self, fail):
         """
@@ -366,7 +359,7 @@ class _AsyncioApi(object):
             )
             return f.getvalue()
         except Exception:
-            return "Failed to format failure traceback for '{0}'".format(fail)
+            return f"Failed to format failure traceback for '{fail}'"
 
     def create_future(
         self, result=_unspecified, error=_unspecified, canceller=_unspecified
@@ -417,7 +410,7 @@ class _AsyncioApi(object):
             elif isinstance(res, AsyncGeneratorType):
                 raise RuntimeError(
                     "as_future() received an async generator function; does "
-                    "'{}' use 'yield' when you meant 'await'?".format(str(fun))
+                    f"'{str(fun)}' use 'yield' when you meant 'await'?"
                 )
             else:
                 return create_future_success(res)
@@ -472,10 +465,7 @@ class _AsyncioApi(object):
         future.set_exception(error.value)
 
     def cancel(self, future, msg=None):
-        if sys.version_info >= (3, 9):
-            future.cancel(msg)
-        else:
-            future.cancel()
+        future.cancel(msg)
 
     def create_failure(self, exception=None):
         """

@@ -28,7 +28,7 @@ import math
 from txaio.interfaces import IBatchedTimer
 
 
-class _BatchedCall(object):
+class _BatchedCall:
     """
     Wraps IDelayedCall-implementing objects, implementing only the API
     which txaio promised in the first place: .cancel
@@ -134,7 +134,7 @@ class _BatchedTimer(IBatchedTimer):
                 if len(errors):
                     msg = "Error(s) processing call_later bucket:\n"
                     for e in errors:
-                        msg += "{}\n".format(e)
+                        msg += f"{e}\n"
                     raise RuntimeError(msg)
 
         # ceil()ing because we want the number of chunks, and a

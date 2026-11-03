@@ -24,24 +24,7 @@
 #
 ###############################################################################
 
-import sys
 import time
 
-
-if sys.version_info >= (3, 7):
-    time_ns = time.time_ns
-    perf_counter_ns = time.perf_counter_ns
-
-else:
-
-    def time_ns():
-        """
-        Shim for standard library time.time_ns for Python < 3.7.
-        """
-        return int(time.time() * 1000000000.0)
-
-    def perf_counter_ns():
-        """
-        Shim for standard library time.perf_counter for Python < 3.7.
-        """
-        return int(time.perf_counter() * 1000000000.0)
+time_ns = time.time_ns
+perf_counter_ns = time.perf_counter_ns

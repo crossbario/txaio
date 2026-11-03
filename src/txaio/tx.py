@@ -98,7 +98,7 @@ def with_config(loop=None):
 # descriptor.  So, we override __get__ to just return ``self`` which
 # means ``log_source`` will be wrong, but we don't document that as a
 # key that you can depend on anyway :/
-class Logger(object):
+class Logger:
     def __init__(self, level=None, logger=None, namespace=None, observer=None):
         assert logger, "Should not be instantiated directly."
 
@@ -194,7 +194,7 @@ def make_logger(level=None, logger=_Logger, observer=None):
     if "self" in cf.f_locals:
         # We're probably in a class init or method
         cls = cf.f_locals["self"].__class__
-        namespace = "{0}.{1}".format(cls.__module__, cls.__name__)
+        namespace = f"{cls.__module__}.{cls.__name__}"
     else:
         namespace = cf.f_globals["__name__"]
         if cf.f_code.co_name != "<module>":
@@ -206,7 +206,7 @@ def make_logger(level=None, logger=_Logger, observer=None):
 
 
 @provider(ILogObserver)
-class _LogObserver(object):
+class _LogObserver:
     """
     Internal helper.
 
@@ -244,10 +244,9 @@ class _LogObserver(object):
         # "Unhandled error in Deferred" -- perhaps this is a Twisted
         # bug?
         if event["log_format"] is None:
-            msg = "{0} {1}{2}".format(
-                formatTime(event["log_time"]),
-                failure_format_traceback(event["log_failure"]),
-                os.linesep,
+            msg = (
+                f"{formatTime(event['log_time'])} "
+                f"{failure_format_traceback(event['log_failure'])}{os.linesep}"
             )
             if self._encode:
                 msg = msg.encode("utf8")
@@ -256,10 +255,8 @@ class _LogObserver(object):
             # although Logger will already have filtered out unwanted
             # levels, bare Logger instances from Twisted code won't have.
             if "log_level" in event and self._acceptable_level(event["log_level"]):
-                msg = "{0} {1}{2}".format(
-                    formatTime(event["log_time"]),
-                    formatEvent(event),
-                    os.linesep,
+                msg = (
+                    f"{formatTime(event['log_time'])} {formatEvent(event)}{os.linesep}"
                 )
                 if self._encode:
                     msg = msg.encode("utf8")
@@ -276,9 +273,7 @@ def start_logging(out=_stdout, level="info"):
 
     if level not in log_levels:
         raise RuntimeError(
-            "Invalid log level '{0}'; valid are: {1}".format(
-                level, ", ".join(log_levels)
-            )
+            f"Invalid log level '{level}'; valid are: {', '.join(log_levels)}"
         )
 
     if _started_logging:
@@ -297,14 +292,14 @@ def start_logging(out=_stdout, level="info"):
     # globalLogBeginner.beginLoggingTo(observers: Iterable[ILogObserver]).
     _observers: list[ILogObserver] = []
     if _observer:
-        _observers.append(cast(ILogObserver, _observer))
+        _observers.append(cast("ILogObserver", _observer))
     globalLogBeginner.beginLoggingTo(_observers)
 
 
 _unspecified = object()
 
 
-class _TxApi(object):
+class _TxApi:
     def __init__(self, config):
         self._config = config
 
@@ -314,12 +309,9 @@ class _TxApi(object):
         returns a unicode error-message
         """
         try:
-            return "{0}: {1}".format(
-                fail.value.__class__.__name__,
-                fail.getErrorMessage(),
-            )
+            return f"{fail.value.__class__.__name__}: {fail.getErrorMessage()}"
         except Exception:
-            return 'Failed to produce failure message for "{0}"'.format(fail)
+            return f'Failed to produce failure message for "{fail}"'
 
     def failure_traceback(self, fail):
         """
@@ -338,7 +330,7 @@ class _TxApi(object):
             fail.printTraceback(file=f)
             return f.getvalue()
         except Exception:
-            return "Failed to format failure traceback for '{0}'".format(fail)
+            return f"Failed to format failure traceback for '{fail}'"
 
     def create_future(self, result=_unspecified, error=_unspecified, canceller=None):
         if result is not _unspecified and error is not _unspecified:
