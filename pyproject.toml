@@ -86,7 +86,7 @@ dev = [
     "coverage>=7.0.0",
 
     # Code quality
-    "ruff>=0.4.0",
+    "ruff>=0.12.1",
     # ty: Astral's type checker (standalone Rust binary, shipped as a wheel).
     # Pre-1.0 and fast-moving: we deliberately follow latest upstream releases
     # rather than pinning, so local and CI resolve the same (newest) ty.
@@ -172,6 +172,13 @@ line-ending = "auto"
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+# Shapes the flake8-annotations (ANN) rules that `just check-typing` selects on the
+# command line (see #214). Inert for `check-format`, which does not select ANN.
+[tool.ruff.lint.flake8-annotations]
+mypy-init-return = true          # allow __init__ without an explicit -> None
+suppress-none-returning = false  # still require -> None on functions returning only None
+allow-star-arg-any = false       # *args/**kwargs must be typed, not implicitly Any
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

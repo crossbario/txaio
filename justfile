@@ -545,6 +545,19 @@ check-typing venv="": (install-tools venv) (install venv)
         echo "==> Defaulting to venv: '${VENV_NAME}'"
     fi
     VENV_PATH="{{ VENV_DIR }}/${VENV_NAME}"
+    echo "==> Checking type annotation presence and modern syntax (via ruff)..."
+    # Annotation presence (ANN), modern syntax (UP/pyupgrade) and TYPE_CHECKING
+    # imports (TC). The ANN/TC ignores below track the EXISTING gaps in src/txaio/
+    # and should be removed module-by-module as typing improves (see #214); every
+    # other UP and TC rule is enforced now, so new code cannot regress modern syntax.
+    # --force-exclude makes the [tool.ruff] exclude list apply to this explicit path too.
+    "${VENV_PATH}/bin/ruff" check --select ANN,UP,TCH --force-exclude \
+        --ignore ANN001 --ignore ANN002 --ignore ANN003 \
+        --ignore ANN201 --ignore ANN202 --ignore ANN204 --ignore ANN205 --ignore ANN206 \
+        --ignore ANN401 \
+        --ignore UP037 \
+        --ignore TC001 --ignore TC002 --ignore TC003 \
+        src/txaio/
     echo "==> Running static type checks with ty (using ${VENV_NAME} for type stubs)..."
     # ty uses the venv's Python for resolving third-party type stubs
     # Note: Some rules are ignored due to txaio's design patterns:
