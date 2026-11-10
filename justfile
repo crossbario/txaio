@@ -561,17 +561,38 @@ check-typing venv="": (install-tools venv) (install venv)
     echo "==> Running static type checks with ty (using ${VENV_NAME} for type stubs)..."
     # ty uses the venv's Python for resolving third-party type stubs
     # Note: Some rules are ignored due to txaio's design patterns:
-    # - unresolved-attribute: txaio dynamically sets module attributes (using_twisted, using_asyncio)
+    # - missing-attribute (unresolved-attribute before ty 0.0.100): txaio dynamically sets module attributes (using_twisted, using_asyncio)
     # - possibly-missing-attribute: sys._getframe() returns FrameType | None
     # - call-non-callable: callback type inference edge cases
     # - deprecated: abc.abstractproperty usage (fix later)
+    # - missing-union-attribute: new in ty 0.0.100, 14 sites to fix (#251)
+    #
+    # CI installs the newest ty, on purpose: we follow it as it moves (#250). ty
+    # renames rules now and then, and an --ignore naming an old name then silences
+    # nothing, so the rule comes back with many errors and the one warning that
+    # explains them is lost among them. The warnings are repeated at the end.
+    echo "    ty: $("${VENV_PATH}/bin/ty" --version)"
+    TY_OUT=$(mktemp)
+    trap 'rm -f "${TY_OUT}" "${TY_OUT}.names"' EXIT
+    set +e
     "${VENV_PATH}/bin/ty" check \
         --python "${VENV_PATH}/bin/python" \
-        --ignore unresolved-attribute \
+        --ignore missing-attribute \
         --ignore possibly-missing-attribute \
         --ignore call-non-callable \
         --ignore deprecated \
-        src/
+        --ignore missing-union-attribute \
+        src/ 2>&1 | tee "${TY_OUT}"
+    rc=${PIPESTATUS[0]}
+    set -e
+    if grep -E '^warning\[(unknown-rule|renamed-rule|renamed-rule-in-ignore-comment)\]' "${TY_OUT}" > "${TY_OUT}.names"; then
+        echo ""
+        echo "==> ty does not know a rule name this recipe or a ty: ignore comment uses:"
+        sed 's/^/    /' "${TY_OUT}.names"
+        echo "    Rename it to ty's current name (the errors above may be that rule, back on)."
+        exit 1
+    fi
+    exit ${rc}
 
 # Run tests and generate an HTML coverage report in a specific directory.
 check-coverage venv="": (install-tools venv) (install venv)
