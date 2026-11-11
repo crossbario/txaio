@@ -565,7 +565,6 @@ check-typing venv="": (install-tools venv) (install venv)
     # - possibly-missing-attribute: sys._getframe() returns FrameType | None
     # - call-non-callable: callback type inference edge cases
     # - deprecated: abc.abstractproperty usage (fix later)
-    # - missing-union-attribute: new in ty 0.0.100, 14 sites to fix (#251)
     #
     # CI installs the newest ty, on purpose: we follow it as it moves (#250). ty
     # renames rules now and then, and an --ignore naming an old name then silences
@@ -581,7 +580,6 @@ check-typing venv="": (install-tools venv) (install venv)
         --ignore possibly-missing-attribute \
         --ignore call-non-callable \
         --ignore deprecated \
-        --ignore missing-union-attribute \
         src/ 2>&1 | tee "${TY_OUT}"
     rc=${PIPESTATUS[0]}
     set -e

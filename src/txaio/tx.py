@@ -28,7 +28,6 @@ import io
 import os
 import sys
 import weakref
-import inspect
 
 from functools import partial
 from typing import cast
@@ -43,7 +42,7 @@ from zope.interface import provider
 from txaio.interfaces import IFailedFuture, ILogger, log_levels
 from txaio._iotype import guess_stream_needs_encoding
 from txaio import _Config
-from txaio._common import _BatchedTimer
+from txaio._common import _BatchedTimer, _caller_namespace
 from txaio import _util
 from twisted.logger import Logger as _Logger, formatEvent, ILogObserver
 from twisted.logger import globalLogBeginner, formatTime, LogLevel
@@ -190,17 +189,7 @@ def make_logger(level=None, logger=_Logger, observer=None):
     # we want the namespace to be the calling context of "make_logger"
     # -- so we *have* to pass namespace kwarg to Logger (or else it
     # will always say the context is "make_logger")
-    cf = inspect.currentframe().f_back
-    if "self" in cf.f_locals:
-        # We're probably in a class init or method
-        cls = cf.f_locals["self"].__class__
-        namespace = f"{cls.__module__}.{cls.__name__}"
-    else:
-        namespace = cf.f_globals["__name__"]
-        if cf.f_code.co_name != "<module>":
-            # If it's not the module, and not in a class instance, add the code
-            # object's name.
-            namespace = namespace + "." + cf.f_code.co_name
+    namespace = _caller_namespace()
     logger = Logger(level=level, namespace=namespace, logger=logger, observer=observer)
     return logger
 

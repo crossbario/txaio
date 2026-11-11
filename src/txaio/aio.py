@@ -44,13 +44,12 @@ import weakref
 import functools
 import traceback
 import logging
-import inspect
 
 from datetime import datetime
 
 from txaio.interfaces import IFailedFuture, ILogger, log_levels
 from txaio._iotype import guess_stream_needs_encoding
-from txaio._common import _BatchedTimer
+from txaio._common import _BatchedTimer, _caller_namespace
 from txaio import _util
 from txaio import _Config
 
@@ -151,7 +150,7 @@ class FailedFuture(IFailedFuture):
 def _log(logger, level, format="", **kwargs):
     # Look for a log_category, switch it in if we have it
     if "log_category" in kwargs and kwargs["log_category"] in _categories:
-        format = _categories.get(kwargs["log_category"])
+        format = _categories[kwargs["log_category"]]
 
     kwargs["log_time"] = time.time()
     kwargs["log_level"] = level
@@ -224,17 +223,7 @@ class _TxaioFileHandler(logging.Handler):
 def make_logger():
     # we want the namespace to be the calling context of "make_logger"
     # otherwise the root logger will be returned
-    cf = inspect.currentframe().f_back
-    if "self" in cf.f_locals:
-        # We're probably in a class init or method
-        cls = cf.f_locals["self"].__class__
-        namespace = f"{cls.__module__}.{cls.__name__}"
-    else:
-        namespace = cf.f_globals["__name__"]
-        if cf.f_code.co_name != "<module>":
-            # If it's not the module, and not in a class instance, add the code
-            # object's name.
-            namespace = namespace + "." + cf.f_code.co_name
+    namespace = _caller_namespace()
 
     logger = _TxaioLogWrapper(logging.getLogger(name=namespace))
     # remember this so we can set their levels properly once
