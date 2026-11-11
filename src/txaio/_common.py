@@ -24,6 +24,7 @@
 #
 ###############################################################################
 
+import inspect
 import math
 from txaio.interfaces import IBatchedTimer
 
@@ -43,6 +44,10 @@ class _BatchedCall:
         self._call = the_call
 
     def cancel(self):
+        # A second cancel() is a no-op, as asyncio's Handle.cancel() is: _timer is None
+        # after the first one, and calling it again raised AttributeError (#251).
+        if self._timer is None:
+            return
         self._timer._remove_call(self._index, self)
         self._timer = None
 
@@ -163,3 +168,28 @@ class _BatchedTimer(IBatchedTimer):
         if not calls:
             del self._buckets[real_time]
             delayed_call.cancel()
+
+
+def _caller_namespace():
+    """
+    The logger namespace for the code that called ``make_logger()``: the class of
+    ``self`` there, or else the module, plus the function's name outside module level.
+    Shared by the asyncio and the Twisted ``make_logger()``.
+    """
+    # this function <- make_logger() <- the code that wants a logger
+    frame = inspect.currentframe()
+    make_logger_frame = frame.f_back if frame is not None else None
+    cf = make_logger_frame.f_back if make_logger_frame is not None else None
+    if cf is None:
+        # inspect.currentframe() is None on a Python without stack frame support (#251)
+        raise RuntimeError("txaio.make_logger() needs Python stack frames (inspect.currentframe())")
+    if "self" in cf.f_locals:
+        # We're probably in a class init or method
+        cls = cf.f_locals["self"].__class__
+        return f"{cls.__module__}.{cls.__name__}"
+    namespace = cf.f_globals["__name__"]
+    if cf.f_code.co_name != "<module>":
+        # If it's not the module, and not in a class instance, add the code
+        # object's name.
+        namespace = namespace + "." + cf.f_code.co_name
+    return namespace
